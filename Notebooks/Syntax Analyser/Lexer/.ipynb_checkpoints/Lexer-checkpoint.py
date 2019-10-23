@@ -1,9 +1,10 @@
-import numpy as np
 import re
-
+import os
 #file imports
-path_tokens = 'tokens.txt'
-path_reserved = 'reserved.txt'
+folder_path = os.path.dirname(os.path.abspath(__file__))
+path_tokens = os.path.join(folder_path, 'tokens.txt')
+path_reserved = os.path.join(folder_path, 'reserved.txt')
+
 
 # reserved set
 f = open(path_reserved)
@@ -140,7 +141,7 @@ class Lexer:
         return tk
     
     def identifier(self, c, line):
-        global regex, reserved_set
+        global regex, reserved_set,token_regex, token_set
         reg = regex['id']
         col, match = whileFullMatch(reg, line, c)
         #print(col,match)
@@ -153,7 +154,13 @@ class Lexer:
             self.flag = False # Numeric special case
             return tk
         
-        tk = Token(self.row, self.col + self.displacement,'id', match)
+        tk = None
+        if(re.fullmatch(token_regex,match)):
+            tk = Token(self.row, self.col + self.displacement,token_set[match])
+        else:
+            tk = Token(self.row, self.col + self.displacement,'id', match)
+        
+        
         self.col += col #increment for the next read
         
         self.flag = True # numeric special case
@@ -167,7 +174,21 @@ class Lexer:
             self.error = True
             return tk
         
+        
         col, match = whileFullMatch(token_regex, line, c)
+        
+        # try to match another token. Useful for tokens that are
+        # concatenations of tokens. ex: -:=, put inside while if the
+        
+        if(col+1<len(line)):
+            col_, match_ = whileFullMatch(token_regex, line[col:], line[col])
+            if(match_==':=:'):
+                match_=':='
+                col_-=1;
+            if(re.fullmatch(token_regex,match+match_)):
+                col+=col_
+                match += match_
+        
         tk = Token(self.row, self.col + self.displacement, token_set[match])
         self.col += col #increment for the next read
         
