@@ -185,7 +185,7 @@ class Lexer:
             col_, match_ = whileFullMatch(token_regex, line[col:], line[col])
             if(match_==':=:'):
                 match_=':='
-                col_-=1;
+                col_-=1
             if(re.fullmatch(token_regex,match+match_)):
                 col+=col_
                 match += match_
@@ -250,7 +250,7 @@ class Lexer:
         flag = True
         line = ''
         while(line == ''):
-            if self.row >= len(self.lines): return ''
+            if self.row >= len(self.lines): return Token(self.row, self.col, '$') # END OF FILE
             line = self.lines[self.row][self.col:]
             line = self.cleanLine(line)
             if line == '' or line[0] == '#': # commentaries handling
@@ -260,7 +260,6 @@ class Lexer:
                 line = ''
         #Process
         c = line[0]
-        print(line)
         opt = {
             '+' : self.sign,
             '-' : self.sign,

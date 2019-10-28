@@ -250,7 +250,7 @@ class Lexer:
         flag = True
         line = ''
         while(line == ''):
-            if self.row >= len(self.lines): return Token(self.row,self.col, 'EOF', '$') # END OF FILE
+            if self.row >= len(self.lines): return Token(self.row, self.col, '$') # END OF FILE
             line = self.lines[self.row][self.col:]
             line = self.cleanLine(line)
             if line == '' or line[0] == '#': # commentaries handling

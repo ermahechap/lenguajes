@@ -1,12 +1,7 @@
-S A B C
-S D E
-A dos B tres
-A e
-B B'
-B' e
-B' cuatro C cinco
-C seis A B
-C e
-D uno A E
-D B
-E tres
+A B C
+A ant A all
+B big C
+B bus A boss
+B e
+C cat
+C cow
