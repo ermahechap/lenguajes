@@ -12,13 +12,14 @@ not	tk_bit-wise
 **	tk_exp
 *	tk_multi
 /	tk_div
+//  tk_parallel
 %	tk_residuo
 :=:	tk_swap
 ||	tk_conc
 <<	tk_left_shift
 >>	tk_right_shift
 =	tk_igual
-!	tk_coma
+!	tk_admire
 ;	tk_punto_y_coma
 :=	tk_asig
 :	tk_dos_puntos
@@ -56,3 +57,5 @@ and	tk_and
 or	tk_or
 |	tk_or
 xor	tk_xor
+!=  tk_ne
+~=  tk_ne
