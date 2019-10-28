@@ -93,7 +93,7 @@ class Lexer:
     def __init__(self, filepath):
         self.filepath = filepath
         self.flag = False #Flag for numeric special case
-        self.error = False
+        self.error = None
         
     def readFile(self):
         f = open(self.filepath,'r')
@@ -101,7 +101,8 @@ class Lexer:
         f.close()
         #reset
         self.displacement = self.row = self.col = 0
-        self.flag = self.error = False
+        self.flag = False
+        self.error = None
     
     def cleanLine(self, line):
         l = 0
@@ -171,7 +172,7 @@ class Lexer:
         
         if(not re.match(token_regex, c)):
             tk = Token(self.row, self.col + self.displacement) #Error Token
-            self.error = True
+            self.error = tk
             return tk
         
         
@@ -184,7 +185,7 @@ class Lexer:
             col_, match_ = whileFullMatch(token_regex, line[col:], line[col])
             if(match_==':=:'):
                 match_=':='
-                col_-=1;
+                col_-=1
             if(re.fullmatch(token_regex,match+match_)):
                 col+=col_
                 match += match_
@@ -230,7 +231,7 @@ class Lexer:
             return tk
         
         tk = Token(self.row, self.col + self.displacement) #Error Token
-        self.error = True
+        self.error = tk
         self.flag = False # Numeric special case
         return tk
     
@@ -245,11 +246,11 @@ class Lexer:
         return self.default(c,line)
     
     def nextToken(self):
-        if self.error: return ''
+        if self.error: return self.error
         flag = True
         line = ''
         while(line == ''):
-            if self.row >= len(self.lines): return ''
+            if self.row >= len(self.lines): return Token(self.row,self.col, 'EOF', '$') # END OF FILE
             line = self.lines[self.row][self.col:]
             line = self.cleanLine(line)
             if line == '' or line[0] == '#': # commentaries handling

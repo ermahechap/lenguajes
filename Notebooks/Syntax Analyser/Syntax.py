@@ -1,1 +1,2 @@
-import Lexer.Lexer
+import Lexer.Lexer as lx
+import re
