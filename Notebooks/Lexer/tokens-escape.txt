@@ -19,7 +19,7 @@ not	tk_bit-wise
 <<	tk_left_shift
 >>	tk_right_shift
 =	tk_igual
-!	tk_coma
+!	tk_admire
 ;	tk_punto_y_coma
 \:=	tk_asig
 \:	tk_dos_puntos
