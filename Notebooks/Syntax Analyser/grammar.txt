@@ -1,8 +1,9 @@
 COMPONENT SPEC_COMPONENT tk_punto_y_coma COMBINED_COMPONENT tk_punto_y_coma SEPARATE_BODY tk_punto_y_coma e                                                                                                                                                                       
-SPEC_COMPONENT COMP_LABEL SPECT_STMT_LS SPEC_BODY                                                                                                                                                                
-COMP_LABEL CMP_KWD id                                                                                                                                                                  
+SPEC_COMPONENT COMP_LABEL SPEC_STMT_LS SPEC_BODY                                                                                                                                                                
+COMP_LABEL COMP_KWD id                                                                                                                                                                  
 COMP_KWD global resource                                                                                                                                                                      
-SPEC_STMT_LS SPEC_STMT SPECT_STMT_LS'                                                                                                                                                                             
+COMP_KWD resource                                                                                                                                                                      
+SPEC_STMT_LS SPEC_STMT SPEC_STMT_LS'                                                                                                                                                                             
 SPEC_STMT_LS' separate SPEC_STMT SPEC_STMT_LS' e                                                                                                                                                                           
 SPEC_STMT COMMON_STMT EXTEND_CLAUSE BODY_ONLY                                                                                                                                                                            
 COMMON_STMT DECL IMPORT_CLAUSE e                                                                                                                                                                            
