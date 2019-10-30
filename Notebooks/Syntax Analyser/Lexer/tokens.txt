@@ -21,7 +21,7 @@ not	tk_bit-wise
 =	tk_igual
 !	tk_admire
 ;	tk_punto_y_coma
-:=	tk_asig
+:=	tk_asign
 :	tk_dos_puntos
 ;	tk_punto_y_coma
 ,	tk_coma

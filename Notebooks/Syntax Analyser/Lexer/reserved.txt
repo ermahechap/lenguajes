@@ -85,5 +85,6 @@ file
 sem
 const
 optype
+type
 external
 extend

@@ -1,147 +1,500 @@
-COMPONENT SPEC_COMPONENT tk_punto_y_coma COMBINED_COMPONENT tk_punto_y_coma SEPARATE_BODY tk_punto_y_coma e                                                                                                                                                                       
-SPEC_COMPONENT COMP_LABEL SPEC_STMT_LS SPEC_BODY                                                                                                                                                                
-COMP_LABEL COMP_KWD id                                                                                                                                                                  
-COMP_KWD global resource                                                                                                                                                                      
-COMP_KWD resource                                                                                                                                                                      
-SPEC_STMT_LS SPEC_STMT SPEC_STMT_LS'                                                                                                                                                                             
-SPEC_STMT_LS' separate SPEC_STMT SPEC_STMT_LS' e                                                                                                                                                                           
-SPEC_STMT COMMON_STMT EXTEND_CLAUSE BODY_ONLY                                                                                                                                                                            
-COMMON_STMT DECL IMPORT_CLAUSE e                                                                                                                                                                            
-DECL TYPE_DECL OBJ_DECL OPTYPE_DECL SEM_DECL OP_DECL ¿Error?                                                                                                                                                                         
-TYPE_DECL tk_type id tk_igual TYPE TYPE_RESTRICTION                                                                                                                                                                          
-TYPE SUBSCRIPTS UNSUB_TYPE UNSUB_TYPE                                                                                                                                                                            
-SUBSCRIPTS BRACKETED_LIST BRACKETED_LIST SUBSCRIPTS                                                                                                                                                                            
-BRACKETED_LIST tk_cor_izq BOUND_LP tk_cor_der                                                                                                                                                                            
-BOUND_LP BOUNDS BOUND_LP tk_coma BOUNDS                                                                                                                                                                           
-BOUNDS BOUND BOUND tk_dos_puntos BOUND                                                                                                                                                                           
-BOUND EXPR tk_multi                                                                                                                                                                             
-EXPR id LITERAL INVOCATION CONSTRUCTOR BINARY_EXPR PREFIX_EXPR SUFFIX_EXPR CREATE_EXPR                                                                                                                                                                       
-LITERAL int real tk_blit tk_clit tk_slit tk_nlit tk_flit                                                                                                                                                                        
-INVOCATION EXPR PAREN_LIST                                                                                                                                                                             
-PAREN_LIST tk_par_izq PAREN_ITEM_LS tk_par_der                                                                                                                                                                            
-PAREN_ITEM_LS EXPR_LP e                                                                                                                                                                             
-EXPR_LP EXPR EXPR_LP tk_coma EXPR                                                                                                                                                                           
-CONSTRUCTOR tk_par_izq CONSTR_ITEM_LP tk_par_der                                                                                                                                                                            
-CONSTR_ITEM_LP CONSTR_ITEM CONSTR_ITEM_LP tk_coma CONSTR_ITEM                                                                                                                                                                           
-CONSTR_ITEM EXPR tk_cor_izq EXPR tk_cor_der EXPR                                                                                                                                                                          
-BINARY_EXPR EXPR tk_exp EXPR EXPR tk_multi EXPR EXPR tk_div EXPR EXPR tk_residuo EXPR EXPR rem_asign EXPR EXPR tk_mas EXPR EXPR tk_menos EXPR EXPR tk_conc EXPR EXPR tk_igual EXPR EXPR tk_ne EXPR EXPR tk_ge EXPR EXPR tk_menor_igual EXPR EXPR tk_mayorque EXPR EXPR tk_menorque EXPR EXPR tk_and EXPR EXPR tk_or EXPR EXPR tk_xor EXPR EXPR tk_right_shift EXPR EXPR tk_left_shift EXPR EXPR tk_swap EXPR EXPR tk_asig EXPR EXPR tk_inc_asing EXPR EXPR tk_dec_asing EXPR EXPR tk_mult_asing EXPR EXPR tk_div_asing EXPR EXPR tk_rem_asing EXPR EXPR tk_exp_asing EXPR EXPR tk_or_asing EXPR EXPR tk_and_asing EXPR EXPR tk_concat_asing EXPR EXPR tk_right_shift_asign EXPR EXPR tk_left_shift_asign EXPR                                                                               
-PREFIX_EXPR tk_bit_wise EXPR tk_mas EXPR tk_menos EXPR tk_direccion EXPR tk_num_llamadas EXPR tk_increment EXPR tk_decrement EXPR BASIC_TYPE PAREN_EXPR string PAREN_EXPR low tk_par_izq TYPE tk_par_der high tk_par_izq TYPE tk_par_der tk_new tk_par_izq SUBSCRIPTS_OPT NEW_ITEM tk_par_der                                                                                                                                                
-BASIC_TYPE bool char int file real                                                                                                                                                                          
-PAREN_EXPR tk_par_izq EXPR tk_par_der                                                                                                                                                                            
-SUBSCRIPTS_OPT SUBSCRIPTS e                                                                                                                                                                             
-NEW_ITEM UNSUB_TYPE sem SEM_PROTO op OP_PROTOTYPE                                                                                                                                                                          
-UNSUB_TYPE BASIC_TYPE STRING_DEF ENUM_DEF POINTER_DEF RECORD_DEF UNION_DEF CAPABILITY_DEF QUALIFIED_ID                                                                                                                                                                       
-STRING_DEF string tk_cor_izq STRING_LIM tk_cor_der string tk_par_izq STRING_LIM tk_par_der                                                                                                                                                                       
-STRING_LIM EXPR tk_multi                                                                                                                                                                             
-ENUM_DEF enum tk_par_izq ID_LP tk_par_der                                                                                                                                                                           
-ID_LP id ID_LP tk_coma id                                                                                                                                                                           
-POINTER_DEF ptr TYPE ptr any                                                                                                                                                                           
-RECORD_DEF rec tk_par_izq FIELD_LP tk_par_der                                                                                                                                                                           
-FIELD_LP FIELD FIELD tk_punto_y_coma FIELD tk_punto_y_coma FIELD_LP                                                                                                                                                                         
-FIELD  VAR_DEF_LP                                                                                                                                                                             
-VAR_DEF_LP VAR_DEF VAR_DEF_LP tk_coma VAR_DEF                                                                                                                                                                           
-VAR_DEF ID_SUBS_LP VAR_ATT                                                                                                                                                                             
-ID_SUBS_LP ID_SUBS ID_SUBS_LP tk_coma ID_SUBS                                                                                                                                                                           
-ID_SUBS id id SUBSCRIPTS                                                                                                                                                                            
-VAR_ATT tk_dos_puntos TYPE tk_dos_puntos TYPE tk_asig EXPR tk_asig EXPR tk_punto_y_coma                                                                                                                                                                      
-UNION_DEF union tk_par_izq FIELD_LP tk_par_der                                                                                                                                                                           
-CAPABILITY_DEF cap CAP_FOR                                                                                                                                                                             
-CAP_FOR QUALIFIED_ID OP_PROTOTYPE sem SEM_PROTO vm                                                                                                                                                                          
-QUALIFIED_ID id id tk_punto id                                                                                                                                                                           
-OP_PROTOTYPE PROTOTYPE OP_RESTRICTION_OPT                                                                                                                                                                             
-PROTOTYPE PARAMETERS RETURN_SPEC_OPT                                                                                                                                                                             
-PARAMETERS tk_par_izq PARAM_SPEC_LS tk_par_der                                                                                                                                                                            
-PARAM_SPEC_LS PARAM_SPEC_LP e                                                                                                                                                                             
-PARAM_SPEC_LP PARAM_SPEC PARAM_SPEC tk_punto_y_coma PARAM_SPEC tk_punto_y_coma PARAM_SPEC_LP                                                                                                                                                                         
-PARAM_SPEC PARAM_KIND_OPT TYPE PARAM_KIND_OPT ID_SUBS_LP tk_dos_puntos TYPE                                                                                                                                                                         
-PARAM_KIND_OPT val var res ref e                                                                                                                                                                          
-RETURN_SPEC_OPT RETURN_SPEC_NULL returns TYPE returns ID_SUBS tk_dos_puntos TYPE returns id bogus                                                                                                                                                                     
-RETURN_SPEC_NULL e                                                                                                                                                                              
-SEM_PROTO RETURN_SPEC_NULL                                                                                                                                                                              
-OP_RESTRICTION_OPT tk_llave_izq OP_RESTRICTION tk_llave_der e %prec tk_llave_izq                                                                                                                                                                         
-OP_RESTRICTION call send call tk_coma send send tk_coma call                                                                                                                                                                       
-CREATE_EXPR create CREATE_CALL LOCATION_OPT                                                                                                                                                                            
-CREATE_CALL RSRC_NAME PAREN_LIST                                                                                                                                                                             
-RSRC_NAME id vm                                                                                                                                                                             
-LOCATION_OPT on EXPR e                                                                                                                                                                            
-TYPE_RESTRICTION tk_llave_izq id tk_llave_der e                                                                                                                                                                           
-OBJ_DECL VAR_OR_CONST VAR_DEF_LP                                                                                                                                                                             
-VAR_OR_CONST var const                                                                                                                                                                             
-OPTYPE_DECL optype id EQ_OPT OP_PROTOTYPE                                                                                                                                                                           
-EQ_OPT tk_igual e                                                                                                                                                                             
-SEM_DECL sem SEM_DEF_LP                                                                                                                                                                             
-SEM_DEF_LP SEM_DEF SEM_DEF_LP tk_coma SEM_DEF                                                                                                                                                                           
-SEM_DEF ID_SUBS SEM_PROTO SEM_INIT                                                                                                                                                                            
-SEM_INIT tk_asig EXPR e                                                                                                                                                                            
-OP_DECL OP_OR_EXT OPER_DEF_LP                                                                                                                                                                             
-OP_OR_EXT op external                                                                                                                                                                             
-OPER_DEF_LP OPER_DEF OPER_DEF_LP tk_coma OPER_DEF                                                                                                                                                                           
-OPER_DEF ID_SUBS_LP OP_PROTOTYPE ID_SUBS_LP COLON_OPT QUALIFIED_ID                                                                                                                                                                          
-COLON_OPT tk_dos_puntos e                                                                                                                                                                             
-IMPORT_CLAUSE import {*dopr=O_IMPORT;}  IMPORT_LIST                                                                                                                                                                            
-IMPORT_LIST IMPORT_NAME IMPORT_LIST tk_coma IMPORT_NAME                                                                                                                                                                           
-IMPORT_NAME id                                                                                                                                                                              
-EXTEND_CLAUSE extend {*dopr=O_EXTEND;} IMPORT_LIST                                                                                                                                                                            
-BODY_ONLY STMT PROC PROCESS PROCEDURE INITIAL_BLOCK FINAL_BLOCK                                                                                                                                                                         
-STMT SKIP_STMT STOP_STMT EXIT_STMT NEXT_STMT RETURN_STMT REPLY_STMT FORWARD_STMT SEND_STMT EXPLICIT_CALL DESTROY__STMT BEGIN_END IF_STMT DO_STMT FOR_ALL_STMT V_STMT INPUT_STMT RECEIVE_STMT P_STMT CONCURRENT_STMT                                                                                                                                                            
-SKIP_STMT skip                                                                                                                                                                              
-STOP_STMT stop EXIT_CODE_OPT                                                                                                                                                                             
-EXIT_CODE_OPT tk_par_izq EXPR tk_par_der e                                                                                                                                                                           
-EXIT_STMT exit                                                                                                                                                                              
-NEXT_STMT next                                                                                                                                                                              
-RETURN_STMT return                                                                                                                                                                              
-REPLY_STMT reply                                                                                                                                                                              
-FORWARD_STMT forward INVOCATION                                                                                                                                                                             
-SEND_STMT send INVOCATION                                                                                                                                                                             
-EXPLICIT_CALL call INVOCATION                                                                                                                                                                             
-DESTROY_STMT destroy EXPR                                                                                                                                                                             
-BEGIN_END begin BLOCK end                                                                                                                                                                            
-BLOCK BLOCK_ITEMS                                                                                                                                                                              
-BLOCK_ITEMS BLOCK_ITEM BLOCK_ITEMS tk_punto_y_coma BLOCK_ITEM                                                                                                                                                                           
-BLOCK_ITEM DECL STMT EXPR IMPORT_CLAUSE e                                                                                                                                                                          
-IF_STMT if GUARDED_CMD_LP ELSE_CMD_OPT fi                                                                                                                                                                           
-GUARDED_CMD_LP GUARDED_CMD GUARDED_CMD_LP tk_separa GUARDED_CMD                                                                                                                                                                           
-GUARDED_CMD EXPR tk_ejecuta BLOCK                                                                                                                                                                            
-ELSE_CMD_OPT tk_separa else tk_ejecuta BLOCK                                                                                                                                                                           
-DO_STMT do GUARDED_CMD_LP ELSE_CMD_OPT od                                                                                                                                                                           
-FOR_ALL_STMT fa QUANTIFIER_LP tk_ejecuta BLOCK af                                                                                                                                                                          
-QUANTIFIER_LP QUANTIFIER QUANTIFIER_LP tk_coma QUANTIFIER                                                                                                                                                                           
-QUANTIFIER id tk_asig EXPR DIRECTION EXPR STEP_OPT SUCH_THAT_OPT                                                                                                                                                                        
-DIRECTION to downto                                                                                                                                                                             
-STEP_OPT by EXPR e                                                                                                                                                                            
-SUCH_THAT_OPT st EXPR e                                                                                                                                                                            
-V_STMT V tk_par_izq EXPR tk_par_der                                                                                                                                                                           
-INPUT_STMT in IN_CMD_LP ELSE_CMD_OPT ni                                                                                                                                                                           
-IN_CMD_LP IN_CMD IN_CMD_LP tk_separa IN_CMD                                                                                                                                                                           
-IN_CMD QUANTIFIERS_OPT IN_SPEC SYNC_EXPR_OPT SCHED_EXPR_OPT tk_ejecuta BLOCK                                                                                                                                                                         
-QUANTIFIERS_OPT tk_par_izq QUANTIFIER_LP tk_par_der                                                                                                                                                                            
-IN_SPEC IN_OP PARAM_NAMES                                                                                                                                                                             
-IN_OP QUALIFIED_ID QUALIFIED_ID SUBSCRIPTS                                                                                                                                                                            
-PARAM_NAMES tk_par_izq ID_LS tk_par_der RETURN_NAME_OPT                                                                                                                                                                           
-ID_LS ID_LP e                                                                                                                                                                             
-RETURN_NAME_OPT returns id e                                                                                                                                                                            
-SYNC_EXPR_OPT tk_and EXPR st EXPR e                                                                                                                                                                          
-SCHED_EXPR_OPT by EXPR e                                                                                                                                                                            
-RECEIVE_STMT receive EXPR PAREN_LIST                                                                                                                                                                            
-P_STMT P tk_par_izq EXPR tk_par_der                                                                                                                                                                           
-CONCURRENT_STMT co CONCURRENT_CMD_LP oc                                                                                                                                                                            
-CONCURRENT_CMD_LP CONCURRENT_CMD CONCURRENT_CMD_LP tk_parallel CONCURRENT_CMD                                                                                                                                                                           
-CONCURRENT_CMD QUANTIFIERS_OPT SEPARATOR_OPT CONCURRENT_INVOCATION POST_PROCESSING_OPT                                                                                                                                                                           
-SEPARATOR_OPT SEPARATOR_OPT tk_punto_y_coma e                                                                                                                                                                            
-CONCURRENT_INVOCATION EXPLICIT_CALL SEND_STMT EXPR                                                                                                                                                                            
-POST_PROCESSING_OPT tk_ejecuta BLOCK e                                                                                                                                                                            
-PROC proc id PARAM_NAMES BLOCK END_ID                                                                                                                                                                          
-END_ID end ID_OPT                                                                                                                                                                             
-ID_OPT id e                                                                                                                                                                             
-PROCESS process id RETURN_SPEC_NULL QUANTIFIERS_OPT BLOCK END_ID                                                                                                                                                                         
-PROCEDURE procedure id PROTOTYPE BLOCK END_ID                                                                                                                                                                          
-INITIAL_BLOCK initial { WARN ("`initial' treated as `begin'"); } BLOCK end INITIAL_OPT                                                                                                                                                                          
-INITIAL_OPT initial e                                                                                                                                                                             
-FINAL_BLOCK final BLOCK end FINAL_OPT                                                                                                                                                                           
-FINAL_OPT final e                                                                                                                                                                             
-COMBINED_COMPONENT COMBINED_SPECPART BODY_STMT_LS END_ID                                                                                                                                                                            
-COMBINED_SPECPART COMP_LABEL COMP_PARAMS                                                                                                                                                                             
-COMP_PARAMS PARAMETERS                                                                                                                                                                              
-BODY_STMT_LS BODY_STMT BODY_STMT_LS tk_punto_y_coma BODY_STMT                                                                                                                                                                           
-BODY_STMT COMMON_STMT EXPR BODY_ONLY EXTEND_CLAUSE                                                                                                                                                                           
-SEPARATE_BODY body id BODY_STMT_LS END_ID                                                                                                                                                                           
+Component e
+Component Spec_component tk_separator
+Component Combined_component tk_separator
+Component Separate_body tk_separator
+
+Spec_component Comp_label Spec_stmt_ls Spec_body
+
+Combined_component Combined_specpart Body_smt_ls End_id
+
+Combined_specpart Comp_label Comp_params
+
+Comp_label Comp_kwd tk_id
+
+Comp_kwd tk_global
+Comp_kwd tk_resourse
+
+Spec_body End_id
+Spec_body tk_body tk_id Maybe_params
+Spec_body tk_body tk_id Maybe_params tk_separate
+
+Maybe_params e
+Maybe_params Comp_params
+
+Comp_params Parameters
+
+Separate_body tk_body tk_id Body_smt_ls End_id
+
+//Spec_body contents
+
+//Spec_stmt_ls Spec_stmt_ls tk_separator Body_smt
+//Spec_stmt_ls Spec_stmt
+
+Spec_stmt_ls tk_separator Spec_stmt_ls2
+Spec_stmt_ls2 Spec_stmt Spec_stmt_ls2
+
+Body_smt_ls Body_smt
+Body_smt_ls Body_smt_ls tk_separator Body_smt
+
+Body_only Body_smt
+Body_only Proc
+Body_only Process
+Body_only Procedure
+Body_only Initial_block
+Body_only Final_block
+
+Common_stmt e
+Common_stmt Decl
+Common_stmt Import_clause
+
+Import_clause import
+
+Extend_clause extend
+
+Import_list Import_name
+Import_list Import_list tk_coma Import_name
+
+Import_name id
+
+Op_decl Op_or_ext Oper_def_lp
+
+Op_or_ext op
+Op_or_ext exteral
+
+Oper_def_lp Oper_def
+Oper_def_lp Oper_def_lp tk_coma Oper_def
+
+Oper_def Id_subs_lp Op_prototype
+Oper_def Id_subs_lp Colon_opt Qualified_id
+
+Colon_opt e
+Colon_opt tk_dos_puntos
+
+Sem_decl sem Sem_def_lp
+
+Sem_def_lp Sem_def
+Sem_def_lp Sem_def_lp tk_coma Sem_def
+
+Sem_def Id_subs Sem_proto Sem_init
+
+Sem_proto Return_spec_null
+
+Sem_init e
+Sem_init tk_asig Expr
+
+Proc proc id Param_names Block End_id
+
+Procedure procedure id Prototype Block End_id
+
+Process process id Return_spec_null Qualified_id Block End_id
+
+Initial_block initial
+
+Initial_opt e
+Initial_opt initial
+
+Final_block final Block end Final_opt
+
+Final_opt e
+Final_opt final
+
+/// Parameters
+
+Prototype Parameters Return_spec_opt
+
+Parameters tk_par_izq Param_spec_ls tk_par_der
+
+Param_spec_ls e
+Param_spec_ls Param_spec_lp
+
+Param_spec_lp Param_spec
+Param_spec_lp Param_spec tk_punto_y_coma
+Param_spec_lp Param_spec tk_punto_y_coma Param_spec_lp
+
+Param_spec Param_kind_opt Type
+Param_spec Param_kind_opt Id_subs_lp tk_dos_puntos 
+
+Param_kind_opt e
+Param_kind_opt val
+Param_kind_opt var
+Param_kind_opt res
+Param_kind_opt ref
+
+Return_spec_opt Return_spec_null
+Return_spec_opt returns 
+Return_spec_opt returns Id_subs tk_dos_puntos 
+Return_spec_opt returns id bogus
+
+Return_spec_null e
+
+Param_names tk_par_izq ls tk_par_der Return_name_opt
+
+Return_name_opt e
+Return_name_opt returns id
+
+//declaration
+
+Decl Error tk_punto_y_coma
+Decl _decl
+Decl Obj_decl
+Decl Op_decl
+Decl Sem_decl
+Decl Op_decl
+
+_decl  id = Type Type_restriction
+
+Type_restriction e
+Type_restriction tk_llave_izq id tk_llave_der
+
+Obj_decl Var_or_const Var_def_lp
+
+Var_or_const var
+Var_or_const const
+
+Var_def_lp Var_def
+Var_def_lp Var_def_lp tk_coma Var_def
+
+Var_def Id_subs_lp Var_att
+
+Var_att tk_dos_puntos Type
+Var_att tk_dos_puntos Type tk_asig Expr
+Var_att tk_asig Expr
+Var_att tk_dos_puntos
+
+///type Specification
+
+Type Subscripts Unsub_type
+Type Unsub_type
+
+Unsub_type Basic_type
+Unsub_type String_def
+Unsub_type Enum_def
+Unsub_type Pointer_def
+Unsub_type Record_def
+Unsub_type Union_def
+Unsub_type Capability_def
+Unsub_type Qualified_id
+
+Basic_type bool
+Basic_type char
+Basic_type int
+Basic_type file
+Basic_type real
+
+String_def string tk_llave_izq String_lim tk_llave_der
+String_def string tk_par_izq String_lim tk_par_der
+
+String_lim Expr
+String_lim tk_multi
+
+Enum_def enum tk_par_izq Id_lp tk_par_der
+
+Pointer_def ptr Type
+Pointer_def ptr any
+
+Record_def rec tk_par_izq Field_lp tk_par_der
+
+Union_def union tk_par_izq Field_lp tk_par_der
+
+Field_lp Field
+Field_lp Field tk_punto_y_coma
+Field_lp Field tk_punto_y_coma Field_lp
+
+Field Var_def_lp
+
+Capability_def cap Cap_for
+
+Cap_for Qualified_id
+Cap_for Os_prototype
+Cap_for sem Sem_proto
+Cap_for vm
+
+///// Op type
+
+Optype_decl optype id Eq_opt Op_prototype
+
+Op_prototype Prototype Op_restriction_opt
+
+Eq_opt e
+Eq_opt =
+
+Op_restriction_opt e
+Op_restriction_opt tk_llave_izq Op_restriction_opt
+
+Op_restriction call
+Op_restriction send
+Op_restriction call tk_coma send
+
+////BLocks
+
+Block Block_items
+
+Block_items Block_item
+Block_items Block_item tk_punto_y_coma Block_item
+
+Block_item e
+Block_item Decl
+Block_item Stmt
+Block_item Expr
+Block_item Import_clause
+
+Stmt Skip_stmt
+Stmt Stop_stmt
+Stmt Exit_stmt
+Stmt Next_stmt
+Stmt Return_stmt
+Stmt Reply_stmt
+Stmt Forward_stmt
+Stmt Send_stmt
+Stmt Explicit_call
+Stmt Destroy_stmt
+Stmt Begin_end
+Stmt If_stmt
+Stmt Do_stmt
+Stmt For_all_stmt
+Stmt V_stmt
+Stmt Input_stmt
+Stmt Recieve_stmt
+Stmt P_stmt
+Stmt Concurrent_stmt
+
+Skip_stmt skip
+
+Stop_stmt stop Exit_code_opt
+
+Exit_code_opt e
+Exit_code_opt tk_par_izq Expr tk_par_der
+
+Exit_stmt exit
+
+Next_stmt next
+
+Return_stmt return
+
+Reply_stmt reply
+
+Forward_stmt forward Invocation
+
+Send_stmt send Invocation
+
+V_stmt V tk_par_izq Expr tk_par_der
+
+P_stmt P tk_par_izq Expr tk_par_der
+
+Explicit_call call Invocation
+
+Destroy_stmt destroy Expr
+
+Begin_end begin Block end
+
+If_stmt if Guarded_cmd_lp Else_cmd_opt fi
+
+Do_stmt do Guarded_cmd_lp Else_cmd_opt od
+
+Guarded_cmd_lp Guarded_cmd
+Guarded_cmd_lp Guarded_cmd_lp tk_separa Guarded_cmd
+
+Guarded_cmd Expr tk_ejecuta Block
+
+Else_cmd_opt e
+Else_cmd_opt tk_separa else tk_ejecuta Block
+
+For_all_stmt fa Quantifier_lp tk_ejecuta Block af
+
+//input statement
+
+Input_stmt in In_cmd_lp Else_cmd_opt ni
+
+In_cmd_lp In_cmd
+In_cmd_lp In_cmd_lp tk_separa In_cmd
+
+In_cmd Quantifier_opt In_spec Sync_expr_opt Sched_expr_opt tk_separa Block
+
+In_spec In_op Param_names
+
+In_op Qualified_id
+In_op Qualified_id Subscripts
+
+Sync_expr_opt e
+Sync_expr_opt and Expr
+Sync_expr_opt st Expr
+
+Sched_expr_opt e
+Sched_expr_opt by Expr
+
+//co statement
+
+Concurrent_stmt co Concurrent_cmd_lp oc
+
+Concurrent_cmd_lp Concurrent_cmd
+Concurrent_cmd_lp Concurrent_cmd_lp tk_parallel Concurrent_cmd
+
+Concurrent_cmd Quantifiers_opt Sepatator_opt Concurrent_invocation Post_processing_opt
+
+Sepatator_opt e
+Sepatator_opt Sepatator_opt tk_punto_y_coma
+
+Concurrent_invocation Explicit_call
+Concurrent_invocation Send_stmt
+Concurrent_invocation Expr
+
+Post_processing_opt e
+Post_processing_opt tk_ejecuta BLock
+
+//Quantifier
+
+Quantifiers_opt e
+Quantifiers_opt tk_coma Quantifier
+
+Quantifier id tk_asig Expr Direction Expr Step_opt Such_that_opt
+
+Direction to
+Direction downto
+
+Step_opt e
+Step_opt by Expr
+
+Such_that_opt e
+Such_that_opt sc Expr
+
+//expression
+
+Expr id
+Expr Literal
+Expr Invocation
+Expr Constructor
+Expr Binary_expr
+Expr Prefix_exp
+Expr Suffix_expr
+Expr Create_expr
+
+Literal int
+Literal real
+Literal bool
+Literal char
+Literal string
+Literal null
+Literal float
+
+Binary_expr Expr tk_exp Expr
+Binary_expr Expr tk_multi Expr
+Binary_expr Expr tk_div Expr
+Binary_expr Expr tk_residuo Expr
+Binary_expr Expr rem_asign Expr
+Binary_expr Expr tk_mas Expr
+Binary_expr Expr tk_menos Expr
+Binary_expr Expr tk_conc Expr
+Binary_expr Expr tk_igual Expr
+Binary_expr Expr tk_ne Expr
+Binary_expr Expr tk_ge Expr
+Binary_expr Expr tk_menor_igual Expr
+Binary_expr Expr tk_mayorque Expr
+Binary_expr Expr tk_menorque Expr
+Binary_expr Expr tk_and Expr
+Binary_expr Expr tk_or Expr
+Binary_expr Expr tk_xor Expr
+Binary_expr Expr tk_right_shift Expr
+Binary_expr Expr tk_left_shift Expr
+Binary_expr Expr tk_swap Expr
+Binary_expr Expr tk_asig Expr
+Binary_expr Expr tk_inc_asing Expr
+Binary_expr Expr tk_dec_asing Expr
+Binary_expr Expr tk_mult_asing Expr
+Binary_expr Expr tk_div_asing Expr
+Binary_expr Expr tk_rem_asing Expr
+Binary_expr Expr tk_exp_asing Expr
+Binary_expr Expr tk_or_asing Expr
+Binary_expr Expr tk_and_asing Expr
+Binary_expr Expr tk_concat_asing Expr
+Binary_expr Expr tk_right_shift_asign Expr
+Binary_expr Expr tk_left_shift_asign Expr   
+
+Prefix_expr tk_bit_wise Expr
+Prefix_expr tk_mas Expr
+Prefix_expr tk_menos Expr
+Prefix_expr tk_direccion Expr
+Prefix_expr tk_num_llamadas Expr
+Prefix_expr tk_increment Expr
+Prefix_expr tk_decrement Expr
+Prefix_expr Basic_type Paren_expr
+Prefix_expr string Paren_expr
+Prefix_expr low tk_par_izq Type tk_par_der
+Prefix_expr high tk_par_izq Type tk_par_der
+Prefix_expr tk_new tk_par_izq Subscripts_opt New_item tk_par_der  
+
+New_item Unsub_type
+New_item sem Sem_proto
+New_item op Op_prototype
+
+Paren_expr tk_par_izq Expr tk_par_der
+
+Suffix_expr Expr tk_increment
+Suffix_expr Expr tk_decrement
+Suffix_expr Expr tk_puntero
+Suffix_expr Expr tk_punto id
+Suffix_expr Expr tk_llave_izq Bound_lp tk_llave_der
+
+Invocation Expr Paren_list
+
+Paren_list tk_par_izq Paren_item_ls tk_par_der
+
+Paren_item_ls e
+Paren_item_ls Expr_lp
+
+Expr_lp Expr
+Expr_lp Expr_lp tk_coma Expr
+
+Constructor tk_par_izq Constr_item_lp tk_par_der
+
+Constr_item_lp Constr_item
+Constr_item_lp Constr_item tk_coma Constr_item
+
+Constr_item Expr
+Constr_item tk_llave_izq Expr tk_llave_der Expr
+
+Create_expr create Create_call Location_opt
+
+Create_call Rsrc_name Paren_list
+
+Rsrc_name id
+Rsrc_name vm
+
+Location_opt e
+Location_opt on Expr
+
+//miscellaneous
+
+Qualified_id id
+Qualified_id id . id
+
+End_id end Id_opt
+
+Id_opt e
+Id_opt id
+
+Id_ls e
+Id_ls id_lp
+
+Id_lp id
+Id_lp id Subscripts
+
+Subscripts Bracktened_list
+Subscripts Bracktened_list Subscripts
+
+Subscripts_opt e
+Subscripts_opt Subscripts
+
+Bracktened_list tk_llave_izq Bound_lp tk_llave_der
+
+Bound_lp Bounds
+Bound_lp Bound_lp tk_coma Bounds
+
+Bounds Bound
+Bounds Bound tk_dos_puntos Bound
+
+Bound Expr
+Bound tk_multi
+
+Recieve_stmt 
+
+Concurrent_stmt
