@@ -191,7 +191,7 @@ def mainExists(file_path):
     tk = lexer.nextToken()
     while (tk.lexeme != '$'):
         if tk.lexeme == 'resource': return True
-        tk = lexer.nextTokent()
+        tk = lexer.nextToken()
     return False
 
 def getNewPrefix(non_terminal, token_type):
