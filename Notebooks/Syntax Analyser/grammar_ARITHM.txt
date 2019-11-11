@@ -1,0 +1,7 @@
+VAL ++ VAL
+VAL -- VAL
+// no idea pointer derreference
+
+
+VAL id
+VAL tk_num
