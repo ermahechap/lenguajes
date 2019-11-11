@@ -1,1 +1,6 @@
-hola Manuela Felipe, Emilia
+resource e1
+	type t = rec (a,b:int)
+	op f(x:t;y:cap e1)
+	optype print = (x:t) returns y:int
+	op printa, printb: print
+resource e1() separate

@@ -13,7 +13,7 @@ public class Main {
 
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             MiLenguajeParser parser = new MiLenguajeParser(tokens);
-            ParseTree tree = parser.inicio();
+            ParseTree tree = parser.start();
 
             System.out.println(tree.toStringTree(parser));
         } catch (Exception e){
