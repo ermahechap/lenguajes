@@ -6,7 +6,7 @@ grammar MiLenguaje;
 
 
 
-start: entry*;
+start: entry+;
 
 entry: resource | global |  body;
 
@@ -18,34 +18,34 @@ resource: spec? Resource ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES)?
 body: Body ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES) resource_body End;
 
 resource_body :
-    declarations?
+    declarations*
     (Initial block End)?
     proc*
-    (Final block End)
+    (Final block End)?
 ;
-
 
 spec: Spec ID (import_ | const_ | type | operation)*; //not finished yet
 
 import_: Import ID (',' ID)* (TK_SEMI_COLON)?;
-const_: Const equal_expression;
+const_: Const (equal_expression | assign_expression);
 
 type: Type ID TK_EQUAL Rec TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES; // THIS one is dubious because there is no example of this
 optype: Optype ID TK_EQUAL TK_LEFT_PARENTHESES op_type_params TK_RIGHT_PARENTHESES (Returns param )?; //dont know if these are just IDS or functions are allowed too
 op_type_params:
     Res ? param (TK_SEMI_COLON Res? param)*
 ;
-var: Var comma_params TK_COLON (Cap ? ID | data_type) (assign_expression)? ;
+var: Var comma_params TK_COLON (Cap ? ID | data_type) (assign_expression)? |
+     Var assign_expression;
 
 operation: Op comma_params ( operation_one | TK_COLON ID);
 operation_one: TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES (Returns param)? ;
 
-proc: Proc ID (TK_LEFT_PARENTHESES comma_params? TK_RIGHT_PARENTHESES)? (Returns param)? block End;
+proc: (Proc | Procedure) ID (TK_LEFT_PARENTHESES comma_expressions_params? TK_RIGHT_PARENTHESES)? (Returns param)? block End;
 
 
-block: declarations? statements ;
+block: declarations* statements ;
 
-declarations: (const_ | type | optype | var | operation)*;
+declarations: import_ | const_ | type | optype | var | operation | function_ | expression;
 statements: (sequential | operation_invocation | operation_service | resource_control)*;
 
 
@@ -65,14 +65,14 @@ block
 DATA_TYPE
 */
 
-data_type: Int | Char | String | Bool;
+data_type: (Int | Char | String | Bool | Chars) subscript_slice ;
 
 
 // Expressions
 equal_expression: ID TK_EQUAL (binary_expression | ( ID | array ) ) (TK_SEMI_COLON)?;
-assign_expression: ID TK_ASSIGN (binary_expression | ( ID | array ) ) (TK_SEMI_COLON)?;
+assign_expression: ID TK_ASSIGN (binary_expression | ( ID | array ) | data_type (TK_LEFT_PARENTHESES (array | ID | STRING) TK_RIGHT_PARENTHESES)? ) (TK_SEMI_COLON)?;
 
-function_: (RESERVED_WORD_F | ID subscript_slice?) TK_LEFT_PARENTHESES comma_expressions_params TK_RIGHT_PARENTHESES; //dont know if reserved word f
+function_: (RESERVED_WORD_F | ID subscript_slice?) TK_LEFT_PARENTHESES (comma_expressions_params | expression) TK_RIGHT_PARENTHESES; //dont know if reserved word f
 
 resource_control: create_cap_expression | destroy_cap_expression ;
 create_cap_expression: ID TK_ASSIGN Create ID TK_LEFT_PARENTHESES comma_expressions_params? TK_RIGHT_PARENTHESES ('on' ID)?;
@@ -85,14 +85,31 @@ concurrent_expression: Co (TK_LEFT_PARENTHESES quantifier To ID TK_RIGHT_PARENTH
 call_invocation: Call? (ID assigns (binary_expression | ( ID | array ) ) | function_);
 quantifier: ID TK_COLON binary_expression;
 
-sequential: 'notyet';
+sequential: 'skip' |
+             var |
+             (comma_expressions_params | expression) |
+             var Tk_increment |
+             var Tk_decrement |
+             If (boolean_expression Tk_ejecuta block Tk_separa?)* Fi |
+             Do (boolean_expression Tk_ejecuta block Tk_separa?)* Od |
+             Fa for_expr block_cycle Af |
+             'exit' |
+             Next;
+
+boolean_expression: Tk_par_izq expression Tk_par_der | expression;
+
+for_expr : ID TK_ASSIGN expression To expression for_expr_Ls* TK_EXECUTE;
+for_expr_Ls : TK_COMMA ID TK_ASSIGN expression To expression;
+
+block_cycle : (comma_expressions_params | expression);
+
 operation_service: 'NOTYET';
 
 
 expression: assign (TK_SEMI_COLON)?;
 
 assign:
-    array TK_SWAP (ID | array) //missing sliced array/string
+    (ID | array) TK_SWAP (ID | array) //missing sliced array/string
     |ID assigns (binary_expression | ( ID | array ) )
 ;
 
@@ -130,7 +147,7 @@ pre_op :
 single_expr: ID | NUMBER | STRING | array | grouping;
 
 array: TK_LEFT_BRACKET (ID | NUMBER | STRING | BOOLEAN)(','(ID | NUMBER | STRING | BOOLEAN))* TK_RIGHT_BRACKET;
-subscript_slice: TK_LEFT_BRACKET (subscript | slice) (',' (subscript | slice))* TK_RIGHT_BRACKET;
+subscript_slice: TK_LEFT_BRACKET (subscript | slice | '*') (',' (subscript | slice | '*'))* TK_RIGHT_BRACKET (TK_COLON (ID | data_type))?;
 slice: subscript TK_COLON (subscript| '*');
 subscript: (ID | INT);
 
@@ -182,114 +199,7 @@ other_op:
 ------------- Lexer Rules --------------
 */
 
-RESERVED_WORD_F : 'write'; //add others
-
-/*
-RESERVED_WORDS:
-    'global'
-    |'af'
-    |'read'
-    |'if'
-    |'fi'
-    |'union'
-    |'real'
-    |'resource'
-    |'initial'
-    |'ptr'
-    |'procedure'
-    |'int'
-    |'oc'
-    |'getarg'
-    |'call'
-    |'any'
-    |'cap'
-    |'enum'
-    |'import'
-    |'id'
-    |'ref'
-    |'create'
-    |'end'
-    |'on'
-    |'stop'
-    |'od'
-    |'write'
-    |'send'
-    |'or'
-    |'body'
-    |'do'
-    |'fa'
-    |'mod'
-    |'var'
-    |'val'
-    |'res'
-    |'downto'
-    |'by'
-    |'rec'
-    |'vm'
-    |'to'
-    |'returns'
-    |'bogus'
-    |'return'
-    |'st'
-    |'writes'
-    |'else'
-    |'P'
-    |'V'
-    |'in'
-    |'ni'
-    |'put'
-    |'end'
-    |'op'
-    |'fa'
-    |'forward'
-    |'receive'
-    |'destroy'
-    |'body'
-    |'write'
-    |'exit'
-    |'final'
-    |'process'
-    |'send'
-    |'getarg'
-    |'skip'
-    |'stop'
-    |'char'
-    |'global'
-    |'import'
-    |'create'
-    |'destroy'
-    |'reply'
-    |'next'
-    |'fi'
-    |'ni'
-    |'co'
-    |'cap'
-    |'proc'
-    |'string'
-    |'low'
-    |'high'
-    |'bool'
-    |'file'
-    |'sem'
-    |'const_'
-    |'optype'
-    |'type'
-    |'external'
-    |'extend'
-;*/
-
-ID: IDENTIFIER | IDENTIFIER_PTR;
-IDENTIFIER : ID_LETTER (ID_LETTER | DIGIT)* () ;
-IDENTIFIER_PTR: IDENTIFIER '.' IDENTIFIER;
-BOOLEAN: 'true' | 'false';
-NUMBER: INT | REAL;
-INT: DIGIT+;
-REAL: DIGIT+ '.' DIGIT+ | '.' DIGIT+ ;
-STRING: '"' ( '\\"' | . )*? '"';
-
-ID_LETTER: 'a'..'z' | 'A'..'Z' | '_';
-DIGIT: '0'..'9';
-
+RESERVED_WORD_F : Write ; //add others
 
 // No idea what an ordered type means
 // ********* Reserved ************
@@ -335,6 +245,7 @@ Destroy : 'destroy';
 Final : 'final';
 Process : 'process';
 Char : 'char';
+Chars : 'chars';
 Bool : 'bool';
 Real : 'real';
 Reply : 'reply';
@@ -405,6 +316,18 @@ TK_CONCAT_ASSIGN: '||:=';
 TK_LEFT_SHIFT_ASSIGN: '<<:=';
 TK_RIGHT_SHIFT_ASSIGN: '>>:=';
 
+BOOLEAN: 'true' | 'false';
+NUMBER: INT | REAL;
+INT: DIGIT+;
+REAL: DIGIT+ '.' DIGIT+ | '.' DIGIT+ ;
+STRING: '"' ( '\\"' | . )*? '"';
+
+ID: IDENTIFIER | IDENTIFIER_PTR;
+IDENTIFIER : ID_LETTER (ID_LETTER | DIGIT)* () ;
+IDENTIFIER_PTR: IDENTIFIER '.' IDENTIFIER;
+
+ID_LETTER: 'a'..'z' | 'A'..'Z' | '_';
+DIGIT: '0'..'9';
 
 // Ignored
 SPACES : [ \t\r\n]+ -> skip; // tabs, new lines, spaces,etc
