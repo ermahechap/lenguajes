@@ -6,73 +6,88 @@ grammar MiLenguaje;
 
 
 
-start: entry ;
+start: entry*;
 
-entry: (resource | global | body) entry | EOF;
+entry: resource | global |  body;
 
-global: 'global' ID (const | type)* 'end';
-resource: spec? 'resource' ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES)?
-    ( 'separate' | resource_endigns)
+global: Global ID (const_ | type)* End;
+resource: spec? Resource ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES)?
+    ( Separate | resource_body )
 ;
 
-resource_endigns:
-    'resource' ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES)?  'separate'
-    | resource_body? body
-;
+body: Body ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES) resource_body End;
 
 resource_body :
-    ('body' ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES)?)?
-    (import_ | type | optype | operation | var | const)*
-    //declarations?
-    //(initial block end)?
-    //procs
-    //(final block end)?
+    declarations?
+    (Initial block End)?
+    proc*
+    (Final block End)
 ;
 
-body: resource_body 'end';
 
+spec: Spec ID (import_ | const_ | type | operation)*; //not finished yet
 
-spec: 'spec' ID (import_ | const | type | operation)*; //not finished yet
+import_: Import ID (',' ID)* (TK_SEMI_COLON)?;
+const_: Const equal_expression;
 
-import_: 'import' ID (',' ID)* (TK_SEMI_COLON)?;
-const: 'const' equal_expression;
-
-type: 'type' ID TK_EQUAL 'rec' TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES; // THIS one is dubious because there is no example of this
-optype: 'optype' ID TK_EQUAL TK_LEFT_PARENTHESES op_type_params TK_RIGHT_PARENTHESES ('returns'param )?;
+type: Type ID TK_EQUAL Rec TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES; // THIS one is dubious because there is no example of this
+optype: Optype ID TK_EQUAL TK_LEFT_PARENTHESES op_type_params TK_RIGHT_PARENTHESES (Returns param )?; //dont know if these are just IDS or functions are allowed too
 op_type_params:
-    'res'? param (TK_SEMI_COLON 'res'? param)*
+    Res ? param (TK_SEMI_COLON Res? param)*
 ;
-var: 'var' comma_params TK_COLON type assign_expression;
+var: Var comma_params TK_COLON (Cap ? ID | data_type) (assign_expression)? ;
 
-operation: 'op' comma_params ( operation_one | TK_COLON ID);
-operation_one: TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES ('returns' param)? ;
+operation: Op comma_params ( operation_one | TK_COLON ID);
+operation_one: TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES (Returns param)? ;
 
-proc: 'proc' ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES)? ('returns' param)? block 'end';
+proc: Proc ID (TK_LEFT_PARENTHESES comma_params? TK_RIGHT_PARENTHESES)? (Returns param)? block End;
 
 
 block: declarations? statements ;
 
-statements: 'JA';
-declarations: 'JA';
+declarations: (const_ | type | optype | var | operation)*;
+statements: (sequential | operation_invocation | operation_service | resource_control)*;
+
+
 
 comma_params: ID subscript_slice* (',' ID subscript_slice*)*;
+//comma_expressions: binary_expression subscript_slice* (',' binary_expression subscript_slice*)*;
+comma_expressions_params:   (ID subscript_slice* | binary_expression) (',' (ID subscript_slice* | binary_expression))*;
 params: param (TK_SEMI_COLON param)*;
-param: ID (',' ID)* (subscript_slice* TK_COLON ( data_type | 'cap' ID | ID));
+param: ID (',' ID)* subscript_slice* TK_COLON ( data_type | 'cap' ID | ID);
 
 
 /*
 to-do
-resource_body
-    block
-
+proc
+block
+    sequential || operation_service
 DATA_TYPE
 */
 
-data_type: 'int' | 'char' | 'string' 'bool';
+data_type: Int | Char | String | Bool;
+
 
 // Expressions
 equal_expression: ID TK_EQUAL (binary_expression | ( ID | array ) ) (TK_SEMI_COLON)?;
 assign_expression: ID TK_ASSIGN (binary_expression | ( ID | array ) ) (TK_SEMI_COLON)?;
+
+function_: (RESERVED_WORD_F | ID subscript_slice?) TK_LEFT_PARENTHESES comma_expressions_params TK_RIGHT_PARENTHESES; //dont know if reserved word f
+
+resource_control: create_cap_expression | destroy_cap_expression ;
+create_cap_expression: ID TK_ASSIGN Create ID TK_LEFT_PARENTHESES comma_expressions_params? TK_RIGHT_PARENTHESES ('on' ID)?;
+destroy_cap_expression: Destroy ID;
+
+operation_invocation: call_expression | send_expression | concurrent_expression;
+call_expression: Call? ID TK_LEFT_PARENTHESES comma_expressions_params? TK_RIGHT_PARENTHESES;
+send_expression: Send ID TK_LEFT_PARENTHESES comma_expressions_params? TK_RIGHT_PARENTHESES;
+concurrent_expression: Co (TK_LEFT_PARENTHESES quantifier To ID TK_RIGHT_PARENTHESES)? call_invocation (TK_EXECUTE block)? 'oc';
+call_invocation: Call? (ID assigns (binary_expression | ( ID | array ) ) | function_);
+quantifier: ID TK_COLON binary_expression;
+
+sequential: 'notyet';
+operation_service: 'NOTYET';
+
 
 expression: assign (TK_SEMI_COLON)?;
 
@@ -97,7 +112,7 @@ other_op_expression: exponentiation_expression (other_op exponentiation_expressi
 
 exponentiation_expression: (unary_expression TK_EXPONENTIATION)* unary_expression;
 
-unary_expression: post_op | pre_op | single_expr;
+unary_expression: post_op | pre_op | single_expr | function_;
 
 post_op :
     (ID | REAL) (TK_INCREMENT | TK_DECREMENT)
@@ -162,9 +177,13 @@ other_op:
     | TK_MULTIPLICATION
 ;
 
+
 /*
 ------------- Lexer Rules --------------
 */
+
+RESERVED_WORD_F : 'write'; //add others
+
 /*
 RESERVED_WORDS:
     'global'
@@ -252,7 +271,7 @@ RESERVED_WORDS:
     |'bool'
     |'file'
     |'sem'
-    |'const'
+    |'const_'
     |'optype'
     |'type'
     |'external'
@@ -273,7 +292,63 @@ DIGIT: '0'..'9';
 
 
 // No idea what an ordered type means
-
+// ********* Reserved ************
+/// Reserved ///
+Spec : 'spec';
+Global : 'global';
+Res: 'res';
+Af : 'af';
+Read : 'read';
+If : 'if';
+Fi : 'fi';
+Do : 'do';
+Od : 'od';
+Resource : 'resource';
+Procedure : 'procedure';
+Type : 'type';
+Optype : 'optype';
+Rec : 'rec';
+Int : 'int';
+Getarg : 'getarg';
+Cap : 'cap';
+Import : 'import';
+Id : 'id';
+Create : 'create';
+End : 'end';
+Stop : 'stop';
+Write : 'write';
+Send : 'send';
+Or : 'or';
+Body : 'body';
+Fa : 'fa';
+Mod : 'mod';
+Var : 'var';
+To : 'to';
+True : 'true';
+False : 'false';
+Returns : 'returns';
+Writes : 'writes';
+Put : 'put';
+Op : 'op';
+Receive : 'receive';
+Destroy : 'destroy';
+Final : 'final';
+Process : 'process';
+Char : 'char';
+Bool : 'bool';
+Real : 'real';
+Reply : 'reply';
+Next : 'next';
+Ni : 'ni';
+Co : 'co';
+Proc : 'proc';
+String : 'string';
+Const : 'const';
+Low : 'low';
+High : 'high';
+Call : 'call';
+In : 'in';
+Separate : 'separate';
 
 //  ******** OPERTATORS **********
 TK_SEPARA: '[]';

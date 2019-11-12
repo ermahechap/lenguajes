@@ -16,6 +16,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStart(MiLenguajeParser.StartContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#entry}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEntry(MiLenguajeParser.EntryContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#global}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -27,6 +33,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitResource(MiLenguajeParser.ResourceContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#body}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBody(MiLenguajeParser.BodyContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#resource_body}.
 	 * @param ctx the parse tree
@@ -46,11 +58,11 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitImport_(MiLenguajeParser.Import_Context ctx);
 	/**
-	 * Visit a parse tree produced by {@link MiLenguajeParser#const}.
+	 * Visit a parse tree produced by {@link MiLenguajeParser#const_}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitConst(MiLenguajeParser.ConstContext ctx);
+	T visitConst_(MiLenguajeParser.Const_Context ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#type}.
 	 * @param ctx the parse tree
@@ -63,6 +75,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitOptype(MiLenguajeParser.OptypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#op_type_params}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOp_type_params(MiLenguajeParser.Op_type_paramsContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#var}.
 	 * @param ctx the parse tree
@@ -94,17 +112,29 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlock(MiLenguajeParser.BlockContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#declarations}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeclarations(MiLenguajeParser.DeclarationsContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#statements}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitStatements(MiLenguajeParser.StatementsContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MiLenguajeParser#declarations}.
+	 * Visit a parse tree produced by {@link MiLenguajeParser#comma_params}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDeclarations(MiLenguajeParser.DeclarationsContext ctx);
+	T visitComma_params(MiLenguajeParser.Comma_paramsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#comma_expressions_params}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComma_expressions_params(MiLenguajeParser.Comma_expressions_paramsContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#params}.
 	 * @param ctx the parse tree
@@ -124,11 +154,89 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitData_type(MiLenguajeParser.Data_typeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#equal_expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEqual_expression(MiLenguajeParser.Equal_expressionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#assign_expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAssign_expression(MiLenguajeParser.Assign_expressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#function_}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction_(MiLenguajeParser.Function_Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#resource_control}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitResource_control(MiLenguajeParser.Resource_controlContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#create_cap_expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCreate_cap_expression(MiLenguajeParser.Create_cap_expressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#destroy_cap_expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDestroy_cap_expression(MiLenguajeParser.Destroy_cap_expressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#operation_invocation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOperation_invocation(MiLenguajeParser.Operation_invocationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#call_expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCall_expression(MiLenguajeParser.Call_expressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#send_expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSend_expression(MiLenguajeParser.Send_expressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#concurrent_expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConcurrent_expression(MiLenguajeParser.Concurrent_expressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#call_invocation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCall_invocation(MiLenguajeParser.Call_invocationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#quantifier}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitQuantifier(MiLenguajeParser.QuantifierContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#sequential}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSequential(MiLenguajeParser.SequentialContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#operation_service}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOperation_service(MiLenguajeParser.Operation_serviceContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#expression}.
 	 * @param ctx the parse tree

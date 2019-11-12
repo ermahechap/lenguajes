@@ -1,4 +1,4 @@
-grammar MiLenguaje;
+grammar Lenguaje2;
 
 /// Componentes ///
 components : global | resource_specification | resource_body | proc | block;

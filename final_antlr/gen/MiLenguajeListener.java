@@ -17,6 +17,16 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 */
 	void exitStart(MiLenguajeParser.StartContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#entry}.
+	 * @param ctx the parse tree
+	 */
+	void enterEntry(MiLenguajeParser.EntryContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#entry}.
+	 * @param ctx the parse tree
+	 */
+	void exitEntry(MiLenguajeParser.EntryContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#global}.
 	 * @param ctx the parse tree
 	 */
@@ -36,6 +46,16 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitResource(MiLenguajeParser.ResourceContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#body}.
+	 * @param ctx the parse tree
+	 */
+	void enterBody(MiLenguajeParser.BodyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#body}.
+	 * @param ctx the parse tree
+	 */
+	void exitBody(MiLenguajeParser.BodyContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#resource_body}.
 	 * @param ctx the parse tree
@@ -67,15 +87,15 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 */
 	void exitImport_(MiLenguajeParser.Import_Context ctx);
 	/**
-	 * Enter a parse tree produced by {@link MiLenguajeParser#const}.
+	 * Enter a parse tree produced by {@link MiLenguajeParser#const_}.
 	 * @param ctx the parse tree
 	 */
-	void enterConst(MiLenguajeParser.ConstContext ctx);
+	void enterConst_(MiLenguajeParser.Const_Context ctx);
 	/**
-	 * Exit a parse tree produced by {@link MiLenguajeParser#const}.
+	 * Exit a parse tree produced by {@link MiLenguajeParser#const_}.
 	 * @param ctx the parse tree
 	 */
-	void exitConst(MiLenguajeParser.ConstContext ctx);
+	void exitConst_(MiLenguajeParser.Const_Context ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#type}.
 	 * @param ctx the parse tree
@@ -96,6 +116,16 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitOptype(MiLenguajeParser.OptypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#op_type_params}.
+	 * @param ctx the parse tree
+	 */
+	void enterOp_type_params(MiLenguajeParser.Op_type_paramsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#op_type_params}.
+	 * @param ctx the parse tree
+	 */
+	void exitOp_type_params(MiLenguajeParser.Op_type_paramsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#var}.
 	 * @param ctx the parse tree
@@ -147,6 +177,16 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 */
 	void exitBlock(MiLenguajeParser.BlockContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#declarations}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeclarations(MiLenguajeParser.DeclarationsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#declarations}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeclarations(MiLenguajeParser.DeclarationsContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#statements}.
 	 * @param ctx the parse tree
 	 */
@@ -157,15 +197,25 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 */
 	void exitStatements(MiLenguajeParser.StatementsContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MiLenguajeParser#declarations}.
+	 * Enter a parse tree produced by {@link MiLenguajeParser#comma_params}.
 	 * @param ctx the parse tree
 	 */
-	void enterDeclarations(MiLenguajeParser.DeclarationsContext ctx);
+	void enterComma_params(MiLenguajeParser.Comma_paramsContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MiLenguajeParser#declarations}.
+	 * Exit a parse tree produced by {@link MiLenguajeParser#comma_params}.
 	 * @param ctx the parse tree
 	 */
-	void exitDeclarations(MiLenguajeParser.DeclarationsContext ctx);
+	void exitComma_params(MiLenguajeParser.Comma_paramsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#comma_expressions_params}.
+	 * @param ctx the parse tree
+	 */
+	void enterComma_expressions_params(MiLenguajeParser.Comma_expressions_paramsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#comma_expressions_params}.
+	 * @param ctx the parse tree
+	 */
+	void exitComma_expressions_params(MiLenguajeParser.Comma_expressions_paramsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#params}.
 	 * @param ctx the parse tree
@@ -197,6 +247,16 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 */
 	void exitData_type(MiLenguajeParser.Data_typeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#equal_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterEqual_expression(MiLenguajeParser.Equal_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#equal_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitEqual_expression(MiLenguajeParser.Equal_expressionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#assign_expression}.
 	 * @param ctx the parse tree
 	 */
@@ -206,6 +266,126 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssign_expression(MiLenguajeParser.Assign_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#function_}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_(MiLenguajeParser.Function_Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#function_}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_(MiLenguajeParser.Function_Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#resource_control}.
+	 * @param ctx the parse tree
+	 */
+	void enterResource_control(MiLenguajeParser.Resource_controlContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#resource_control}.
+	 * @param ctx the parse tree
+	 */
+	void exitResource_control(MiLenguajeParser.Resource_controlContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#create_cap_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterCreate_cap_expression(MiLenguajeParser.Create_cap_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#create_cap_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitCreate_cap_expression(MiLenguajeParser.Create_cap_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#destroy_cap_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterDestroy_cap_expression(MiLenguajeParser.Destroy_cap_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#destroy_cap_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitDestroy_cap_expression(MiLenguajeParser.Destroy_cap_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#operation_invocation}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperation_invocation(MiLenguajeParser.Operation_invocationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#operation_invocation}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperation_invocation(MiLenguajeParser.Operation_invocationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#call_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterCall_expression(MiLenguajeParser.Call_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#call_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitCall_expression(MiLenguajeParser.Call_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#send_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterSend_expression(MiLenguajeParser.Send_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#send_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitSend_expression(MiLenguajeParser.Send_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#concurrent_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterConcurrent_expression(MiLenguajeParser.Concurrent_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#concurrent_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitConcurrent_expression(MiLenguajeParser.Concurrent_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#call_invocation}.
+	 * @param ctx the parse tree
+	 */
+	void enterCall_invocation(MiLenguajeParser.Call_invocationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#call_invocation}.
+	 * @param ctx the parse tree
+	 */
+	void exitCall_invocation(MiLenguajeParser.Call_invocationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#quantifier}.
+	 * @param ctx the parse tree
+	 */
+	void enterQuantifier(MiLenguajeParser.QuantifierContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#quantifier}.
+	 * @param ctx the parse tree
+	 */
+	void exitQuantifier(MiLenguajeParser.QuantifierContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#sequential}.
+	 * @param ctx the parse tree
+	 */
+	void enterSequential(MiLenguajeParser.SequentialContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#sequential}.
+	 * @param ctx the parse tree
+	 */
+	void exitSequential(MiLenguajeParser.SequentialContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#operation_service}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperation_service(MiLenguajeParser.Operation_serviceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#operation_service}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperation_service(MiLenguajeParser.Operation_serviceContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#expression}.
 	 * @param ctx the parse tree

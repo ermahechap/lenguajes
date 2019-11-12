@@ -4,3 +4,10 @@ resource e1
 	optype print = (x:t) returns y:int
 	op printa, printb: print
 resource e1() separate
+
+resource e2
+	import e1
+body e2()
+	var s:e1.t
+	var c:cap e1
+end
