@@ -232,6 +232,30 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSequential(MiLenguajeParser.SequentialContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#boolean_expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolean_expression(MiLenguajeParser.Boolean_expressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#for_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFor_expr(MiLenguajeParser.For_exprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#for_expr_Ls}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFor_expr_Ls(MiLenguajeParser.For_expr_LsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#block_cycle}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBlock_cycle(MiLenguajeParser.Block_cycleContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#operation_service}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

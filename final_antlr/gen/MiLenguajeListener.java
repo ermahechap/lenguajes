@@ -377,6 +377,46 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 */
 	void exitSequential(MiLenguajeParser.SequentialContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#boolean_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBoolean_expression(MiLenguajeParser.Boolean_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#boolean_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBoolean_expression(MiLenguajeParser.Boolean_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#for_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterFor_expr(MiLenguajeParser.For_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#for_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitFor_expr(MiLenguajeParser.For_exprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#for_expr_Ls}.
+	 * @param ctx the parse tree
+	 */
+	void enterFor_expr_Ls(MiLenguajeParser.For_expr_LsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#for_expr_Ls}.
+	 * @param ctx the parse tree
+	 */
+	void exitFor_expr_Ls(MiLenguajeParser.For_expr_LsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#block_cycle}.
+	 * @param ctx the parse tree
+	 */
+	void enterBlock_cycle(MiLenguajeParser.Block_cycleContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#block_cycle}.
+	 * @param ctx the parse tree
+	 */
+	void exitBlock_cycle(MiLenguajeParser.Block_cycleContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#operation_service}.
 	 * @param ctx the parse tree
 	 */
