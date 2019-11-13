@@ -147,6 +147,16 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 */
 	void exitVar(MiLenguajeParser.VarContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#var_create}.
+	 * @param ctx the parse tree
+	 */
+	void enterVar_create(MiLenguajeParser.Var_createContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#var_create}.
+	 * @param ctx the parse tree
+	 */
+	void exitVar_create(MiLenguajeParser.Var_createContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#operation}.
 	 * @param ctx the parse tree
 	 */
@@ -286,6 +296,16 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunction_(MiLenguajeParser.Function_Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#function_end}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_end(MiLenguajeParser.Function_endContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#function_end}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_end(MiLenguajeParser.Function_endContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#resource_control}.
 	 * @param ctx the parse tree
@@ -466,6 +486,16 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssign(MiLenguajeParser.AssignContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#assign_slice}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssign_slice(MiLenguajeParser.Assign_sliceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#assign_slice}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssign_slice(MiLenguajeParser.Assign_sliceContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#binary_expression}.
 	 * @param ctx the parse tree

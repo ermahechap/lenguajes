@@ -9,3 +9,4 @@ resource factorial()
   writes("enter a positive integer: "); read(n)
   write("the factorial of", n, "is", fact(n))
 end
+

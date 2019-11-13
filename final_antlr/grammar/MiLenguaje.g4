@@ -39,7 +39,10 @@ op_type_params:
     Res ? param (TK_SEMI_COLON Res? param)*
 ;
 var: Var comma_params TK_COLON (Cap ? ID | data_type) (assign_expression)? |
-     Var assign_expression;
+     Var assign_expression |
+     var_create;
+
+var_create: Var ID TK_ASSIGN Create ID TK_LEFT_PARENTHESES comma_expressions_params? TK_RIGHT_PARENTHESES ('on' ID)?;
 
 operation: Op comma_params ( operation_one | TK_COLON ID);
 operation_one: TK_LEFT_PARENTHESES (params | op_type_params)? TK_RIGHT_PARENTHESES (Returns param)? ;
@@ -76,7 +79,8 @@ data_type: Int | Char | String | Bool | Chars | Real;
 equal_expression: ID TK_EQUAL (binary_expression | ( ID | array ) ) (TK_SEMI_COLON)?;
 assign_expression: ID? TK_ASSIGN (binary_expression | ( ID | array ) | data_type (TK_LEFT_PARENTHESES (array | ID | STRING) TK_RIGHT_PARENTHESES)? ) (TK_SEMI_COLON)?;
 
-function_: (RESERVED_WORD_F | ID subscript_slice?) TK_LEFT_PARENTHESES (comma_expressions_params | expression)?  TK_RIGHT_PARENTHESES; //dont know if reserved word f
+function_: (RESERVED_WORD_F | ID subscript_slice?) function_end; //dont know if reserved word f
+function_end: TK_LEFT_PARENTHESES (comma_expressions_params | expression)?  TK_RIGHT_PARENTHESES;
 
 resource_control: create_cap_expression | destroy_cap_expression ;
 create_cap_expression: ID TK_ASSIGN Create ID TK_LEFT_PARENTHESES comma_expressions_params? TK_RIGHT_PARENTHESES ('on' ID)?;
@@ -117,9 +121,11 @@ operation_service: 'NOTYET';
 expression: assign;
 
 assign:
-    (ID subscript_slice? | array) TK_SWAP (ID subscript_slice? | array) //missing sliced array/string
-    |ID subscript_slice? assigns (binary_expression | ( ID subscript_slice? | array ) )
+    (assign_slice | array) TK_SWAP (assign_slice | array) //missing sliced array/string
+    |assign_slice assigns (binary_expression | ( assign_slice | array ) )
 ;
+
+assign_slice: ID subscript_slice? ;
 
 binary_expression: or_expression;
 

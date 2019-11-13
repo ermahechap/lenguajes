@@ -1,13 +1,12 @@
-resource e1
-	var i:=5;	
-body e1()
-	var g:= "gg"
-	proc expr() returns ans
-		a:=1
-	    ans := term()
-		do s[pos] = "+" ->
-			pos++
-			ans +:= term()
-		od
-	end
+resource factorial()
+  procedure fact(v: int) returns r: int
+    # v is assumed to be positive
+    if v = 1 -> r := 1
+    [] v > 1 -> r := v*fact(v-1)
+    fi
+  end
+  var n: int
+  writes("enter a positive integer: "); read(n)
+  write("the factorial of", n, "is", fact(n))
 end
+

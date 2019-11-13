@@ -56,7 +56,7 @@ public class Translator extends MiLenguajeBaseListener {
     }
     @Override
     public void exitResource_body(MiLenguajeParser.Resource_bodyContext ctx){
-        if (ctx.body() != null){
+        /*if (ctx.body() != null){
             // here we render the procs, by the end of the body
             if(ctx.body().resource_body().proc() != null) {
                 int len = ctx.body().resource_body().proc().size();
@@ -77,13 +77,24 @@ public class Translator extends MiLenguajeBaseListener {
                     System.out.println();
                 }
             }
-        }
+        }*/
     }
 
     public void enterProc(MiLenguajeParser.ProcContext ctx){
-        if (ctx.Returns() != null){
-//            System.out.println("end");
+        printTab(); System.out.print("def " +  ctx.ID().getText() + "(");
+        if(ctx.param() != null){
+            System.out.print("temp_param");
         }
+        System.out.print("):");
+        System.out.println();
+        tab++;
+    }
+    public void exitProc(MiLenguajeParser.ProcContext ctx){
+        printTab();
+        if (ctx.Returns() != null){
+            System.out.println("return " + "sd"); //placeholder, change later
+        }
+        tab--;
     }
 
     @Override
@@ -101,13 +112,14 @@ public class Translator extends MiLenguajeBaseListener {
 
     @Override
     public void enterAssign(MiLenguajeParser.AssignContext ctx){
+        printTab();
         if(ctx.TK_SWAP() != null){
             String v1 = ctx.getChild(0).getText();
             String v2 = ctx.getChild(2).getText();
             System.out.println(v1 + "," + v2 + " = " + v2 + "," + v1);
         }
         if(ctx.assigns()!=null){
-            String id = ctx.getChild(0).getText();
+            String id = ctx.assign_slice().get(0).getText();
             System.out.print(id + " ");
             String as = ctx.assigns().getChild(0).getText();
             switch (as){
@@ -149,6 +161,7 @@ public class Translator extends MiLenguajeBaseListener {
 
     @Override
     public void enterConst_(MiLenguajeParser.Const_Context ctx){
+        printTab();
         if(ctx.assign_expression() !=null){
             System.out.print(ctx.assign_expression().getChild(0).getText() + " = ");
             System.out.print(ctx.assign_expression().getChild(2).getText());
@@ -160,10 +173,27 @@ public class Translator extends MiLenguajeBaseListener {
     }
 
     @Override
+    public void enterVar_create(MiLenguajeParser.Var_createContext ctx){
+        System.out.print(ctx.ID().get(0)+"= new "+ ctx.ID().get(1)+"(");
+        if (ctx.comma_expressions_params()!=null) {
+            int len = ctx.comma_expressions_params().ID().size();
+            if (len != 0) {
+                for (int i = 0; i < len; i++) {
+                    System.out.print(ctx.comma_expressions_params().ID().get(i).getText());
+                    if (i != len - 1) {
+                        System.out.print(", ");
+                    }
+                }
+            }
+        }
+        System.out.print(")");
+    }
+
+    @Override
     public void enterVar(MiLenguajeParser.VarContext ctx){
-        printTab();
         if(ctx.comma_params() != null){
             for(int i = 0; i <ctx.comma_params().ID().size() ;  i++){
+                printTab();
                 String id = ctx.comma_params().ID(i).getText();
                 if (ctx.data_type() != null){
                     if(ctx.data_type().Chars() != null){
@@ -202,12 +232,13 @@ public class Translator extends MiLenguajeBaseListener {
                         }
                     }
                     if(ctx.data_type().String() != null){
-                        System.out.println(id + " = " );
+                        System.out.println(id + " = ''" );
                     }
                 }
             }
         }
         if(ctx.assign_expression() != null){
+            printTab();
             String id = ctx.assign_expression().getChild(0).getText();
             if(ctx.assign_expression().data_type() != null){
                 if(ctx.assign_expression().data_type().Chars() != null){
@@ -236,44 +267,42 @@ public class Translator extends MiLenguajeBaseListener {
     }
 
     @Override
-    public void enterExpression(MiLenguajeParser.ExpressionContext ctx){
-        //System.out.println("here");
-    }
-
-    @Override
     public void enterSequential(MiLenguajeParser.SequentialContext ctx){
+
         if(ctx.If()!=null){
+            printTab();
             System.out.println("if " + ctx.getChild(1).getText()+" : ") ;
-        }else if(ctx.Fa() != null){
-            //System.out.println("for ");
+            tab++;
         }else if (ctx.Do() != null){
             System.out.println("do:");
         }
+        //fa is handled in another place
     }
 
     @Override
     public void exitSequential(MiLenguajeParser.SequentialContext ctx){
         if(ctx.Od() != null){
-            System.out.println("while " + ctx.getChild(1).getText());
+            printTab(); System.out.println("while " + ctx.getChild(1).getText());
         }
+        tab--;
     }
 
     @Override
     public void enterFor_expr(MiLenguajeParser.For_exprContext ctx){
-        System.out.println();
         String id = ctx.expression().assign().getChild(0).getText();
         String from  = ctx.expression().assign().getChild(2).getText();
         String to = ctx.getChild(2).getText();
-
+        printTab();
         System.out.println("for "+id + " in range(" + from +", " + to + "):");
+        tab++;
     }
 
     @Override
     public void exitFor_expr(MiLenguajeParser.For_exprContext ctx){
-
     }
     @Override
     public void enterIf_inner(MiLenguajeParser.If_innerContext ctx){
+        printTab();
         if(ctx.TK_SEPARA()!=null){
             if(! ctx.getChild(1).getText().equals("else"))
                 System.out.println("elif "+ctx.getChild(1).getText() + " :");
@@ -281,12 +310,17 @@ public class Translator extends MiLenguajeBaseListener {
                 System.out.println("else:");
 
         }
+        tab++;
+
+    }
+    @Override
+    public void exitIf_inner(MiLenguajeParser.If_innerContext ctx){
     }
 
     @Override
     public void enterBlock(MiLenguajeParser.BlockContext ctx){
         //block stuff tabbed
-        tab--;
+        //tab--;
     }
 
     @Override
@@ -304,5 +338,19 @@ public class Translator extends MiLenguajeBaseListener {
         System.out.println();
     }
 
+    @Override
+    public void enterFunction_ (MiLenguajeParser.Function_Context ctx){
+        printTab();
+        if( ctx.RESERVED_WORD_F() != null ){
+            if(ctx.RESERVED_WORD_F().getText().equals("write") || ctx.RESERVED_WORD_F().getText().equals("writes")){
+                System.out.print("print"+ ctx.function_end().getText());
+            }else if(ctx.RESERVED_WORD_F().getText().equals("write")){
+                System.out.print("open"+ ctx.function_end().getText());
+            }
+        }else{
+            System.out.print(ctx.getText());
+        }
+        System.out.println();
+    }
 
 }

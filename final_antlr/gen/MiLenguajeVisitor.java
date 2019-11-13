@@ -94,6 +94,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVar(MiLenguajeParser.VarContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#var_create}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVar_create(MiLenguajeParser.Var_createContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#operation}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -177,6 +183,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFunction_(MiLenguajeParser.Function_Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#function_end}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction_end(MiLenguajeParser.Function_endContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#resource_control}.
 	 * @param ctx the parse tree
@@ -285,6 +297,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAssign(MiLenguajeParser.AssignContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#assign_slice}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssign_slice(MiLenguajeParser.Assign_sliceContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#binary_expression}.
 	 * @param ctx the parse tree
