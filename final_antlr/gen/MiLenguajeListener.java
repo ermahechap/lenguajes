@@ -57,6 +57,16 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 */
 	void exitBody(MiLenguajeParser.BodyContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#resource_specification}.
+	 * @param ctx the parse tree
+	 */
+	void enterResource_specification(MiLenguajeParser.Resource_specificationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#resource_specification}.
+	 * @param ctx the parse tree
+	 */
+	void exitResource_specification(MiLenguajeParser.Resource_specificationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#resource_body}.
 	 * @param ctx the parse tree
 	 */
@@ -376,6 +386,16 @@ public interface MiLenguajeListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSequential(MiLenguajeParser.SequentialContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MiLenguajeParser#if_inner}.
+	 * @param ctx the parse tree
+	 */
+	void enterIf_inner(MiLenguajeParser.If_innerContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiLenguajeParser#if_inner}.
+	 * @param ctx the parse tree
+	 */
+	void exitIf_inner(MiLenguajeParser.If_innerContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MiLenguajeParser#boolean_expression}.
 	 * @param ctx the parse tree

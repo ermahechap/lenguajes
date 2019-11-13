@@ -40,6 +40,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBody(MiLenguajeParser.BodyContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#resource_specification}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitResource_specification(MiLenguajeParser.Resource_specificationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#resource_body}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -231,6 +237,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSequential(MiLenguajeParser.SequentialContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#if_inner}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIf_inner(MiLenguajeParser.If_innerContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#boolean_expression}.
 	 * @param ctx the parse tree

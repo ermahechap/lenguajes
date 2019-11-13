@@ -1,3 +1,13 @@
-resource e1()
-	var n:int
+resource e1
+	var i:=5;	
+body e1()
+	var g:= "gg"
+	proc expr() returns ans
+		a:=1
+	    ans := term()
+		do s[pos] = "+" ->
+			pos++
+			ans +:= term()
+		od
+	end
 end

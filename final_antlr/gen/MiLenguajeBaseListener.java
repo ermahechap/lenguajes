@@ -75,6 +75,18 @@ public class MiLenguajeBaseListener implements MiLenguajeListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterResource_specification(MiLenguajeParser.Resource_specificationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitResource_specification(MiLenguajeParser.Resource_specificationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterResource_body(MiLenguajeParser.Resource_bodyContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -454,6 +466,18 @@ public class MiLenguajeBaseListener implements MiLenguajeListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitSequential(MiLenguajeParser.SequentialContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIf_inner(MiLenguajeParser.If_innerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIf_inner(MiLenguajeParser.If_innerContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

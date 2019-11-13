@@ -12,10 +12,12 @@ entry: resource | global |  body ;
 
 global: Global ID (const_ | type)* End;
 resource: spec? Resource ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES)?
-    ( Separate | (Body ID)? resource_body)
+    ( Separate | resource_specification | body)
 ;
 
-body: Body ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES) resource_body;
+body: Body ID (TK_LEFT_PARENTHESES params? TK_RIGHT_PARENTHESES)? resource_body;
+
+resource_specification: resource_body;
 
 resource_body :
     declarations?
@@ -87,16 +89,19 @@ concurrent_expression: Co (TK_LEFT_PARENTHESES quantifier To ID TK_RIGHT_PARENTH
 call_invocation: Call? (ID assigns (binary_expression | ( ID | array ) ) | function_);
 quantifier: ID TK_COLON binary_expression;
 
-sequential: 'skip' |
-             var |
-             (comma_expressions_params | expression) |
-             var Tk_increment |
-             var Tk_decrement |
-             If ((boolean_expression | binary_expression) TK_EXECUTE (block | function_ ) TK_SEPARA?)* Fi |
-             Do ((boolean_expression | binary_expression) TK_EXECUTE (block | function_ ) TK_SEPARA?)* Od |
-             Fa for_expr block Af |
-             'exit' |
-             Next;
+sequential: 'skip'
+             | var
+             | (comma_expressions_params | expression)
+             | var Tk_increment
+             | var Tk_decrement
+             | If (boolean_expression | binary_expression) TK_EXECUTE block* if_inner* Fi
+             //| Do ((boolean_expression | binary_expression) TK_EXECUTE (block | function_ ) TK_SEPARA?)* Od
+             | Do (boolean_expression | binary_expression) TK_EXECUTE block* Od
+             | Fa for_expr block Af
+             | 'exit'
+             | Next;
+
+if_inner: (TK_SEPARA (boolean_expression | binary_expression) TK_EXECUTE block*);
 
 //((boolean_expression | binary_expression) TK_EXECUTE block TK_SEPARA?)*
 boolean_expression: TK_LEFT_PARENTHESES expression TK_RIGHT_PARENTHESES | expression | binary_expression | BOOLEAN ;
