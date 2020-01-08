@@ -27,6 +27,5 @@ F = 10
 
 O,P = J
 Q, R, S = K
-
-def fun():
-    pass
+T = U = 10
+V,W = X =[4,50]
