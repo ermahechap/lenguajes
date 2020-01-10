@@ -1,0 +1,22 @@
+.code-container{
+    width: 50%;
+    position: relative;
+}
+
+pre b, pre strong
+{
+    font-weight:normal;
+    color:#039;
+}
+pre u, pre u b, pre u strong
+{
+    text-decoration:none;
+    color:#083;
+}
+pre i, pre em, pre i *, pre em *, pre i * *, pre em * *
+{
+    letter-spacing:-0.1em;
+    text-decoration:none;
+    font-style:normal;
+    color:#c55;
+}
