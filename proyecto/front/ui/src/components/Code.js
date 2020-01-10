@@ -1,5 +1,8 @@
 import React, { useEffect} from "react";
 import "../Styles/Code.css"
+import { Table, Divider, Tag } from 'antd';
+
+const { Column, ColumnGroup } = Table;
 
 
 const Code = (props) => {

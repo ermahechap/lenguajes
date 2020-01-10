@@ -95,8 +95,8 @@ function RootNode({ node }) {
 }
 
 const Dendogram = ({
-                       width = 500,
-                       height = 800,
+                       // width = 500,
+                       // height = 800,
                        margin = {
                            top: 40,
                            left: 0,
@@ -105,15 +105,15 @@ const Dendogram = ({
                        }
                    }) => {
     const data = hierarchy(cluster);
-    const xMax = width - margin.left - margin.right;
-    const yMax = height - margin.top - margin.bottom;
+    // const xMax = width - margin.left - margin.right;
+    // const yMax = height - margin.top - margin.bottom;
 
     return (
         <div className="graph-container">
             <svg className="graph">
                 <LinearGradient id="top" from={green} to={aqua} />
-                <rect width={width} height={height} rx={14} fill={bg} />
-                <Cluster root={data} size={[xMax, yMax]}>
+                <rect width={500} height={800} rx={14} fill={bg} />
+                <Cluster root={data} size={[500, 300]}>
                     {cluster => {
                         return (
                             <Group top={margin.top} left={margin.left}>
@@ -137,7 +137,7 @@ const Dendogram = ({
                     }}
                 </Cluster>
             </svg>
-            <h1 onClick={() => console.log(width)}>
+            <h1 onClick={() => console.log("holitas")}>
                 click me
             </h1>
         </div>
