@@ -1,8 +1,5 @@
 import React, { useEffect} from "react";
 import "../Styles/Code.css"
-import { Table, Divider, Tag } from 'antd';
-
-const { Column, ColumnGroup } = Table;
 
 
 const Code = (props) => {
@@ -18,7 +15,8 @@ const Code = (props) => {
     });
 
 
-    const codeFromServer = `<code>
+    const codeFromServer =
+        `<code>
 # This function adds two numbers
 def add(x, y):
    return x + y
@@ -50,8 +48,7 @@ elif choice == '4':
    print(num1,"/",num2,"=", divide(num1,num2))
 else:
    print("Invalid input")
-        </code>
-    `;
+        </code>`;
 
 
     return (
@@ -67,10 +64,6 @@ else:
                      dangerouslySetInnerHTML={{
                     __html: codeFromServer
                 }}>
-                    {/*<code className="python" contenteditable="true" tabindex="0" spellcheck="false">*/}
-                    {/*    # Program make a simple calculator*/}
-
-                    {/*</code>*/}
                 </pre>
             </figure>
         </div>

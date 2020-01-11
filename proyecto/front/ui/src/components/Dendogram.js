@@ -4,6 +4,7 @@ import { Cluster } from '@vx/hierarchy';
 import { LinkVertical } from '@vx/shape';
 import { hierarchy } from 'd3-hierarchy';
 import { LinearGradient } from '@vx/gradient';
+import {Button, Card} from 'antd';
 import "../Styles/Dendogram.css"
 
 const citrus = '#ddf163';
@@ -137,9 +138,14 @@ const Dendogram = ({
                     }}
                 </Cluster>
             </svg>
-            <h1 onClick={() => console.log("holitas")}>
-                click me
-            </h1>
+            <Button className="btn-yes" type="danger" size="large" onClick={() => console.log("holitas")}> click me </Button>
+            <div style={{ background: '#ECECEC', padding: '30px' }}>
+                <Card title="Card title" bordered={false} style={{ width: 300 }}>
+                    <p>Card content</p>
+                    <p>Card content</p>
+                    <p>Card content</p>
+                </Card>
+            </div>
         </div>
 
     );

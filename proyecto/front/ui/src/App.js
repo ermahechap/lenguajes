@@ -17,11 +17,10 @@ function App() {
                     <Dendogram/>
                 </Col>
             </Row>
+
         </div>
-
-
-
     </div>
+
   );
 }
 
