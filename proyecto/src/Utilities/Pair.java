@@ -1,8 +1,15 @@
 package Utilities;
-public class Pair {
-    public int x, y;
-    public Pair(int x, int y) {
+
+public class Pair<T1, T2> {
+    public T1 x;
+    public T2 y;
+    public Pair(T1 x, T2 y) {
         this.x = x;
         this.y = y;
+    }
+
+    @Override
+    public String toString(){
+        return "["+ this.x.toString() +", "+ this.y.toString() +"]";
     }
 }

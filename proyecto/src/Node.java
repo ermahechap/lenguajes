@@ -1,44 +1,69 @@
 import Utilities.*;
 import java.util.*;
 
-public abstract class Node {
-    public Node parent = null;
-    public ArrayList<Node> children = new ArrayList<>(); //children of this node
-
-    public String type = null;
+public class Node {
+    public String name, type;
     public Pair from, to;
-    public static int id;
+    public static int counter;
+    public int id;
+
+    public Node parent;
+    public ArrayList<Node> children = new ArrayList<>(); //children of this node
 
     public Node(Node parent, Pair from, Pair to) {
         this.parent = parent;
         this.from = from;
         this.to = to;
-        this.id++;
+        this.counter++;
+        this.id = counter;
     }
+
+    public Node() {
+        this.counter++;
+        this.id = counter;
+    } // empty node, just in case
+
 
     public boolean addChild(Node child) {
         return children.add(child);
     }
 
-    public abstract String show();
-}
+    private ArrayList<Integer> getChildrenIds() {
+        ArrayList<Integer> child_ids = new ArrayList<>();
+        for (Node child : children)
+            child_ids.add(child.id);
 
-/*
-* Custom classes to handle other kind of things
-* */
+        return child_ids;
+    }
+
+    private int getParentId() {
+        return (this.parent == null) ? -1 : this.parent.id;
+    }
+
+    public String show() {
+        return "{" +
+                "type: " + this.type +
+                ", id: " + this.id +
+                ", parent_id:" + this.getParentId() +
+                ", children_id: " + this.getChildrenIds().toString() +
+                ", from: " + this.from.toString() +
+                ", to: " +this.to.toString()
+                ;
+    }
+}
 
 class Root extends Node {
     private static Root me = null;
 
-    private Root(Node parent, Pair from, Pair to) {
-        super(parent, from, to);
+    private Root(Pair from, Pair to) {
+        super(null, from, to);
         this.type = "ROOT";
         this.me = this;
     }
 
     public static Root getRootInstance() { // Singleton, only one root
         if (me == null) {
-            me = new Root(null, new Pair(-1, -1), new Pair(-1, -1));
+            me = new Root(new Pair(-1, -1), new Pair(-1, -1));
             return me;
         }
         return me;
@@ -46,28 +71,54 @@ class Root extends Node {
 
     @Override
     public String show(){
-        return "{" +
-                "type: ROOT," +
-                "id: " + this.id + ", " +
-                "parent_id: -1" +
+        return super.show() + "}";
+    }
+}
+
+/*
+* Custom classes to handle other kind of things
+* */
+
+class Var extends Node {
+    public Node value;
+    public Var(Node parent, Pair from, Pair to, String name) {
+        super(parent, from, to);
+        this.name = name;
+        this.type = "variable";
+    }
+
+    public void assignValue(Node value) {
+        this.value = value;
+    }
+    @Override
+    public String show() {
+        return super.show() +
+                ", name: " + this.name +
+                ", value_id: " + ((this.value != null) ? this.value.id : "null") +
                 "}";
     }
 }
 
-class Var extends Node {
-    public Node value = null;
-    public Var(Node parent, Pair from, String type) {
-        super(parent, from, new Pair(-1, -1));
-        this.type = "variable";
-    }
-
-    public void setTo(Pair to){
-        this.to = to;
+class Subscript extends Node {
+    public Subscript(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type = "subscript";
     }
 
     @Override
+    public String show(){
+        return super.show() + "}";
+    }
+}
+
+class List_ extends Node {
+    public List_(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type="list";
+    }
+    @Override
     public String show() {
-        return null;
+        return super.show() + "}";
     }
 }
 
@@ -76,8 +127,9 @@ class Function extends Node {
     public ArrayList<Node> returns = new ArrayList<>();
     public ArrayList<Node> parameters = new ArrayList <>();
 
-    public Function(Node parent, Pair from, Pair to) {
+    public Function(Node parent, Pair from, Pair to, String name) {
         super(parent, from, to);
+        this.name = name;
     }
 
     public boolean addParameter(Node parameter) {
@@ -100,6 +152,7 @@ class Class extends Node {
 
     public Class(Node parent, Pair from, Pair to, String className) {
         super(parent, from, to);
+        this.type = "subscript";
         this.className = className;
     }
 

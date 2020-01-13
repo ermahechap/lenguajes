@@ -5,32 +5,36 @@ import java.util.HashMap;
 // https://www.geeksforgeeks.org/scope-resolution-in-python-legb-rule/
 public class Scope {
     HashMap<String, ArrayList<Node> > context = new HashMap<>();
-    public Scope parentScope; //who is my parent
-    public ArrayList<Scope> childrenScope = new ArrayList<>(); // children scopes
+    private Scope parentScope; //who is my parent
+    private Node scopeNode; // must be a class, function or module. it identifies the node that opens this scope
+    public ArrayList<Scope> childrenScopes = new ArrayList<>(); // children scopes
     public HashMap<String,ArrayList<Node>> nodes = new HashMap<>(); // K = node name, V = referenced places into scope
 
-    public Scope (Scope parentScope){
+    public Scope (Scope parentScope, Node scopeNode){
         this.parentScope = parentScope;
+        this.scopeNode = scopeNode;
     }
 
     public boolean addChild(Scope childScope){
-        return this.childrenScope.add(childScope);
+        return this.childrenScopes.add(childScope);
     }
 
-    public boolean addNodeToScope(Node node){
-        String nodeTypes[] ={"variable", "function", "class"};
-        if ( Arrays.stream(nodeTypes).anyMatch(x-> node.type.equals(x)) ){
-            if(!this.nodes.containsKey(node.type)) {
-                ArrayList<Node> myNodes = new ArrayList<>();
-                myNodes.add(node);
-                this.nodes.put(node.type, myNodes);
-            } else {
-                ArrayList<Node> myNodes = nodes.get(node.type);
-                myNodes.add(node);
-                this.nodes.replace(node.type, myNodes); //tho, i dont think it is necessary
-            }
-            return true;
+    public void addNodeToScope(Node node){
+        if(!this.nodes.containsKey(node.name)) {
+            ArrayList<Node> myNodes = new ArrayList<>();
+            myNodes.add(node);
+            this.nodes.put(node.name, myNodes);
+        } else {
+            ArrayList<Node> myNodes = nodes.get(node.name);
+            myNodes.add(node);
+            this.nodes.replace(node.name, myNodes); //tho, i dont think it is necessary
         }
-        return false;
+    }
+
+    public Scope getParentScope(){
+        return (this.parentScope == null)? this : this.parentScope;
+    }
+    public Node getScopeNode(){
+        return this.scopeNode;
     }
 }
