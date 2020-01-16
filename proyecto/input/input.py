@@ -1,5 +1,7 @@
-A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
-
-[A,B+5]
-
-[A, [A,C]]
+A = 10
+print(A)
+def f():
+    A = 12
+    print(A)
+f()
+print(A)

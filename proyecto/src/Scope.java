@@ -1,6 +1,16 @@
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.HashMap;
+
+/*
+* Things that belongs to scopes:
+* - Classes
+* - var declaration
+* - function declaration:
+*   - Functions within a class (methods)
+*   - Functions within functions
+*   - Overloaded functions
+ */
+
 
 // https://www.geeksforgeeks.org/scope-resolution-in-python-legb-rule/
 public class Scope {
@@ -20,17 +30,39 @@ public class Scope {
     }
 
     public void addNodeToScope(Node node){
+        if(node.name == null) return;
+
+        //lookup in scopes
+        
+
         if(!this.nodes.containsKey(node.name)) {
             ArrayList<Node> myNodes = new ArrayList<>();
             myNodes.add(node);
             this.nodes.put(node.name, myNodes);
         } else {
             ArrayList<Node> myNodes = nodes.get(node.name);
-            myNodes.add(node);
+            Node scopeNode = myNodes.get(myNodes.size() - 1);
+
+            if(scopeNode.type == "variable" && node.type == "variable"){
+                if(((Var) node).value == null){
+                    ((Var)scopeNode).addVarMention(node);
+                    ((Var)node).assignVarDeclaration(scopeNode);
+                    System.out.println("call " + node.name);
+                } else {
+                    myNodes.add(node); // assign;
+                    System.out.println("assign " + node.name);
+                }
+
+            } else if(scopeNode.type == "function" && node.type == "function_call") {
+                //pending
+
+            } else if(scopeNode.type == "class" && node.type == "function_call") {
+                //pending
+            }
             this.nodes.replace(node.name, myNodes); //tho, i dont think it is necessary
         }
-    }
 
+    }
     public Scope getParentScope(){
         return (this.parentScope == null)? this : this.parentScope;
     }

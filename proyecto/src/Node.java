@@ -2,6 +2,7 @@ import Utilities.*;
 import java.util.*;
 
 public class Node {
+    public static ArrayList<Node> nodeDump = new ArrayList<>(); // this is intended to keep a reference of all nodes being created
     public String name, type;
     public Pair from, to;
     public static int counter;
@@ -16,13 +17,9 @@ public class Node {
         this.to = to;
         this.counter++;
         this.id = counter;
+        this.type = "node";
+        this.nodeDump.add(this);
     }
-
-    public Node() {
-        this.counter++;
-        this.id = counter;
-    } // empty node, just in case
-
 
     public boolean addChild(Node child) {
         return children.add(child);
@@ -42,12 +39,13 @@ public class Node {
 
     public String show() {
         return "{" +
-                "type: " + this.type +
+                "type: " + this.type+
                 ", id: " + this.id +
                 ", parent_id:" + this.getParentId() +
                 ", children_id: " + this.getChildrenIds().toString() +
                 ", from: " + this.from.toString() +
-                ", to: " +this.to.toString()
+                ", to: " +this.to.toString() +
+                ((this.getClass().toString() == "class Node") ? "}" : "")
                 ;
     }
 }
@@ -81,20 +79,39 @@ class Root extends Node {
 
 class Var extends Node {
     public Node value;
+    private Node varDeclaration;
+    private ArrayList<Node> varMentions = new ArrayList<>();
+
     public Var(Node parent, Pair from, Pair to, String name) {
         super(parent, from, to);
         this.name = name;
         this.type = "variable";
     }
 
-    public void assignValue(Node value) {
+    public void setValue(Node value) {
         this.value = value;
     }
+    public void assignVarDeclaration(Node varDeclaration) {
+        this.varDeclaration = varDeclaration;
+    }
+    public boolean addVarMention(Node varMention) {
+        return this.varMentions.add(varMention);
+    }
+
+    private ArrayList<Integer> getVarMentions() {
+        ArrayList<Integer> var_mentions = new ArrayList<>();
+        for (Node varMention : varMentions)
+            var_mentions.add(varMention.id);
+        return var_mentions;
+    }
+
     @Override
     public String show() {
         return super.show() +
                 ", name: " + this.name +
                 ", value_id: " + ((this.value != null) ? this.value.id : "null") +
+                ", declared_id: " + ((this.varDeclaration != null) ? this.varDeclaration.id : "null") +
+                ", mentions_ids: " + getVarMentions().toString() +
                 "}";
     }
 }
@@ -130,6 +147,7 @@ class Function extends Node {
     public Function(Node parent, Pair from, Pair to, String name) {
         super(parent, from, to);
         this.name = name;
+        this.type = "function";
     }
 
     public boolean addParameter(Node parameter) {
@@ -142,31 +160,63 @@ class Function extends Node {
 
     @Override
     public String show() {
-        return null;
+        return super.show() + "}";
     }
 }
 
-class Class extends Node {
-    public String className = null;
-    public Function constructor = null;
+class FunctionCall extends Node {
+    public ArrayList<Node> parameters = new ArrayList<>();
+    public Function calledFunction;
 
-    public Class(Node parent, Pair from, Pair to, String className) {
+    public FunctionCall(Node parent, Pair from, Pair to){
         super(parent, from, to);
-        this.type = "subscript";
-        this.className = className;
+        this.type = "function_call";
     }
 
+    public boolean addParameter(Node parameter) {
+        return parameters.add(parameter);
+    }
+
+    public ArrayList<Integer> getParametersIds(){
+        ArrayList<Integer> ids = new ArrayList<>();
+        for(Node node : this.parameters) {
+            ids.add(node.id);
+        }
+        return ids;
+    }
     @Override
-    public String show() {
-        return "{type: " + this.className + "}";
+    public String show(){
+        return super.show() +
+            ", parameters_ids: " + this.getParametersIds().toString() +
+            ", called_function_id: " + ((this.calledFunction != null) ? this.calledFunction.id : "null") +
+            "}";
     }
 }
-
 
 
 
 /* Pendiente */
+
+class Class extends Node {
+    public Function constructor;
+
+    public Class(Node parent, Pair from, Pair to, String className) {
+        super(parent, from, to);
+        this.type = "class";
+        this.name = className;
+    }
+
+    @Override
+    public String show() {
+        return super.show() +
+                ", constructor_id: " + this.constructor.id +
+                "}";
+    }
+}
+
 class For extends Node {
+    public Node Rule;
+
     public For(Node parent, Pair from, Pair to) {
         super(parent, from, to);
     }
@@ -187,6 +237,8 @@ class While extends Node {
         return null;
     }
 }
+
+
 
 class If extends Node {
     public ArrayList<If> else_if = new ArrayList<>();
