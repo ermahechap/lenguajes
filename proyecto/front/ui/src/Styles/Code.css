@@ -14,3 +14,7 @@ pre > code {
     padding: 1rem;
     word-wrap: normal;
 }
+
+.variable{
+    background-color: cadetblue;
+}

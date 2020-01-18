@@ -57,6 +57,8 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
 
     const closes = {};
 
+    var temp = '';
+
     const handleCodeFromServe = (codeFromServer) => {
         const res = codeFromServer.split('\n');
         console.log(res);
@@ -68,7 +70,7 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                     closes[dataFromS[i].to[0]] = {};
                     setByRows[dataFromS[i].to[0]] = new Set();
                     rows.add((dataFromS[i].from[0]));
-                    ob[dataFromS[i].to[0]] = new Array();
+                    ob[dataFromS[i].to[0]] = [];
                 }
             }else {
                 if(!rows.has(dataFromS[i].from[0])){
@@ -76,13 +78,13 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                     closes[dataFromS[i].from[0]] = {};
                     rows.add((dataFromS[i].from[0]));
                     setByRows[dataFromS[i].from[0]] = new Set();
-                    ob[dataFromS[i].from[0]] = new Array();
+                    ob[dataFromS[i].from[0]] = [];
                 }
                 if(!rows.has(dataFromS[i].to[0])){
                     closes[dataFromS[i].to[0]] = {};
                     rows.add((dataFromS[i].to[0]));
                     setByRows[dataFromS[i].to[0]] = new Set();
-                    ob[dataFromS[i].to[0]] = new Array();
+                    ob[dataFromS[i].to[0]] = [];
                 }
 
             }
@@ -111,23 +113,24 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
         console.log(opens);
         console.log(closes);
         console.log(setByRows);
-        const temp = "";
+        temp += `<code>`;
         for (let row of rows){
             for(var i = 0; i < res[row].length; i++){
                 if(i in opens[row]){
                     console.log(opens[row][i]);
-                    temp.concat(opens[row][i]);
-                    console.log(temp);
+                    temp+=(opens[row][i]);
+                    // console.log(temp);
                 }
                 if(i in closes[row]){
                     console.log(closes[row][i]);
-                    temp.concat(closes[row][i]);
+                    temp+=(closes[row][i]);
                 }
                 console.log(res[row][i]);
-                temp.concat(res[row][i]);
+                temp+=(res[row][i]);
 
             }
-            temp.concat('\n');
+            temp += "\n";
+
 
             // console.log("----");
             // // console.log(typeof (Object.keys(opens[row])));
@@ -138,6 +141,9 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
             // console.log(ob[row].sort().sort().sort());
             // console.log("----");
         }
+        temp += `</code>`;
+        console.log(temp)
+        return temp
     }
 
     return (
@@ -151,7 +157,7 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                 </figcaption>
                 <pre className="prettyprint"
                      dangerouslySetInnerHTML={{
-                    __html: codeFromServer
+                    __html: handleCodeFromServe(codeFromServer)
                 }}>
                 </pre>
             </figure>
