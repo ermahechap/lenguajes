@@ -1,6 +1,20 @@
 import Utilities.*;
 import java.util.*;
 
+/*
+* Pending:
+* Comprenhension // has its own scope
+* sets - DONE
+* tuples - DONE
+* For - DONE
+* While - DONE
+ * function definition - DONE
+ * If / else if / else
+* function call
+* global scope lookup
+* imports (modules)
+* */
+
 public class Node {
     public static ArrayList<Node> nodeDump = new ArrayList<>(); // this is intended to keep a reference of all nodes being created
     public String name, type;
@@ -37,7 +51,8 @@ public class Node {
         return (this.parent == null) ? -1 : this.parent.id;
     }
 
-    public String show() {
+    @Override
+    public String toString() {
         return "{" +
                 "type: " + this.type+
                 ", id: " + this.id +
@@ -68,8 +83,8 @@ class Root extends Node {
     }
 
     @Override
-    public String show(){
-        return super.show() + "}";
+    public String toString(){
+        return super.toString() + "}";
     }
 }
 
@@ -106,8 +121,8 @@ class Var extends Node {
     }
 
     @Override
-    public String show() {
-        return super.show() +
+    public String toString() {
+        return super.toString() +
                 ", name: " + this.name +
                 ", value_id: " + ((this.value != null) ? this.value.id : "null") +
                 ", declared_id: " + ((this.varDeclaration != null) ? this.varDeclaration.id : "null") +
@@ -123,19 +138,60 @@ class Subscript extends Node {
     }
 
     @Override
-    public String show(){
-        return super.show() + "}";
+    public String toString(){
+        return super.toString() + "}";
     }
 }
 
 class List_ extends Node {
+    private ArrayList<Node> elements = new ArrayList<>();
     public List_(Node parent, Pair from, Pair to) {
         super(parent, from, to);
         this.type="list";
     }
+
+    public boolean addElement(Node node){ return this.elements.add(node); }
+    public ArrayList<Integer> getElementsIds() {
+        ArrayList<Integer> ids = new ArrayList<>();
+        this.elements.forEach(node -> ids.add(node.id));
+        return ids;
+    }
+
     @Override
-    public String show() {
-        return super.show() + "}";
+    public String toString() {
+        return super.toString() +
+            ", elements_ids: " + getElementsIds() +
+            "}";
+    }
+}
+
+class Tuple extends List_ {
+    public Tuple(Node parent, Pair from, Pair to){
+        super(parent, from, to);
+        this.type = "tuple";
+    }
+}
+
+class Dictionary extends Node {
+    private ArrayList<Pair <Node, Node> > pairs = new ArrayList<>(); //key, value;
+    public Dictionary(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type = "dictionary";
+    }
+    public void addPairs (Node k, Node v) {
+        this.pairs.add(new Pair<>(k,v));
+    }
+
+    public ArrayList<Pair<Integer, Integer>> getDictIds(){
+        ArrayList<Pair<Integer, Integer>>ids = new ArrayList<>();
+        pairs.forEach(nodeNodePair -> ids.add(new Pair<>(nodeNodePair.x.id, nodeNodePair.y.id)));
+        return ids;
+    }
+    @Override
+    public String toString() {
+        return super.toString() +
+            ", elements_ids: " + getDictIds() +
+            "}";
     }
 }
 
@@ -158,9 +214,18 @@ class Function extends Node {
         return returns.add(value);
     }
 
+    public ArrayList<Integer> getParametersIds(){
+        ArrayList<Integer> ids = new ArrayList<>();
+        this.parameters.forEach((n)->ids.add(n.id));
+        return ids;
+    }
+
     @Override
-    public String show() {
-        return super.show() + "}";
+    public String toString() {
+        return super.toString() +
+            ", name: " + this.name +
+            ",parameters_ids: " + this.getParametersIds() +
+            "}";
     }
 }
 
@@ -185,8 +250,8 @@ class FunctionCall extends Node {
         return ids;
     }
     @Override
-    public String show(){
-        return super.show() +
+    public String toString(){
+        return super.toString() +
             ", parameters_ids: " + this.getParametersIds().toString() +
             ", called_function_id: " + ((this.calledFunction != null) ? this.calledFunction.id : "null") +
             "}";
@@ -194,11 +259,9 @@ class FunctionCall extends Node {
 }
 
 
-
-/* Pendiente */
-
 class Class extends Node {
     public Function constructor;
+    public Class inherits;
 
     public Class(Node parent, Pair from, Pair to, String className) {
         super(parent, from, to);
@@ -206,13 +269,21 @@ class Class extends Node {
         this.name = className;
     }
 
+    public void setConstructor(Function constructor){ this.constructor = constructor; }
+    public void setInherits(Class inherits){ this.inherits = inherits; }
+
     @Override
-    public String show() {
-        return super.show() +
-                ", constructor_id: " + this.constructor.id +
+    public String toString() {
+        return super.toString() +
+                ", name: " + this.name +
+                ", constructor_id: " + ((this.constructor == null)? "null" : this.constructor.id) +
+                ", inherits_id: " + ((this.inherits == null)? "null" : this.inherits.id) +
                 "}";
     }
 }
+
+
+/* Pendiente */
 
 class For extends Node {
     public Node Rule;
@@ -222,7 +293,7 @@ class For extends Node {
     }
 
     @Override
-    public String show() {
+    public String toString() {
         return null;
     }
 }
@@ -233,7 +304,7 @@ class While extends Node {
     }
 
     @Override
-    public String show() {
+    public String toString() {
         return null;
     }
 }
@@ -248,9 +319,63 @@ class If extends Node {
     }
 
     @Override
-    public String show() {
+    public String toString() {
         return null;
     }
 }
 
 
+
+
+/* UTILITIES */
+
+//composed node
+
+class Composed extends Node {
+    public Composed(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type = "composed";
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "}";
+    }
+}
+
+
+//composed node element
+
+class ComposedElement extends Node {
+    public ComposedElement(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type = "composed_element";
+    }
+    @Override
+    public String toString() {
+        return super.toString() + "}";
+    }
+}
+
+class ReturnNode extends Node{
+    private ArrayList<Node> returns = new ArrayList<>();
+    public ReturnNode(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type = "return";
+    }
+
+    public boolean addReturn(Node node){ return this.returns.add(node); }
+    public ArrayList<Integer> getRetunsIds() {
+        ArrayList<Integer> ids = new ArrayList<>();
+        returns.forEach((node -> ids.add(node.id)));
+        return ids;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ", returns_ids: " + this.getRetunsIds() +
+                "}";
+    }
+
+}

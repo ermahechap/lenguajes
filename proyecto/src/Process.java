@@ -5,7 +5,6 @@ import java.io.File;
 public class Process {
     public static void main(String[] args) throws Exception {
         Python3Lexer lexer;
-        System.out.println("here");
         if(args.length > 0){
             System.out.println("FILE MODE");
             lexer = new Python3Lexer(CharStreams.fromFileName(args[0]));
