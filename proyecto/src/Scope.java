@@ -10,21 +10,19 @@ import java.util.HashMap;
 * - function declaration:
 *   - Functions within a class (methods)
 *   - Functions within functions
-*   - Overloaded functions
  */
 
 
 // https://www.geeksforgeeks.org/scope-resolution-in-python-legb-rule/
 public class Scope {
-    HashMap<String, ArrayList<Node> > context = new HashMap<>();
     private Scope parentScope; //who is my parent
     private Node scopeNode; // must be a class, function or module. it identifies the node that opens this scope
 
-    private  static String []global_methods = {"abs", "all", "min", "str", "zip", "range"}; // add as required from here https://docs.python.org/3/library/functions.html
+    private  static String []builtin_methods = {"abs", "all", "min", "str", "zip", "range"}; // add as required from here https://docs.python.org/3/library/functions.html
     private static ArrayList<Module> modules= new ArrayList<>();
 
     public ArrayList<Scope> childrenScopes = new ArrayList<>(); // children scopes
-    public HashMap<String,ArrayList<Node>> nodes = new HashMap<>(); // K = node name, V = referenced places into scope
+    public HashMap<String, Node> nodes = new HashMap<>(); // K = node name, V = declaration, assign, etc within scope
 
     public Scope (Scope parentScope, Node scopeNode){
         this.parentScope = parentScope;
@@ -37,7 +35,7 @@ public class Scope {
 
     private ArrayList<Integer> getNodesIds(){
         ArrayList<Integer> ids = new ArrayList<>();
-        this.nodes.forEach( (k,v)-> v.forEach( (x)->ids.add(x.id) ) );
+        this.nodes.forEach( (k,v)-> ids.add(v.id));
         return ids;
     }
 
@@ -53,19 +51,17 @@ public class Scope {
     public int addNodeToScope(Node node){
         if(node.name == null) return -1;
 
-        //lookup in scopes
         Scope scope = this;
         while(scope != null){
             if(scope.nodes.containsKey(node.name)) {
-                ArrayList<Node> myNodes = scope.nodes.get(node.name);
-                Node scopeNode = myNodes.get(myNodes.size() - 1);
+                Node scopeNode = scope.nodes.get(node.name);
 
                 if(scopeNode.type == "variable" && node.type == "variable"){
                     if(((Var) node).value == null){ // call
                         ((Var)scopeNode).addVarMention(node);
                         ((Var)node).assignVarDeclaration(scopeNode);
                     } else { // assign
-                        myNodes.add(node);
+                        scope.nodes.replace(node.name, node);
                     }
                 } else if(scopeNode.type == "function" && node.type == "function_call") {
                     //pending
@@ -75,7 +71,6 @@ public class Scope {
                 }
 
                 // if not found, it does not reference it, easier.
-                scope.nodes.replace(node.name, myNodes); //tho, i dont think it is necessary
                 return 1;
             }
 
@@ -83,9 +78,7 @@ public class Scope {
         }
 
         // if not found, creates it
-        ArrayList<Node> myNodes =  new ArrayList<>();
-        myNodes.add(node);
-        this.nodes.put(node.name, myNodes);
+        this.nodes.put(node.name, node);
         return 0;
     }
 
@@ -93,8 +86,7 @@ public class Scope {
         Scope scope = this;
         while(scope != null){
             if(scope.nodes.containsKey(name)){
-                ArrayList<Node> myNodes = scope.nodes.get(name);
-                Node scopeNode = myNodes.get(myNodes.size()-1);
+                Node scopeNode = scope.nodes.get(name);
                 return scopeNode;
             }
             scope = scope.parentScope;

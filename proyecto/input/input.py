@@ -1,4 +1,24 @@
-[A, A+10 ,A+20]
-(A, A+10 ,A+20)
-{"ha": "asdf", "he": "mme"}
-A[10]
+
+A = 10
+A
+B = 20
+A
+A,B
+
+
+'''
+def f():
+    return 10
+
+f()
+
+class A:
+    y = 10
+    def f(self):
+        self.A = 1
+        return self.A
+
+A.y
+A.f()
+
+'''

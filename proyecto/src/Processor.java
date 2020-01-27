@@ -128,7 +128,6 @@ public class Processor extends Python3BaseListener {
                     } else if(!trailer.getTokens(Python3Parser.DOT).isEmpty()) { // method or var from class/module
                         // pending
                     }
-                    levels++;
                 }
 
             }

@@ -13,6 +13,7 @@ import java.util.*;
 * function call
 * global scope lookup
 * imports (modules)
+* lambdas (maybe, heck no)
 * */
 
 public class Node {
