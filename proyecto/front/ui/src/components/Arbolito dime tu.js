@@ -32,7 +32,7 @@ const dataFromS = [
 function transformData(data,node){
   
   
-  var strData = '{  name:'+ "'"+node.type+ "'" + ',' + 'attributes: {  id: '+ "'"+node.id+"'"+ ','+'from: '+"'"+'['+String(node.from)+']'+"'"+ ','+'to: '+"'"+'['+String(node.to)+']' +"'"+'},';
+  var strData = '{  "name":'+ '"'+node.type+ '"'+',' + '"attributes": {  "id": '+ '"'+node.id+'"'+ ','+'"from": '+'"'+String(node.from)+'"'+ ','+'"to": '+'"'+String(node.to)+'"'+'},';
   if(node.children_id.length>0){
     strData += ' children: ['
     for(let i=0;i<node.children_id.length;i++){
@@ -52,7 +52,8 @@ function transformData(data,node){
   return strData;
 }
 var datico = transformData(dataFromS, dataFromS[0]);
-const treee = [ datico ];
+// const treee = '['+ datico +']';
+const aaa = JSON.stringify(eval("(" + datico + ")"));
 
 const myTreeData = [
   { 
@@ -241,10 +242,10 @@ const myTreeData2 = [
       return (
         //{/* <Tree /> will fill width/height of its container; in this case `#treeWrapper` */}
         <div id="treeWrapper" style={{width: '50em', height: '20em'}}>
-          <button onClick={() => console.log(treee)}>
+          <button onClick={() => console.log(aaa)}>
             debug
           </button>
-          <Tree data={myTreeData} orientation = 'vertical' />
+          <Tree data={JSON.parse(aaa)} orientation = 'vertical' />
           <dataFromS/>
         </div>
 
