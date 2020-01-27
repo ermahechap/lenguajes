@@ -1,4 +1,6 @@
 import Utilities.*;
+import sun.security.util.ArrayUtil;
+
 import java.util.*;
 
 /*
@@ -26,7 +28,12 @@ public class Node {
     public Node parent;
     public ArrayList<Node> children = new ArrayList<>(); //children of this node
 
+    public String wrapOnCommas(String str) { //this is an useless piece of shit that apparently everyone wants
+        return "'" + str + "'";
+    }
+
     public Node(Node parent, Pair from, Pair to) {
+        if(parent != null) parent.addChild(this);
         this.parent = parent;
         this.from = from;
         this.to = to;
@@ -34,6 +41,7 @@ public class Node {
         this.id = counter;
         this.type = "node";
         this.nodeDump.add(this);
+
     }
 
     public boolean addChild(Node child) {
@@ -55,13 +63,13 @@ public class Node {
     @Override
     public String toString() {
         return "{" +
-                "type: " + this.type+
+                "type: " + wrapOnCommas(this.type) +
                 ", id: " + this.id +
                 ", parent_id:" + this.getParentId() +
                 ", children_id: " + this.getChildrenIds().toString() +
                 ", from: " + this.from.toString() +
                 ", to: " +this.to.toString() +
-                ((this.getClass().toString() == "class Node") ? "}" : "")
+                (( ("node number string boolean").contains(this.type) ) ? "}" : "")
                 ;
     }
 }
@@ -124,7 +132,7 @@ class Var extends Node {
     @Override
     public String toString() {
         return super.toString() +
-                ", name: " + this.name +
+                ", name: " + wrapOnCommas(this.name) +
                 ", value_id: " + ((this.value != null) ? this.value.id : "null") +
                 ", declared_id: " + ((this.varDeclaration != null) ? this.varDeclaration.id : "null") +
                 ", mentions_ids: " + getVarMentions().toString() +
@@ -224,7 +232,7 @@ class Function extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", name: " + this.name +
+            ", name: " + wrapOnCommas(this.name) +
             ",parameters_ids: " + this.getParametersIds() +
             "}";
     }
@@ -276,7 +284,7 @@ class Class extends Node {
     @Override
     public String toString() {
         return super.toString() +
-                ", name: " + this.name +
+                ", name: " + wrapOnCommas(this.name) +
                 ", constructor_id: " + ((this.constructor == null)? "null" : this.constructor.id) +
                 ", inherits_id: " + ((this.inherits == null)? "null" : this.inherits.id) +
                 "}";

@@ -38,7 +38,9 @@ public class Processor extends Python3BaseListener {
 
     @Override
     public void exitFile_input(Python3Parser.File_inputContext ctx) {
-        Node.nodeDump.forEach((n) -> System.out.println(n.toString())); // uses nodedump which is static
+        System.out.println("[");
+        Node.nodeDump.forEach((n) -> System.out.println(n.toString() + ",")); // uses nodedump which is static
+        System.out.println("]");
     }
 
 
@@ -65,7 +67,6 @@ public class Processor extends Python3BaseListener {
                         for(Python3Parser.Atom_exprContext atom_expr_ctx : sb.atom_expr_ctxs) {
                             processAtomExpr(atom_expr_ctx, assignNodeElement, null);
                         }
-                        assignNode.addChild(assignNodeElement);
                     }
 
                 } else {
@@ -131,7 +132,6 @@ public class Processor extends Python3BaseListener {
                 }
 
             }
-            parent.addChild(node);
             this.currentScope.addNodeToScope(node);
             return node;
         } else if(ctx.atom().testlist_comp() != null) {
@@ -142,7 +142,6 @@ public class Processor extends Python3BaseListener {
             Node node = new Node(parent, from, to); // simple node, does not go deeper
             node.type = (ctx.atom().NUMBER() !=null) ? "number" : (!ctx.atom().STRING().isEmpty()) ? "string"
                     : (ctx.atom().TRUE() != null || ctx.atom().FALSE() != null)? "boolean" : "node";
-            parent.addChild(node);
             return node;
         }
     }
@@ -170,7 +169,6 @@ public class Processor extends Python3BaseListener {
         for(Python3Parser.Atom_exprContext atom_expr_ctx : sb.atom_expr_ctxs){
             processAtomExpr(atom_expr_ctx, subscript, null);
         }
-        parent.addChild(subscript);
         return subscript;
     }
 
@@ -203,7 +201,6 @@ public class Processor extends Python3BaseListener {
             list.addElement(composed_element);
         }
 
-        parent.addChild(list);
         return list;
     }
 
@@ -253,7 +250,6 @@ public class Processor extends Python3BaseListener {
             dictionary.addPairs(key,value);
         }
 
-        parent.addChild(dictionary);
         return dictionary;
     }
 
