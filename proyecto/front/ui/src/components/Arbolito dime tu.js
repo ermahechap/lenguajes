@@ -45,16 +45,167 @@ const dataFromS = [
   {type: 'variable', id: 41, parent_id:40, children_id: [], from: [3, 7], to: [3, 7], name: 'C', value_id: null, declared_id: 4, mentions_ids: []},
   ]
 
+// const datos = require('./dataFromS.js');
+
+
+const colors = {
+  variable: 'red',
+  list: 'green',
+  function: 'blue',
+  dictionary: 'purple',
+  class: 'orange',
+  number: 'aquamarine',
+  subscript: 'gold',
+  composed_element: 'lightblue'
+}
+
 function transformData(data,node){
   var strData = '';
   if(node.type=='variable'){
-    strData = '{  "name":'+ '"'+node.type+ '"'+',' + '"attributes": {  "name": '+ '"'+node.name+'"'+ ','+'"id": '+ '"'+node.id+'"'+ ','+'"from": '+'"'+String(node.from)+'"'+ ','+'"to": '+'"'+String(node.to)+'"'+ ','+'"mentions_ids": '+'"'+String(node.mentions_ids)+'"'+'},';
+    strData = `{
+      "name": "${node.type}",
+      "attributes": {
+      "name": "${node.name}",
+      "id": "${node.id}",
+      "from": "${node.from}",
+      "to": "${node.to}",
+      "mentions_ids": "${node.mentions_ids}"
+    },
+      "nodeSvgShape": {
+        "shapeProps": {
+          "fill": "${colors[node.type]}",
+          "r": 10
+        },
+      },
+      `
   }else if(node.type=='list'){
-    strData = '{  "name":'+ '"'+node.type+ '"'+',' + '"attributes": {  "id": '+ '"'+node.id+'"'+ ','+'"from": '+'"'+String(node.from)+'"'+ ','+'"to": '+'"'+String(node.to)+'"'+ ','+'"elements_ids": '+'"'+String(node.elements_ids)+'"'+'},';  
+    strData = `{
+      "name": "${node.type}",
+      "attributes": {
+      "id": "${node.id}",
+      "from": "${node.from}",
+      "to": "${node.to}",
+      "mentions_ids": "${node.elements_ids}" 
+    },
+    "nodeSvgShape": {
+      "shapeProps": {
+        "fill": "${colors[node.type]}",
+        "r": 10
+      },
+    },
+  `
+  }else if(node.type=='dictionary'){
+    strData = `{
+      "name": "${node.type}",
+      "attributes": {
+      "id": "${node.id}",
+      "from": "${node.from}",
+      "to": "${node.to}",
+      "mentions_ids": "${node.elements_ids}" 
+    },
+    "nodeSvgShape": {
+      "shapeProps": {
+        "fill": "${colors[node.type]}",
+        "r": 10
+      },
+    },
+    `
+  }else if(node.type=='function'){
+    strData = `{
+      "name": "${node.type}",
+      "attributes": {
+      "name": "${node.name}",
+      "id": "${node.id}",
+      "from": "${node.from}",
+      "to": "${node.to}",
+      "mentions_ids": "${node.elements_ids}" 
+    },
+    "nodeSvgShape": {
+      "shapeProps": {
+        "fill": "${colors[node.type]}",
+        "r": 10
+      },
+    },
+    `
+  }else if(node.type=='class'){
+    strData = `{
+      "name": "${node.type}",
+      "attributes": {
+      "name": "${node.name}",
+      "id": "${node.id}",
+      "from": "${node.from}",
+      "to": "${node.to}" 
+    },
+    "nodeSvgShape": {
+      "shapeProps": {
+        "fill": "${colors[node.type]}",
+        "r": 10
+      },
+    },
+   `
+  }else if(node.type=='number'){
+    strData = `{
+      "name": "${node.type}",
+      "attributes": {
+      "id": "${node.id}",
+      "from": "${node.from}",
+      "to": "${node.to}" 
+    },
+    "nodeSvgShape": {
+      "shapeProps": {
+        "fill": "${colors[node.type]}",
+        "r": 10
+      },
+    },
+   `
+  }else if(node.type=='composed_element'){
+    strData = `{
+      "name": "${node.type}",
+      "attributes": {
+      "id": "${node.id}",
+      "from": "${node.from}",
+      "to": "${node.to}" 
+    },
+    "nodeSvgShape": {
+      "shapeProps": {
+        "fill": "${colors[node.type]}",
+        "r": 10
+      },
+    },
+   `
+  }else if(node.type=='subscript'){
+    strData = `{
+      "name": "${node.type}",
+      "attributes": {
+      "id": "${node.id}",
+      "from": "${node.from}",
+      "to": "${node.to}" 
+    },
+    "nodeSvgShape": {
+      "shapeProps": {
+        "fill": "${colors[node.type]}",
+        "r": 10
+      },
+    },
+   `
   }else{
-    strData = '{  "name":'+ '"'+node.type+ '"'+',' + '"attributes": {  "id": '+ '"'+node.id+'"'+ ','+'"from": '+'"'+String(node.from)+'"'+ ','+'"to": '+'"'+String(node.to)+'"'+'},';
+    strData = `{
+      "name": "${node.type}",
+      "attributes": {
+      "id": "${node.id}",
+      "from": "${node.from}",
+      "to": "${node.to}" 
+    },
+    "nodeSvgShape": {
+      "shapeProps": {
+        "fill": "grey",
+        "r": 10
+      },
+    },
+   `
   }
-  if(node.children_id.length>0){
+  
+  if(node.children_id.length!=0){
     strData += ' children: ['
     for(let i=0;i<node.children_id.length;i++){
       if(i>0){
@@ -62,159 +213,23 @@ function transformData(data,node){
       }
       strData+= transformData(data,data[node.children_id[i]-1]);
     }
-    // console.log(node.id+' '+node.children_id);
     strData += '] '
   }else{
-  // console.log(node.id+' '+node.children_id);
+  
   }
   strData += '}'
-  console.log(strData);
   
   return strData;
 }
+
+
 var datico = transformData(dataFromS, dataFromS[0]);
 // const treee = '['+ datico +']';
-const aaa = JSON.stringify(eval("(" + datico + ")"));
+const myTreeData = JSON.stringify(eval("(" + datico + ")"));
 
-const myTreeData = [
-  { 
-    name:'ROOT',
-   attributes: { 
-    id: '1',
-   from: '[-1,-1]',
-   to: '[-1,-1]'},
-    children: [{ 
-    name:'variable',
-   attributes: { 
-    id: '2',
-   from: '[1,0]',
-   to: '[1,0]'},},{ 
-    name:'variable',
-   attributes: { 
-    id: '3',
-   from: '[1,2]',
-   to: '[1,2]'},},{ 
-    name:'variable',
-   attributes: { 
-    id: '4',
-   from: '[1,4]',
-   to: '[1,4]'},
-    children: [{ 
-    name:'subscript',
-   attributes: { 
-    id: '5',
-   from: '[1,6]',
-   to: '[1,48]'},
-    children: [{ 
-    name:'variable',
-   attributes: { 
-    id: '6',
-   from: '[1,21]',
-   to: '[1,21]'},},{ 
-    name:'variable',
-   attributes: { 
-    id: '7',
-   from: '[1,23]',
-   to: '[1,23]'},},{ 
-    name:'list',
-   attributes: { 
-    id: '8',
-   from: '[1,26]',
-   to: '[1,35]'},
-    children: [{ 
-    name:'variable',
-   attributes: { 
-    id: '9',
-   from: '[1,26]',
-   to: '[1,26]'},},{ 
-    name:'variable',
-   attributes: { 
-    id: '10',
-   from: '[1,28]',
-   to: '[1,28]'},},{ 
-    name:'variable',
-   attributes: { 
-    id: '11',
-   from: '[1,30]',
-   to: '[1,30]'},
-    children: [{ 
-    name:'subscript',
-   attributes: { 
-    id: '12',
-   from: '[1,32]',
-   to: '[1,33]'},}] 
-   }] 
-   },{ 
-    name:'variable',
-   attributes: { 
-    id: '13',
-   from: '[1,39]',
-   to: '[1,39]'},
-    children: [{ 
-    name:'subscript',
-   attributes: { 
-    id: '14',
-   from: '[1,41]',
-   to: '[1,42]'},}] 
-   },{ 
-    name:'variable',
-   attributes: { 
-    id: '15',
-   from: '[1,46]',
-   to: '[1,46]'},}] 
-   }] 
-   },{ 
-    name:'list',
-   attributes: { 
-    id: '16',
-   from: '[3,1]',
-   to: '[3,5]'},
-    children: [{ 
-    name:'variable',
-   attributes: { 
-    id: '17',
-   from: '[3,1]',
-   to: '[3,1]'},},{ 
-    name:'variable',
-   attributes: { 
-    id: '18',
-   from: '[3,3]',
-   to: '[3,3]'},}] 
-   },{ 
-    name:'list',
-   attributes: { 
-    id: '19',
-   from: '[5,1]',
-   to: '[5,8]'},
-    children: [{ 
-    name:'variable',
-   attributes: { 
-    id: '20',
-   from: '[5,1]',
-   to: '[5,1]'},},{ 
-    name:'list',
-   attributes: { 
-    id: '21',
-   from: '[5,5]',
-   to: '[5,7]'},
-    children: [{ 
-    name:'variable',
-   attributes: { 
-    id: '22',
-   from: '[5,5]',
-   to: '[5,5]'},},{ 
-    name:'variable',
-   attributes: { 
-    id: '23',
-   from: '[5,7]',
-   to: '[5,7]'},}] 
-   }] 
-   }] 
-   }
-]
 const myTreeData2 = [
     {
-      name: dataFromS[0].type,
+      name: 'ROOT',
       attributes: {
         keyA: 'val A',
         keyB: 'val B',
@@ -248,25 +263,56 @@ const myTreeData2 = [
           ]
         },
         {
-          name: 'Level 2: B',
+          name: 'Level 2: B',    
+          onClick: () =>{console.log('hello');},
         },
       ],
+      
     },
   ];
 
-  // transformData(dataFromS);
 
-  console.log(dataFromS);
+  const clickHandler = (nodeData, event) => {
+    // if (this.treeTranslateOrZoomTime && this.treeNodeMouseOverTime < this.treeTranslateOrZoomTime) {
+    //   // Make sure that if the user subsequently clicks the current node without mousing off it,
+    //   // the click will be honored.
+    //   this.treeTranslateOrZoomTime = null;
+    //   return;
+    // }
+    // this.props.actions.openThingyDetail(nodeData.name, nodeData.attributes.version);
+    console.log(nodeData.x+' '+nodeData.y);
+    // console.log(Tree);
+    
+    
+  }
+
+  const updateHandler = (nodeData, event) => {
+    // if (this.treeTranslateOrZoomTime && this.treeNodeMouseOverTime < this.treeTranslateOrZoomTime) {
+    //   // Make sure that if the user subsequently clicks the current node without mousing off it,
+    //   // the click will be honored.
+    //   this.treeTranslateOrZoomTime = null;
+    //   return;
+    // }
+    // this.props.actions.openThingyDetail(nodeData.name, nodeData.attributes.version);
+    console.log(nodeData.x+' '+nodeData.y);
+    // console.log(Tree);
+    
+    
+  }
+
+  // {/* <Tree data={myTreeData2} orientation = 'vertical' /> */}
+
   
   const Arbolito = ()=> { 
       
       return (
         //{/* <Tree /> will fill width/height of its container; in this case `#treeWrapper` */}
         <div id="treeWrapper" style={{width: '75em', height: '20em'}}>
-          <button onClick={() => console.log(aaa)}>
+          <Tree data={JSON.parse(myTreeData)} orientation = 'vertical' onClick={clickHandler} onUpdate={updateHandler} collapsible={false} />
+          <button onClick={() => console.log(Tree)}>
             debug
           </button>
-          <Tree data={JSON.parse(aaa)} orientation = 'vertical' />
+          
           <dataFromS/>
         </div>
 
