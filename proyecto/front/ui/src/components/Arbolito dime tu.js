@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState,useContext,useEffect} from "react";
+import Context from '../GlobalState/context'
 import Tree from 'react-d3-tree';
 
 const dataFromS = [
@@ -272,20 +273,6 @@ const myTreeData2 = [
   ];
 
 
-  const clickHandler = (nodeData, event) => {
-    // if (this.treeTranslateOrZoomTime && this.treeNodeMouseOverTime < this.treeTranslateOrZoomTime) {
-    //   // Make sure that if the user subsequently clicks the current node without mousing off it,
-    //   // the click will be honored.
-    //   this.treeTranslateOrZoomTime = null;
-    //   return;
-    // }
-    // this.props.actions.openThingyDetail(nodeData.name, nodeData.attributes.version);
-    console.log(nodeData.x+' '+nodeData.y);
-    // console.log(Tree);
-    
-    
-  }
-
   const updateHandler = (nodeData, event) => {
     // if (this.treeTranslateOrZoomTime && this.treeNodeMouseOverTime < this.treeTranslateOrZoomTime) {
     //   // Make sure that if the user subsequently clicks the current node without mousing off it,
@@ -303,7 +290,30 @@ const myTreeData2 = [
   // {/* <Tree data={myTreeData2} orientation = 'vertical' /> */}
 
   
-  const Arbolito = ()=> { 
+  const Arbolito = (props)=> {
+
+      const {state, actions} = useContext(Context);
+
+      const clickHandler = (nodeData, event) => {
+        // if (this.treeTranslateOrZoomTime && this.treeNodeMouseOverTime < this.treeTranslateOrZoomTime) {
+        //   // Make sure that if the user subsequently clicks the current node without mousing off it,
+        //   // the click will be honored.
+        //   this.treeTranslateOrZoomTime = null;
+        //   return;
+        // }
+        // this.props.actions.openThingyDetail(nodeData.name, nodeData.attributes.version);
+        // console.log(nodeData.x+' '+nodeData.y);
+        // console.log(Tree);
+
+        console.log(state);
+        actions({
+          type: 'setState',
+          payload: {...state, nodeData: nodeData}
+        });
+
+        console.log(nodeData);
+        // props.node.push(nodeData);
+      };
       
       return (
         //{/* <Tree /> will fill width/height of its container; in this case `#treeWrapper` */}
