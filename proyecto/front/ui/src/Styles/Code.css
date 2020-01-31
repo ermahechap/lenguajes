@@ -18,3 +18,15 @@ pre > code {
 .variable{
     background-color: cadetblue;
 }
+
+.list{
+    background-color: greenyellow;
+}
+
+.subscript{
+    background-color: burlywood;
+}
+
+.composed_element{
+    background-color: #9dffc4;
+}
