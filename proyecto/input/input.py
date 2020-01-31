@@ -1,12 +1,41 @@
-A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
-[A,B+5]
-[A, [A,C]]
+def f(A, B):
+    return 10
+
+f( A = 3, B = 10)
+A.b()
 
 # def f():
 #     return 10
 #
-#
 # f()
+#
+# class C:
+#     pass
+#
+# class B:
+#     c = C()
+#     def __init__(self):
+#         return
+#
+# class A:
+#     b = B
+#     def __init__(self):
+#         return
+#
+# A.b
+# a = A
+# c = a.b.c
+
+
+
+
+# just to see the tree
+#d.b.c
+#aa[10]
+#cc[10][100].d
+
+
+
 
 # class B:
 #     def __init__(self):

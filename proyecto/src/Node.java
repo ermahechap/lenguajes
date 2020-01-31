@@ -20,6 +20,8 @@ import java.util.*;
 
 public class Node {
     public static ArrayList<Node> nodeDump = new ArrayList<>(); // this is intended to keep a reference of all nodes being created
+    protected Scope scope; // just class declaration and function definition should use this, otherwise full scope lookup
+
     public String name, type;
     public Pair from, to;
     public static int counter;
@@ -30,7 +32,10 @@ public class Node {
 
     public String wrapOnCommas(String str) { //this is an useless piece of shit that apparently everyone wants
         return "'" + str + "'";
-    }
+    } //remove when webserver exists
+
+    public void setScope(Scope scope){ this.scope = scope; }
+    public Scope getScope() { return this.scope; }
 
     public Node(Node parent, Pair from, Pair to) {
         if(parent != null) parent.addChild(this);
@@ -117,6 +122,9 @@ class Var extends Node {
     }
     public void assignVarDeclaration(Node varDeclaration) {
         this.varDeclaration = varDeclaration;
+    }
+    public Node getVarDeclaration() {
+        return this.varDeclaration;
     }
     public boolean addVarMention(Node varMention) {
         return this.varMentions.add(varMention);
@@ -238,9 +246,29 @@ class Function extends Node {
     }
 }
 
-class FunctionCall extends Node {
+
+class FunctionReference extends Node{
+    public Node calledFunction;
+
+    public FunctionReference(Node parent, Pair from, Pair to){
+        super(parent, from, to);
+        this.type = "function_reference";
+    }
+
+    public void setCalledFunction(Node calledFunction) {
+        this.calledFunction = calledFunction;
+    }
+
+    @Override
+    public String toString(){
+        return super.toString() +
+            ", called_function_id: " + ((this.calledFunction != null) ? this.calledFunction.id : "null") +
+            (( this.type.equals("function_reference") ) ? "}" : "");
+    }
+}
+
+class FunctionCall extends FunctionReference {
     public ArrayList<Node> parameters = new ArrayList<>();
-    public Function calledFunction;
 
     public FunctionCall(Node parent, Pair from, Pair to){
         super(parent, from, to);
@@ -258,11 +286,57 @@ class FunctionCall extends Node {
         }
         return ids;
     }
+
     @Override
     public String toString(){
         return super.toString() +
             ", parameters_ids: " + this.getParametersIds().toString() +
-            ", called_function_id: " + ((this.calledFunction != null) ? this.calledFunction.id : "null") +
+            "}";
+    }
+}
+
+class ClassReference extends Node {
+    public Node calledClass;
+
+    public void setCalledClass(Node calledClass) {
+        this.calledClass = calledClass;
+    }
+    public ClassReference(Node parent, Pair from, Pair to){
+        super(parent, from, to);
+        this.type = "class_reference";
+    }
+    @Override
+    public String toString() {
+        return super.toString() +
+            ", called_function_id: " + ((this.calledClass != null) ? this.calledClass.id : "null") +
+            ((this.type.equals("class_reference")) ? "}" : "");
+    }
+}
+
+
+class ClassCall extends ClassReference {
+    public ArrayList<Node> parameters = new ArrayList<>(); // might or might not have these
+
+    public ClassCall(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type = "class_call";
+    }
+    public boolean addParameter(Node parameter) {
+        return parameters.add(parameter);
+    }
+
+    public ArrayList<Integer> getParametersIds(){
+        ArrayList<Integer> ids = new ArrayList<>();
+        for(Node node : this.parameters) {
+            ids.add(node.id);
+        }
+        return ids;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+            ", parameters_ids: " + this.getParametersIds().toString() +
             "}";
     }
 }
@@ -275,7 +349,6 @@ class Class extends Node {
     public Class(Node parent, Pair from, Pair to, String className) {
         super(parent, from, to);
         this.type = "class";
-        this.name = className;
     }
 
     public void setConstructor(Function constructor){ this.constructor = constructor; }
@@ -341,6 +414,7 @@ class If extends Node {
 //composed node
 
 class Composed extends Node {
+    public boolean finished = true; // true means we can expand more from here
     public Composed(Node parent, Pair from, Pair to) {
         super(parent, from, to);
         this.type = "composed";

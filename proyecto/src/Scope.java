@@ -21,10 +21,14 @@ public class Scope {
     private  static String []builtin_methods = {"abs", "all", "min", "str", "zip", "range"}; // add as required from here https://docs.python.org/3/library/functions.html
     private static ArrayList<Module> modules= new ArrayList<>();
 
+    private static HashMap<String, Node> lingering = new HashMap<>(); // keeps calls to node instances that have not been created yet. For example https://stackoverflow.com/questions/44423786/does-the-order-of-functions-in-a-python-script-matter
+    // yet we assume that the code is well written and therefore we do not check whether is valid or not.
+
     public ArrayList<Scope> childrenScopes = new ArrayList<>(); // children scopes
     public HashMap<String, Node> nodes = new HashMap<>(); // K = node name, V = declaration, assign, etc within scope
 
     public Scope (Scope parentScope, Node scopeNode){
+
         this.parentScope = parentScope;
         this.scopeNode = scopeNode;
     }
@@ -48,7 +52,7 @@ public class Scope {
                 "\n\t}";
     }
 
-    public int addNodeToScope(Node node){
+    public int addNodeToScope(Node node){ // -1 no named node, 1 name that already exists and needs to be rewritten, 0 new named node
         if(node.name == null) return -1;
 
         Scope scope = this;
@@ -56,24 +60,20 @@ public class Scope {
             if(scope.nodes.containsKey(node.name)) {
                 Node scopeNode = scope.nodes.get(node.name);
 
-                if(scopeNode.type == "variable" && node.type == "variable"){
+                if(scopeNode.type.equals("variable") && node.type.equals("variable")){
                     if(((Var) node).value == null){ // call
                         ((Var)scopeNode).addVarMention(node);
                         ((Var)node).assignVarDeclaration(scopeNode);
                     } else { // assign
                         scope.nodes.replace(node.name, node);
                     }
-                } else if(scopeNode.type == "function" && node.type == "function_call") {
-                    //pending
+                } else if(node.type.equals("function") && node.type.equals("class")) {
+                    scope.nodes.replace(node.name, node);
 
-                } else if(scopeNode.type == "class" && node.type == "function_call") {
-                    //pending
                 }
-
-                // if not found, it does not reference it, easier.
+                // if not found, it does not reference it
                 return 1;
             }
-
             scope = scope.parentScope;
         }
 
