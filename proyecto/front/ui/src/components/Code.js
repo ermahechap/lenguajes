@@ -17,6 +17,10 @@ const Code = (props) => {
 
     const { state, actions } = useContext(Context);
 
+    const setState = () =>{
+        console.log(state);
+    };
+
     const CheckboxGroup = Checkbox.Group;
 
     const plainOptions = ['Apple', 'Pear', 'Orange'];
@@ -193,7 +197,7 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                 />
             </div>
             <figure>
-                <figcaption id="example1-caption" onClick={() => handleCodeFromServe(codeFromServer)}>
+                <figcaption id="example1-caption" onClick={() => setState()}>
                     This is the caption
                 </figcaption>
                 <pre className="prettyprint"

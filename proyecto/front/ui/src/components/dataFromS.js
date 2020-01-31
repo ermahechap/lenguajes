@@ -40,4 +40,4 @@ const dataFromS = [
   {type: 'variable', id: 39, parent_id:38, children_id: [], from: [3, 5], to: [3, 5], name: 'A', value_id: null, declared_id: 2, mentions_ids: []},
   {type: 'composed_element', id: 40, parent_id:37, children_id: [41], from: [3, 7], to: [3, 7]},
   {type: 'variable', id: 41, parent_id:40, children_id: [], from: [3, 7], to: [3, 7], name: 'C', value_id: null, declared_id: 4, mentions_ids: []},
-  ]
+  ];
