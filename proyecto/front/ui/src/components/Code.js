@@ -138,28 +138,35 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
             }
 
         }
-        // console.log(opens);
-        // console.log(closes);
+        console.log(opens);
+        console.log(closes);
         // console.log(setByRows);
-        temp += `<code>`;
-        for (let row of rows){
-            for(let j = 0; j < res[row].length; j++){
-                if(j in opens[row]){
-                    // console.log(opens[row][j]);
-                    temp+=(opens[row][j]);
-                    // console.log(temp);
+        // temp += `<code>`;
+        console.log(rows);
+        for(let r = 0; r < res.length; r++){
+            if(rows.has(r)){
+                for(let c= 0; c < res[r].length; c++){
+                    if(c in opens[r]){
+                        // console.log(opens[row][j]);
+                        temp+=(opens[r][c]);
+                        // console.log(temp);
+                    }
+                    if(c in closes[r]){
+                        temp+=(closes[r][c]);
+                    }
+                    temp+=(res[r][c]);
                 }
-                if(i in closes[row]){
-                    // console.log(closes[row][j]);
-                    temp+=(closes[row][j]);
-                }
-                // console.log(res[row][j]);
-                temp+=(res[row][j]);
-
+                console.log("j: " + r);
+            }else{
+                temp+= res[r];
             }
             temp += "\n";
         }
-        temp += `</code>`;
+        for(let r of res){
+            console.log(r);
+        }
+
+        console.log("temp\n" + temp);
         return temp
     };
 
