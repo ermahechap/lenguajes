@@ -96,7 +96,7 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
     const handleCodeFromServe = (codeFromServer) => {
         const res = codeFromServer.split('\n');
         console.log(res);
-        for(var i = 1; i < dataFromS.length; i++) {
+        for(let i = 1; i < dataFromS.length; i++) {
             if((dataFromS[i].from[0]) === (dataFromS[i].to[0])){
                 if(!rows.has(dataFromS[i].from[0])){
                     opens[dataFromS[i].from[0]] = {};
@@ -118,7 +118,7 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                 }
 
             }
-            opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ dataFromS[i].type + ">";
+            opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ dataFromS[i].type + " id=" + dataFromS[i].id +">";
 
             closes[dataFromS[i].to[0]][dataFromS[i].to[1] + 1] = "</mark>";
 
