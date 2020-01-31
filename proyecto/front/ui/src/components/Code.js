@@ -23,7 +23,15 @@ const Code = (props) => {
 
     const CheckboxGroup = Checkbox.Group;
 
-    const plainOptions = ['Apple', 'Pear', 'Orange'];
+    const plainOptions = ['variable', 'list', 'function', 'dictionary', 'class', 'number', 'subscript', 'composed Element'];
+        /*variable: 'red',*/
+        /*list: 'green',*/
+        /*function: 'blue',*/
+        /*dictionary: 'purple',*/
+        /*class: 'orange',*/
+        /*number: 'aquamarine',*/
+        /*subscript: 'gold',*/
+        /*composed_element: 'lightblue'*/
     const defaultCheckedList = ['Apple', 'Orange'];
 
     const [checkboxOptions, setCheckboxOptions] = useState({
@@ -97,9 +105,9 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
 
     var temp = '';
 
-    const handleCodeFromServe = (codeFromServer) => {
-        const res = codeFromServer.split('\n');
-        console.log(res);
+    let b = false;
+
+    const fillObjects = (codeFromServer) =>{
         for(let i = 1; i < dataFromS.length; i++) {
             if((dataFromS[i].from[0]) === (dataFromS[i].to[0])){
                 if(!rows.has(dataFromS[i].from[0])){
@@ -122,7 +130,41 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                 }
 
             }
-            opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ dataFromS[i].type + " id=" + dataFromS[i].id +">";
+            /*variable: 'red',*/
+            /*list: 'green',*/
+            /*function: 'blue',*/
+            /*dictionary: 'purple',*/
+            /*class: 'orange',*/
+            /*number: 'aquamarine',*/
+            /*subscript: 'gold',*/
+            /*composed_element: 'lightblue'*/
+            switch (dataFromS[i].type) {
+                case "variable":
+                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "v" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
+                    break;
+                case "list":
+                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "l" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
+                    break;
+                case "function":
+                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "f" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
+                    break;
+                case "dictionary":
+                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "d" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
+                    break;
+                case "class":
+                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "c" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
+                    break;
+                case "number":
+                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "n" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
+                    break;
+                case "subscript":
+                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "s" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
+                    break;
+                case "composed_element":
+                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "e" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
+                    break;
+            }
+
 
             closes[dataFromS[i].to[0]][dataFromS[i].to[1] + 1] = "</mark>";
 
@@ -142,6 +184,15 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
             }
 
         }
+        b = true;
+    };
+
+    const handleCodeFromServe = (codeFromServer) => {
+        if(!b){
+            fillObjects(codeFromServer);
+        }
+        const res = codeFromServer.split('\n');
+        console.log(res);
         console.log(opens);
         console.log(closes);
         // console.log(setByRows);
@@ -174,6 +225,18 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
         return temp
     };
 
+    const handleOptionsSelected = (optionsSelected) =>{
+        console.log(optionsSelected);
+        for(let r in opens){
+            for(let i in opens[r]){
+                let type = opens[r][i].split(' ')[2].split('=')[1];
+                //https://love2dev.com/blog/javascript-includes/
+                console.log(type);
+                console.log(opens[r][i]);
+            }
+        }
+    };
+
     return (
         <div className="code-container">
             <p id="example1-description">
@@ -182,9 +245,9 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
             <div className="checkbox-container">
                 <div style={{ borderBottom: '1px solid #E9E9E9' }}>
                     <Checkbox
-                        indeterminate={()=>checkboxOptions.indeterminate}
-                        onChange={(e)=>onCheckAllChange(e)}
-                        checked={checkboxOptions.checkAll}
+                        // indeterminate={()=>checkboxOptions.indeterminate}
+                        // onChange={(e)=>onCheckAllChange(e)}
+                        // checked={checkboxOptions.checkAll}
                     >
                         Check all
                     </Checkbox>
@@ -192,8 +255,9 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                 <br />
                 <CheckboxGroup
                     options={plainOptions}
-                    value={checkboxOptions.options}
-                    onChange={() => onChange(checkboxOptions.options)}
+                    onChange={(optionsSelected) => handleOptionsSelected(optionsSelected)}
+                    // value={checkboxOptions.options}
+                    // onChange={() => onChange(checkboxOptions.options)}
                 />
             </div>
             <figure>
