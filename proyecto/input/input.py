@@ -1,8 +1,21 @@
-def f(A, B):
-    return 10
+class B:
+    def __init__(self):
+        pass
+    def f(self):
+        return 10;
+    def ff(self, a):
+        return 10
+class A:
+    a = B
+    aa = B()
 
-f( A = 3, B = 10)
-A.b()
+A
+A()
+A.a
+A().a
+A.aa.f()
+A().aa.f()
+A().aa.ff(5)
 
 # def f():
 #     return 10

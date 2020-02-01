@@ -60,7 +60,7 @@ public class Scope {
             if(scope.nodes.containsKey(node.name)) {
                 Node scopeNode = scope.nodes.get(node.name);
 
-                if(scopeNode.type.equals("variable") && node.type.equals("variable")){
+                if(node.type.equals("variable")){
                     if(((Var) node).value == null){ // call
                         ((Var)scopeNode).addVarMention(node);
                         ((Var)node).assignVarDeclaration(scopeNode);
@@ -69,7 +69,6 @@ public class Scope {
                     }
                 } else if(node.type.equals("function") && node.type.equals("class")) {
                     scope.nodes.replace(node.name, node);
-
                 }
                 // if not found, it does not reference it
                 return 1;
@@ -82,16 +81,17 @@ public class Scope {
         return 0;
     }
 
-    public Node searchNode(String name) {
+    public Node searchNode(String name) { // up lookup
         Scope scope = this;
         while(scope != null){
-            if(scope.nodes.containsKey(name)){
-                Node scopeNode = scope.nodes.get(name);
-                return scopeNode;
-            }
+            if(scope.nodes.containsKey(name)) return scope.nodes.get(name);
             scope = scope.parentScope;
         }
         return null; // not found
+    }
+
+    public Node searchNodeInScope(String name) { // within scope
+        return this.nodes.get(name);
     }
 
     public Scope getParentScope(){

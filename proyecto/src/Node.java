@@ -148,6 +148,23 @@ class Var extends Node {
     }
 }
 
+class VarReference extends Node {
+    public Node reference;
+    public VarReference(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type = "variable_reference";
+    }
+
+    public void setReference(Node reference) { this.reference = reference; }
+
+    @Override
+    public String toString(){
+        return super.toString() +
+            ", reference_id: " + ((this.reference != null) ? this.reference.id : "null") +
+            "}";
+    }
+}
+
 class Subscript extends Node {
     public Subscript(Node parent, Pair from, Pair to) {
         super(parent, from, to);
@@ -308,7 +325,7 @@ class ClassReference extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", called_function_id: " + ((this.calledClass != null) ? this.calledClass.id : "null") +
+            ", called_class_id: " + ((this.calledClass != null) ? this.calledClass.id : "null") +
             ((this.type.equals("class_reference")) ? "}" : "");
     }
 }
@@ -349,6 +366,7 @@ class Class extends Node {
     public Class(Node parent, Pair from, Pair to, String className) {
         super(parent, from, to);
         this.type = "class";
+        this.name = className;
     }
 
     public void setConstructor(Function constructor){ this.constructor = constructor; }
@@ -414,7 +432,7 @@ class If extends Node {
 //composed node
 
 class Composed extends Node {
-    public boolean finished = true; // true means we can expand more from here
+    public boolean finished = true; // true means we can't expand more from here
     public Composed(Node parent, Pair from, Pair to) {
         super(parent, from, to);
         this.type = "composed";
@@ -423,6 +441,23 @@ class Composed extends Node {
     @Override
     public String toString() {
         return super.toString() + "}";
+    }
+}
+
+class ComposedReference extends Node {
+    private Node reference;
+    public ComposedReference(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type = "composed";
+    }
+
+    public void setReference(Node reference){ this.reference = reference; }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+            ", referenced_id: " + ((reference == null) ? "null": this.reference.id) +
+            "}";
     }
 }
 
