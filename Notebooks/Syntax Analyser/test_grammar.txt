@@ -1,0 +1,51 @@
+COMPONENT SPEC_COMPONENT tk_punto_y_coma
+COMPONENT COMBINED_COMPONENT tk_punto_y_coma SEPARATE_BODY tk_punto_y_coma
+COMPONENT e                                                                                                                                                                       
+SPEC_COMPONENT COMP_LABEL SPEC_STMT_LS SPEC_BODY                                                                                                                                                                
+COMP_LABEL COMP_KWD id                                                                                                                                                                  
+COMP_KWD global                                                                                                                                                                      
+COMP_KWD resource                                                                                                                                                                      
+SPEC_STMT_LS SPEC_STMT SPEC_STMT_LS'                                                                                                                                                                             
+SPEC_STMT_LS' separate SPEC_STMT SPEC_STMT_LS'
+SPEC_STMT_LS' e                                                                                                                                                                           
+SPEC_STMT COMMON_STMT
+SPEC_STMT EXTEND_CLAUSE
+SPEC_STMT BODY_ONLY                                                                                                                                                                            
+COMMON_STMT DECL
+COMMON_STMT IMPORT_CLAUSE
+COMMON_STMT e                                                                                                                                                                            
+DECL TYPE_DECL
+DECL OBJ_DECL
+DECL OPTYPE_DECL
+DECL SEM_DECL
+DECL OP_DECL
+DECL ¿Error?                                                                                                                                                                         
+TYPE_DECL tk_type id tk_igual TYPE TYPE_RESTRICTION                                                                                                                                                                          
+TYPE SUBSCRIPTS UNSUB_TYPE
+TYPE UNSUB_TYPE                                                                                                                                                                            
+SUBSCRIPTS BRACKETED_LIST
+SUBSCRIPTS BRACKETED_LIST SUBSCRIPTS                                                                                                                                                                            
+BRACKETED_LIST tk_cor_izq BOUND_LP tk_cor_der                                                                                                                                                                            
+BOUND_LP BOUNDS
+BOUND_LP BOUND_LP tk_coma BOUNDS                                                                                                                                                                           
+BOUNDS BOUND
+BOUNDS BOUND tk_dos_puntos BOUND                                                                                                                                                                           
+BOUND EXPR
+BOUND tk_multi                                                                                                                                                                             
+EXPR id
+EXPR LITERAL
+EXPR INVOCATION
+EXPR CONSTRUCTOR
+EXPR BINARY_EXPR
+EXPR PREFIX_EXPR
+EXPR SUFFIX_EXPR
+EXPR CREATE_EXPR                                                                                                                                                                       
+LITERAL int
+LITERAL real
+LITERAL tk_blit
+LITERAL tk_clit
+LITERAL tk_slit
+LITERAL tk_nlit
+LITERAL tk_flit                                                                                                                                                                        
+INVOCATION EXPR PAREN_LIST                                                                                                                                                                             
+PAREN_LIST tk_par_izq PAREN_ITEM_LS tk_par_der   

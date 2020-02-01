@@ -1,0 +1,102 @@
+ENTRY MAIN
+// Entrypoint
+MAIN SPECIFICATION RESOURCE MAIN
+MAIN GLOBAL MAIN
+
+RESOURCE resource id FC RESOURCE_BODY end
+
+// Global body specfication, it only requires constants and types
+
+GLOBAL global id GLOBAL_BODY end
+GLOBAL e
+GLOBAL_BODY TYPE GLOBAL_BODY
+GLOBAL_BODY CONSTANT GLOBAL_BODY
+
+// body specfication has imports, operations, constants and type declarations
+
+SPECIFICATION spec id SPECIFICATION_BODY
+SPECIFICATION e
+SPECIFICATION_BODY IMPORT SPECIFICATION_BODY
+SPECIFICATION_BODY OPERATION SPECIFICATION_BODY
+SPECIFICATION_BODY CONSTANT SPECIFICATION_BODY
+SPECIFICATION_BODY TYPE SPECIFICATION_BODY
+
+// resource especification
+RESOURCE_BODY
+
+
+// type definition
+TYPE optype id tk_igual OP_TYPE_DEF RETURNS
+TYPE type id tk_igual rec TYPE_DEF
+
+OP_TYPE_DEF tk_par_izq OP_DEF tk_par_der
+OP_DEF DECLARATION_TYPE id DATA_TYPE_ASSIGN OTHER_ELEMENT
+OTHER_ELEMENT tk_punto_y_coma OP_DEF
+OTHER_ELEMENT e
+
+DECLARATION_TYPE res
+DECLARATION_TYPE var
+DECLARATION_TYPE e
+
+TYPE_DEF tk_par_izq OP_DEF_ONLY tk_par_der
+OP_DEF_ONLY id tk_dos_puntos cap OTHER_ELEMENT_ONLY
+OTHER_ELEMENT_ONLY tk_punto_y_coma OP_DEF_ONLY
+OTHER_ELEMENT_ONLY e
+
+
+RETURNS returns id tk_dos_puntos RETUNRN_TYPE
+RETUNRN_TYPE DATA_TYPE
+RETURNS IDENTIFIER
+RETURNS e
+
+// imports and extend definition
+IMPORT import IMPORT_LIST
+IMPORT extend IMPORT_LIST
+IMPORT_LIST id IMPORT_LIST_OTHER
+IMPORT_LIST_OTHER tk_coma IMPORT_LIST
+IMPORT_LIST_OTHER e
+
+// operation definition 
+OPERATION op id tk_par_izq OP_PARAMS tk_par_der RETURNS 
+OP_PARAMS id OP_PARAMS_OTHER
+OP_PARAMS_OTHER tk_punto_y_coma OP_PARAMS
+OP_PARAMS_OTHER e
+
+
+// contants definition
+CONSTANT const id tk_asign ARITHM
+
+// var definition
+VAR 
+
+
+// Parameter definition for procedures and others, tk_punto_y_coma separated
+PARAMS tk_par_izq PARAMS_VALUES tk_par_der
+
+
+
+// Data type definition
+
+DATA_TYPE_ASSIGN tk_dos_puntos DATA_TYPE
+DATA_TYPE_ASSIGN SLICE tk_dos_puntos char
+
+
+DATA_TYPE int char 
+
+SLICE tk_cor_izq SLICE_FROM tk_dos_puntos SLICE_TO tk_cor_der
+SLICE_FROM tk_num id
+SLICE_TO tk_num id
+SLICE_TO tk_multi
+
+
+// identifiers
+IDENTIFIER id
+IDENTIFIER id tk_punto id
+IDENTIFIER_PREFIX e
+IDENTIFIER_PREFIX tk_separa
+
+
+
+// Arithmetic operations
+// TODO: operations with precedence and other stuff
+ARITHM

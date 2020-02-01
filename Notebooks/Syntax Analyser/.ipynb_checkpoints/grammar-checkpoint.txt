@@ -1,12 +1,9 @@
-S A B C
-S D E
-A dos B tres
+S A B C S'
+S' uno S'
+S' e
+A dos B C
 A e
-B B'
-B' e
-B' cuatro C cinco
-C seis A B
+B C tres
+B e
+C cuatro B
 C e
-D uno A E
-D B
-E tres

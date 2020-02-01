@@ -1,0 +1,9 @@
+resource hello()
+  const N := 10
+  var a[N] : int
+  var b[N] : string
+  a[0] :=: b[0]
+  write("Hello world")
+
+end
+

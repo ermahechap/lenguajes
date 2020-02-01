@@ -1,4 +1,9 @@
-S tk_abs A
-A tk_parderecha B
-B tk_int C
-C tk_parizquierda
+S A B C S'
+S' uno S'
+S' e
+A dos B C
+A e
+B C tres
+B e
+C cuatro B
+C e
