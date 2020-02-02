@@ -13,9 +13,10 @@ const Code = (props) => {
         script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
 
+
     });
 
-    const { state, actions } = useContext(Context);
+    const { state } = useContext(Context);
 
     const setState = () =>{
         console.log(state);
@@ -23,7 +24,15 @@ const Code = (props) => {
 
     const CheckboxGroup = Checkbox.Group;
 
-    const plainOptions = ['Apple', 'Pear', 'Orange'];
+    const plainOptions = ['variable', 'list', 'function', 'dictionary', 'class', 'number', 'subscript', 'composed Element'];
+        /*variable: 'red',*/
+        /*list: 'green',*/
+        /*function: 'blue',*/
+        /*dictionary: 'purple',*/
+        /*class: 'orange',*/
+        /*number: 'aquamarine',*/
+        /*subscript: 'gold',*/
+        /*composed_element: 'lightblue'*/
     const defaultCheckedList = ['Apple', 'Orange'];
 
     const [checkboxOptions, setCheckboxOptions] = useState({
@@ -33,23 +42,23 @@ const Code = (props) => {
     });
 
 
-    function onCheckAllChange(e) {
-        console.log(checkboxOptions);
-        setCheckboxOptions({
-            options: e.checked ? plainOptions : [],
-            indeterminate: false,
-            checkAll: e.checked
-        })
-    };
-
-    function onChange(checkboxOptions) {
-        console.log(checkboxOptions);
-        setCheckboxOptions({
-            ...checkboxOptions,
-            indeterminate: !checkboxOptions.length && checkboxOptions.length < plainOptions.length,
-            checkAll: checkboxOptions.length === plainOptions.length,
-        });
-    }
+    // function onCheckAllChange(e) {
+    //     console.log(checkboxOptions);
+    //     setCheckboxOptions({
+    //         options: e.checked ? plainOptions : [],
+    //         indeterminate: false,
+    //         checkAll: e.checked
+    //     })
+    // };
+    //
+    // function onChange(checkboxOptions) {
+    //     console.log(checkboxOptions);
+    //     setCheckboxOptions({
+    //         ...checkboxOptions,
+    //         indeterminate: !checkboxOptions.length && checkboxOptions.length < plainOptions.length,
+    //         checkAll: checkboxOptions.length === plainOptions.length,
+    //     });
+    // }
 
 
     const dataFromS = [
@@ -87,6 +96,10 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
 [A, [A,C]]
 </code>`;
 
+    const [code, setCode] = useState({
+        str: codeFromServer
+    });
+
     const rows = new Set();
 
     const setByRows = {};
@@ -97,9 +110,9 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
 
     var temp = '';
 
-    const handleCodeFromServe = (codeFromServer) => {
-        const res = codeFromServer.split('\n');
-        console.log(res);
+    let b = false;
+
+    const fillObjects = (codeFromServer) =>{
         for(let i = 1; i < dataFromS.length; i++) {
             if((dataFromS[i].from[0]) === (dataFromS[i].to[0])){
                 if(!rows.has(dataFromS[i].from[0])){
@@ -122,26 +135,34 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                 }
 
             }
-            opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ dataFromS[i].type + " id=" + dataFromS[i].id +">";
-
+            /*variable: 'red',*/
+            /*list: 'green',*/
+            /*function: 'blue',*/
+            /*dictionary: 'purple',*/
+            /*class: 'orange',*/
+            /*number: 'aquamarine',*/
+            /*subscript: 'gold',*/
+            /*composed_element: 'lightblue'*/
+            opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "w" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
             closes[dataFromS[i].to[0]][dataFromS[i].to[1] + 1] = "</mark>";
 
             if(!setByRows[dataFromS[i].from[0]].has(dataFromS[i].from[1])){
                 setByRows[dataFromS[i].from[0]].add(dataFromS[i].from[1]);
-                if(dataFromS[i].from[0] === 1){
-                    // console.log(dataFromS[i].from[1]);
-                }
-
             }
 
             if(!setByRows[dataFromS[i].to[0]].has(dataFromS[i].to[1]+1)){
                 setByRows[dataFromS[i].to[0]].add(dataFromS[i].to[1].valueOf()+1);
-                // if(dataFromS[i].to[0] === 1){
-                //     console.log((dataFromS[i].to[1]+1));
-                // }
             }
-
         }
+        b = true;
+    };
+
+    const handleCodeFromServe = (codeFromServer) => {
+        if(!b){
+            fillObjects(codeFromServer);
+        }
+        const res = codeFromServer.split('\n');
+        console.log(res);
         console.log(opens);
         console.log(closes);
         // console.log(setByRows);
@@ -171,7 +192,63 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
         }
 
         console.log("temp\n" + temp);
+        setCode({...code,str: temp});
         return temp
+    };
+
+    const handleOptionsSelected = (optionsSelected) =>{
+        if(!b){
+            fillObjects(codeFromServer);
+        }
+        console.log(optionsSelected);
+        const set = new Set(optionsSelected);
+        console.log(set);
+        console.log(opens);
+        for(let r in opens){
+            for(let i in opens[r]){
+                let type = opens[r][i].split(' ')[2].split('=')[1];
+
+                //https://love2dev.com/blog/javascript-includes/
+                if(set.has(type)){
+                    console.log(type);
+                    console.log(opens[r][i]);
+                    let begin = opens[r][i].substr(0,12);
+                    let t = "w";
+                    let end = opens[r][i].substr(13,opens[r][i].length);
+                    switch (type) {
+                        case "variable":
+                            t = "v"
+                            break;
+                        case "list":
+                            t = "l";
+                            break;
+                        case "function":
+                            t = "f";
+                            break;
+                        case "dictionary":
+                            t = "d";
+                            break;
+                        case "class":
+                            t = "c";
+                            break;
+                        case "number":
+                            t = "n";
+                            break;
+                        case "subscript":
+                            t = "s";
+                            break;
+                        case "composed_element":
+                            t = "e";
+                            break;
+                    }
+                    opens[r][i] = begin+t+end;
+                    // console.log(begin, "w", end)
+                }
+
+            }
+        }
+        handleCodeFromServe(codeFromServer);
+        console.log(opens);
     };
 
     return (
@@ -182,9 +259,9 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
             <div className="checkbox-container">
                 <div style={{ borderBottom: '1px solid #E9E9E9' }}>
                     <Checkbox
-                        indeterminate={()=>checkboxOptions.indeterminate}
-                        onChange={(e)=>onCheckAllChange(e)}
-                        checked={checkboxOptions.checkAll}
+                        // indeterminate={()=>checkboxOptions.indeterminate}
+                        // onChange={(e)=>onCheckAllChange(e)}
+                        // checked={checkboxOptions.checkAll}
                     >
                         Check all
                     </Checkbox>
@@ -192,17 +269,21 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                 <br />
                 <CheckboxGroup
                     options={plainOptions}
-                    value={checkboxOptions.options}
-                    onChange={() => onChange(checkboxOptions.options)}
+                    onChange={(optionsSelected) => handleOptionsSelected(optionsSelected)}
+                    // value={checkboxOptions.options}
+                    // onChange={() => onChange(checkboxOptions.options)}
                 />
             </div>
+            <button onClick={()=> handleCodeFromServe(codeFromServer)}>
+                Code
+            </button>
             <figure>
                 <figcaption id="example1-caption" onClick={() => setState()}>
                     This is the caption
                 </figcaption>
                 <pre className="prettyprint"
                      dangerouslySetInnerHTML={{
-                    __html: handleCodeFromServe(codeFromServer)
+                    __html: code.str
                 }}>
                 </pre>
             </figure>

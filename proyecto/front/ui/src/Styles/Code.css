@@ -15,18 +15,47 @@ pre > code {
     word-wrap: normal;
 }
 
-.variable{
-    background-color: cadetblue;
+.w{
+
 }
 
-.list{
-    background-color: greenyellow;
+.v{
+    background-color: red;
 }
 
-.subscript{
-    background-color: burlywood;
+.l{
+    background-color: green;
 }
 
-.composed_element{
-    background-color: #9dffc4;
+.f{
+    background-color: blue;
 }
+
+.d{
+    background-color: purple;
+}
+
+.c{
+    background-color: orange;
+}
+
+.n{
+    background-color: aquamarine;
+}
+
+.s{
+    background-color: gold;
+}
+
+.e{
+    background-color: lightblue;
+}
+
+/*variable: 'red',*/
+/*list: 'green',*/
+/*function: 'blue',*/
+/*dictionary: 'purple',*/
+/*class: 'orange',*/
+/*number: 'aquamarine',*/
+/*subscript: 'gold',*/
+/*composed_element: 'lightblue'*/
