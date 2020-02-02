@@ -92,12 +92,9 @@ public class Processor extends Python3BaseListener {
                 }
 
             }
-            System.out.println("[");
-            Node.nodeDump.forEach((n) -> System.out.println(n.toString() + ",")); // uses nodedump which is static
-            System.out.println("]");
         }
         /*
-        * Otherwise, it is just variable call -> dealt later by the overridden method enterAtom_expr
+        * Otherwise, it is just variable call -> dealt later by the method enterAtom_expr
         */
     }
 
@@ -112,7 +109,7 @@ public class Processor extends Python3BaseListener {
         this.lockBranchCounter--;
     }
 
-    public ArrayList<Node> lookAhead(Python3Parser.TrailerContext ctx){ // null if trailer is .varname , else if trailer is (...)
+    public ArrayList<Node> lookAhead(Python3Parser.TrailerContext ctx, Node parent){ // null if trailer is .varname , else if trailer is (...)
         if(ctx.OPEN_PAREN() == null) return null;
         ArrayList<Node> parameters = new ArrayList<>();
 
@@ -121,7 +118,7 @@ public class Processor extends Python3BaseListener {
             ParseTreeWalker walker = new ParseTreeWalker();
             NextAtomExpr sb = new NextAtomExpr();
             walker.walk(sb, (arg_ctx.test().size() > 1)? arg_ctx.test(1): arg_ctx.test(0) );
-            sb.atom_expr_ctxs.forEach((a_ctx) -> parameters.add(processAtomExpr(a_ctx, this.currentNode, null)));
+            sb.atom_expr_ctxs.forEach((a_ctx) -> parameters.add(processAtomExpr(a_ctx, parent, null)));
         }
         return parameters;
     }
@@ -130,19 +127,17 @@ public class Processor extends Python3BaseListener {
         this.lockBranchCounter++;
         Pair from = new Pair<>(ctx.atom().start.getLine(), ctx.atom().start.getCharPositionInLine());
         Pair to = new Pair<>(ctx.atom().stop.getLine(), ctx.atom().stop.getCharPositionInLine());
-
         if(!ctx.atom().getTokens(Python3Parser.NAME).isEmpty()){
-
             if(ctx.trailer().isEmpty()){ // just var call (or function ref or class ref)
                 Node referenced = this.currentScope.searchNode(ctx.atom().NAME().getText());
                 Node newNode = null;
                 if(referenced == null) {
                     // check on defaults .. pending, otherwise new variable
+                }
+                if(assignNode != null){
                     newNode = new Var(parent, from, to, ctx.atom().NAME().getText());
-                    if(assignNode != null){
-                        ((Var)newNode).setValue(assignNode);
-                        this.currentScope.addNodeToScope( newNode ); // overwrites reference
-                    }
+                    ((Var)newNode).setValue(assignNode);
+                    this.currentScope.addNodeToScope( newNode ); // overwrites reference
                     return newNode;
                 }
 
@@ -169,51 +164,41 @@ public class Processor extends Python3BaseListener {
                 return newNode;
 
             }else {
+
                 Composed composed = new Composed(parent,
                     new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
                     new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine()));
                 composed.finished = false;
                 Scope lookupScope = this.currentScope;
                 Node reference = lookupScope.searchNode(ctx.atom().NAME().getText());
-                System.out.println("AAAA" + reference.toString());
                 int lastIdx = -1;
                 for(int i = -1 ; i < ctx.trailer().size(); i++) {
-                    System.out.println("[");
-                    Node.nodeDump.forEach((n) -> System.out.println(n.toString() + ",")); // uses nodedump which is static
-                    System.out.println("]");
-                    System.out.println(i);
-                    System.out.println(ctx.getText());
 
                     Pair t_from = (i==-1) ? new Pair<>(ctx.atom().start.getLine(),ctx.atom().start.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).start.getLine(),ctx.trailer(i).start.getCharPositionInLine()) ;
-                    Pair t_to = (i==-1) ? new Pair<>(ctx.atom().stop.getLine(),ctx.atom().stop.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).stop.getLine(),ctx.trailer(i).stop.getCharPositionInLine()) ;
-                    if(i >= 0) System.out.println(ctx.trailer(i).getText());
-                    if(i >= 0)
-                        reference = lookupScope.searchNode(ctx.trailer(i).NAME().getText());
+                    Pair t_to = (i==-1) ? new Pair<>(ctx.atom().stop.getLine(),ctx.atom().stop.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).stop.getLine(),ctx.trailer(i).stop.getCharPositionInLine());
+                    if(i >= 0) reference = lookupScope.searchNode(ctx.trailer(i).NAME().getText());
                     if(reference.type.equals("class")) {
-                        ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1)) : null;
                         if(i+1 < ctx.trailer().size() && ctx.trailer(i+1).OPEN_PAREN() == null){
-                            ClassReference class_reference = new ClassReference(this.currentNode, t_from, t_to);
+                            ClassReference class_reference = new ClassReference(composed, t_from, t_to);
                             class_reference.setCalledClass(reference);
-                            composed.addChild(class_reference);
                         } else {
-                            ClassCall class_call = new ClassCall(this.currentNode, t_from, t_to);
+                            ClassCall class_call = new ClassCall(composed, t_from, t_to);
+                            ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1), class_call) : null;
                             parameters.forEach((x)->class_call.addParameter(x));
                             class_call.setCalledClass(reference);
-                            composed.addChild(class_call);
                             i++;
                         }
                         lookupScope = reference.getScope();
                     } else if(reference.type.equals("function")) {
-                        ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1)) : null;
-                        if(parameters == null) {
-                            FunctionReference function_ref = new FunctionReference(this.currentNode, t_from, t_to);
+                        if(i+1 < ctx.trailer().size() && ctx.trailer(i+1).OPEN_PAREN() == null){
+                            FunctionReference function_ref = new FunctionReference(composed, t_from, t_to);
                             function_ref.setCalledFunction(reference);
-                            composed.addChild(function_ref);
                         } else {
-                            FunctionCall function_call = new FunctionCall(this.currentNode, t_from, t_to);
+                            FunctionCall function_call = new FunctionCall(composed, t_from, t_to);
+                            ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1), function_call) : null;
                             parameters.forEach((x)->function_call.addParameter(x));
                             function_call.setCalledFunction(reference);
-                            composed.addChild(function_call);
+                            i++;
                             composed.finished = true;
                         }
                     } else if(reference.type.equals("variable")){
@@ -221,9 +206,8 @@ public class Processor extends Python3BaseListener {
                         if(var.value.type.equals("composed")) {
                             Composed found_composed = (Composed) var.value;
                             if (found_composed.finished) {
-                                ComposedReference composed_ref = new ComposedReference(this.currentNode, t_from, t_to);
+                                ComposedReference composed_ref = new ComposedReference(composed, t_from, t_to);
                                 composed_ref.setReference(found_composed);
-                                composed.addChild(composed_ref);
                                 composed.finished = true;
                             } else {
                                 Node last_child_composed = found_composed.children.get(found_composed.children.size() - 1);
@@ -260,14 +244,17 @@ public class Processor extends Python3BaseListener {
                 }
 
                 // from here on it does not matter what reference is, nevertheless we keep indexing functions and slices that come from our local scope
+                Node node = composed.children.get(composed.children.size() - 1);
                 for(int i = lastIdx; i < ctx.trailer().size();i++){
                     Pair t_from = new Pair<>((i==-1)? ctx.atom().start.getLine(): ctx.trailer(i).start.getLine(),(i==-1)? ctx.atom().start.getCharPositionInLine(): ctx.trailer(i).start.getCharPositionInLine());
                     Pair t_to = new Pair<>((i==-1)? ctx.atom().stop.getLine(): ctx.trailer(i).stop.getLine(),(i==-1)? ctx.atom().stop.getCharPositionInLine(): ctx.trailer(i).stop.getCharPositionInLine());
-
                     if(ctx.trailer(i).subscriptlist() != null)
                         processSubscript(ctx.trailer(i).subscriptlist(), composed);
                     else if(ctx.trailer(i).arglist() != null)
-                        lookAhead(ctx.trailer(i));
+                        lookAhead(ctx.trailer(i), node);
+                    else{
+                        node = new Node(composed,t_from, t_to);
+                    }
                 }
 
                 return composed;
