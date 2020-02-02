@@ -1,7 +1,11 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.ref.Reference;
 import java.util.*;
 import Utilities.*;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import sun.misc.ExtensionInstallationException;
 
 class NextAtomExpr extends Python3BaseListener { // Class intended to get the next atom_expr on the tree (avoids atom_expr under the one already found)
     public ArrayList<Python3Parser.Atom_exprContext> atom_expr_ctxs = new ArrayList<>();
@@ -26,10 +30,15 @@ class NextAtomExpr extends Python3BaseListener { // Class intended to get the ne
 // Main class for processing the tree
 public class Processor extends Python3BaseListener {
     private Root root;
+    private String filename;
     public Scope currentScope; // namespaces - like a stack, but not a stack(because keeps references to its subscopes(aka. child scopes)) :v
     public Node currentNode; // not necessarly a scope (it could be an if, a for, etc....)
-
     public int lockBranchCounter = 0;
+
+    public Processor(String arg) {
+        super();
+        this.filename = arg;
+    }
 
     @Override
     public void enterFile_input(Python3Parser.File_inputContext ctx) {
@@ -41,9 +50,38 @@ public class Processor extends Python3BaseListener {
 
     @Override
     public void exitFile_input(Python3Parser.File_inputContext ctx) {
-        System.out.println("[");
-        Node.nodeDump.forEach((n) -> System.out.println(n.toString() + ",")); // uses nodedump which is static
-        System.out.println("]");
+
+        if(this.filename == null){
+            System.out.println("{\"data\": [");
+            Node.nodeDump.forEach((n) -> System.out.println(n.toString() + ",")); // uses nodedump which is static
+            System.out.println("]}");
+        } else {
+            String split[] = this.filename.split("/");
+            split = split[split.length - 1].split("\\.");
+            String filename = "./output/";
+            if(split.length == 1) {
+                filename += this.filename;
+            } else {
+                split = Arrays.copyOfRange(split, 0, split.length -1);
+                filename += String.join(".", split);
+            }
+            filename += ".json";
+            try {
+                File file = new File(filename);
+                FileWriter fw = new FileWriter(filename,false);
+
+                fw.write("{\n\t\"data\": [\n");
+                for (int i = 0; i < Node.nodeDump.size(); i++) {
+                    fw.write("\t\t"+ Node.nodeDump.get(i).toString() + ((i + 1 == Node.nodeDump.size()) ? "\n" : ", \n" ) );
+                }
+                fw.write("\t]\n}");
+                fw.close();
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                System.out.println("Couldn't write to: " + filename);
+                e.printStackTrace();
+            }
+        }
     }
 
 

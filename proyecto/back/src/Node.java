@@ -31,7 +31,7 @@ public class Node {
     public ArrayList<Node> children = new ArrayList<>(); //children of this node
 
     public String wrapOnCommas(String str) { //this is an useless piece of shit that apparently everyone wants
-        return "'" + str + "'";
+        return "\"" + str + "\"";
     } //remove when webserver exists
 
     public void setScope(Scope scope){ this.scope = scope; }
@@ -68,12 +68,12 @@ public class Node {
     @Override
     public String toString() {
         return "{" +
-                "type: " + wrapOnCommas(this.type) +
-                ", id: " + this.id +
-                ", parent_id:" + this.getParentId() +
-                ", children_id: " + this.getChildrenIds().toString() +
-                ", from: " + this.from.toString() +
-                ", to: " +this.to.toString() +
+                "\"type\": " + wrapOnCommas(this.type) +
+                ", \"id\": " + this.id +
+                ", \"parent_id\":" + this.getParentId() +
+                ", \"children_id\": " + this.getChildrenIds().toString() +
+                ", \"from\": " + this.from.toString() +
+                ", \"to\": " +this.to.toString() +
                 (( ("node number string boolean").contains(this.type) ) ? "}" : "")
                 ;
     }
@@ -140,10 +140,10 @@ class Var extends Node {
     @Override
     public String toString() {
         return super.toString() +
-                ", name: " + wrapOnCommas(this.name) +
-                ", value_id: " + ((this.value != null) ? this.value.id : "null") +
-                ", declared_id: " + ((this.varDeclaration != null) ? this.varDeclaration.id : "null") +
-                ", mentions_ids: " + getVarMentions().toString() +
+                ", \"name\": " + wrapOnCommas(this.name) +
+                ", \"value_id\": " + ((this.value != null) ? this.value.id : "null") +
+                ", \"declared_id\": " + ((this.varDeclaration != null) ? this.varDeclaration.id : "null") +
+                ", \"mentions_ids\": " + getVarMentions().toString() +
                 "}";
     }
 }
@@ -160,7 +160,7 @@ class VarReference extends Node {
     @Override
     public String toString(){
         return super.toString() +
-            ", reference_id: " + ((this.reference != null) ? this.reference.id : "null") +
+            ", \"reference_id\": " + ((this.reference != null) ? this.reference.id : "null") +
             "}";
     }
 }
@@ -194,7 +194,7 @@ class List_ extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", elements_ids: " + getElementsIds() +
+            ", \"elements_ids\": " + getElementsIds() +
             "}";
     }
 }
@@ -224,7 +224,7 @@ class Dictionary extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", elements_ids: " + getDictIds() +
+            ", \"elements_ids\": " + getDictIds() +
             "}";
     }
 }
@@ -257,8 +257,8 @@ class Function extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", name: " + wrapOnCommas(this.name) +
-            ",parameters_ids: " + this.getParametersIds() +
+            ", \"name\": " + wrapOnCommas(this.name) +
+            ", \"parameters_ids\": " + this.getParametersIds() +
             "}";
     }
 }
@@ -279,7 +279,7 @@ class FunctionReference extends Node{
     @Override
     public String toString(){
         return super.toString() +
-            ", called_function_id: " + ((this.calledFunction != null) ? this.calledFunction.id : "null") +
+            ", \"called_function_id\": " + ((this.calledFunction != null) ? this.calledFunction.id : "null") +
             (( this.type.equals("function_reference") ) ? "}" : "");
     }
 }
@@ -307,7 +307,7 @@ class FunctionCall extends FunctionReference {
     @Override
     public String toString(){
         return super.toString() +
-            ", parameters_ids: " + this.getParametersIds().toString() +
+            ", \"parameters_ids\": " + this.getParametersIds().toString() +
             "}";
     }
 }
@@ -325,7 +325,7 @@ class ClassReference extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", called_class_id: " + ((this.calledClass != null) ? this.calledClass.id : "null") +
+            ", \"called_class_id\": " + ((this.calledClass != null) ? this.calledClass.id : "null") +
             ((this.type.equals("class_reference")) ? "}" : "");
     }
 }
@@ -353,7 +353,7 @@ class ClassCall extends ClassReference {
     @Override
     public String toString() {
         return super.toString() +
-            ", parameters_ids: " + this.getParametersIds().toString() +
+            ", \"parameters_ids\": " + this.getParametersIds().toString() +
             "}";
     }
 }
@@ -375,9 +375,9 @@ class Class extends Node {
     @Override
     public String toString() {
         return super.toString() +
-                ", name: " + wrapOnCommas(this.name) +
-                ", constructor_id: " + ((this.constructor == null)? "null" : this.constructor.id) +
-                ", inherits_id: " + ((this.inherits == null)? "null" : this.inherits.id) +
+                ", \"name\": " + wrapOnCommas(this.name) +
+                ", \"constructor_id\": " + ((this.constructor == null)? "null" : this.constructor.id) +
+                ", \"inherits_id\": " + ((this.inherits == null)? "null" : this.inherits.id) +
                 "}";
     }
 }
@@ -456,7 +456,7 @@ class ComposedReference extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", referenced_id: " + ((reference == null) ? "null": this.reference.id) +
+            ", \"referenced_id\": " + ((reference == null) ? "null": this.reference.id) +
             "}";
     }
 }
@@ -492,7 +492,7 @@ class ReturnNode extends Node{
     @Override
     public String toString() {
         return super.toString() +
-                ", returns_ids: " + this.getRetunsIds() +
+                ", \"returns_ids\": " + this.getRetunsIds() +
                 "}";
     }
 
