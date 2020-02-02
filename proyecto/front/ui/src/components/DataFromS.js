@@ -1,4 +1,4 @@
-const dataFromS = [
+const DataFromS = [
   {type: 'ROOT', id: 1, parent_id:-1, children_id: [2, 3, 4, 27, 33], from: [-1, -1], to: [-1, -1]},
   {type: 'variable', id: 2, parent_id:1, children_id: [], from: [1, 0], to: [1, 0], name: 'A', value_id: null, declared_id: null, mentions_ids: [29, 35, 39]},
   {type: 'variable', id: 3, parent_id:1, children_id: [], from: [1, 2], to: [1, 2], name: 'B', value_id: null, declared_id: null, mentions_ids: [31]},
@@ -41,3 +41,5 @@ const dataFromS = [
   {type: 'composed_element', id: 40, parent_id:37, children_id: [41], from: [3, 7], to: [3, 7]},
   {type: 'variable', id: 41, parent_id:40, children_id: [], from: [3, 7], to: [3, 7], name: 'C', value_id: null, declared_id: 4, mentions_ids: []},
   ];
+
+export default DataFromS

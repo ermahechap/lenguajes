@@ -1,4 +1,5 @@
-import React, { useState,useContext,useEffect} from "react";
+// import React, { useState,useContext,useEffect} from "react";
+import React, { useContext } from "react";
 import Context from '../GlobalState/context'
 import Tree from 'react-d3-tree';
 
@@ -46,7 +47,7 @@ const dataFromS = [
   {type: 'variable', id: 41, parent_id:40, children_id: [], from: [3, 7], to: [3, 7], name: 'C', value_id: null, declared_id: 4, mentions_ids: []},
   ]
 
-// const datos = require('./dataFromS.js');
+// const datos = require('./DataFromS.js');
 
 
 const colors = {
@@ -62,7 +63,7 @@ const colors = {
 
 function transformData(data,node){
   var strData = '';
-  if(node.type=='variable'){
+  if(node.type==='variable'){
     strData = `{
       "name": "${node.type}",
       "attributes": {
@@ -79,7 +80,7 @@ function transformData(data,node){
         },
       },
       `
-  }else if(node.type=='list'){
+  }else if(node.type==='list'){
     strData = `{
       "name": "${node.type}",
       "attributes": {
@@ -95,7 +96,7 @@ function transformData(data,node){
       },
     },
   `
-  }else if(node.type=='dictionary'){
+  }else if(node.type==='dictionary'){
     strData = `{
       "name": "${node.type}",
       "attributes": {
@@ -111,7 +112,7 @@ function transformData(data,node){
       },
     },
     `
-  }else if(node.type=='function'){
+  }else if(node.type==='function'){
     strData = `{
       "name": "${node.type}",
       "attributes": {
@@ -128,7 +129,7 @@ function transformData(data,node){
       },
     },
     `
-  }else if(node.type=='class'){
+  }else if(node.type==='class'){
     strData = `{
       "name": "${node.type}",
       "attributes": {
@@ -144,7 +145,7 @@ function transformData(data,node){
       },
     },
    `
-  }else if(node.type=='number'){
+  }else if(node.type==='number'){
     strData = `{
       "name": "${node.type}",
       "attributes": {
@@ -159,7 +160,7 @@ function transformData(data,node){
       },
     },
    `
-  }else if(node.type=='composed_element'){
+  }else if(node.type==='composed_element'){
     strData = `{
       "name": "${node.type}",
       "attributes": {
@@ -174,7 +175,7 @@ function transformData(data,node){
       },
     },
    `
-  }else if(node.type=='subscript'){
+  }else if(node.type==='subscript'){
     strData = `{
       "name": "${node.type}",
       "attributes": {
@@ -206,7 +207,7 @@ function transformData(data,node){
    `
   }
   
-  if(node.children_id.length!=0){
+  if(node.children_id.length!==0){
     strData += ' children: ['
     for(let i=0;i<node.children_id.length;i++){
       if(i>0){
@@ -228,49 +229,49 @@ var datico = transformData(dataFromS, dataFromS[0]);
 // const treee = '['+ datico +']';
 const myTreeData = JSON.stringify(eval("(" + datico + ")"));
 
-const myTreeData2 = [
-    {
-      name: 'ROOT',
-      attributes: {
-        keyA: 'val A',
-        keyB: 'val B',
-        keyC: 'val C',
-      },
-      children: [
-        {
-          name: 'Level 2: A',
-          attributes: {
-            keyA: 'val A',
-            keyB: 'val B',
-            keyC: 'val C',
-          },
-          children: [
-              {
-                  name: 'Level 2: B',
-              attributes: {
-                keyA: 'val A',
-                keyB: 'val B',
-                keyC: 'val C',
-            },
-        },
-              {
-                  name: 'Level 2: A',
-              attributes: {
-                keyA: 'val A',
-                keyB: 'val B',
-                keyC: 'val C',
-            }
-        }
-          ]
-        },
-        {
-          name: 'Level 2: B',    
-          onClick: () =>{console.log('hello');},
-        },
-      ],
-      
-    },
-  ];
+// const myTreeData2 = [
+//     {
+//       name: 'ROOT',
+//       attributes: {
+//         keyA: 'val A',
+//         keyB: 'val B',
+//         keyC: 'val C',
+//       },
+//       children: [
+//         {
+//           name: 'Level 2: A',
+//           attributes: {
+//             keyA: 'val A',
+//             keyB: 'val B',
+//             keyC: 'val C',
+//           },
+//           children: [
+//               {
+//                   name: 'Level 2: B',
+//               attributes: {
+//                 keyA: 'val A',
+//                 keyB: 'val B',
+//                 keyC: 'val C',
+//             },
+//         },
+//               {
+//                   name: 'Level 2: A',
+//               attributes: {
+//                 keyA: 'val A',
+//                 keyB: 'val B',
+//                 keyC: 'val C',
+//             }
+//         }
+//           ]
+//         },
+//         {
+//           name: 'Level 2: B',
+//           onClick: () =>{console.log('hello');},
+//         },
+//       ],
+//
+//     },
+//   ];
 
 
   const updateHandler = (nodeData, event) => {

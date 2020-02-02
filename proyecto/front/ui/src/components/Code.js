@@ -13,9 +13,10 @@ const Code = (props) => {
         script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
 
+
     });
 
-    const { state, actions } = useContext(Context);
+    const { state } = useContext(Context);
 
     const setState = () =>{
         console.log(state);
@@ -40,24 +41,28 @@ const Code = (props) => {
         checkAll: false
     });
 
+    const [code, setCode] = useState({
+        str: ""
+    });
 
-    function onCheckAllChange(e) {
-        console.log(checkboxOptions);
-        setCheckboxOptions({
-            options: e.checked ? plainOptions : [],
-            indeterminate: false,
-            checkAll: e.checked
-        })
-    };
 
-    function onChange(checkboxOptions) {
-        console.log(checkboxOptions);
-        setCheckboxOptions({
-            ...checkboxOptions,
-            indeterminate: !checkboxOptions.length && checkboxOptions.length < plainOptions.length,
-            checkAll: checkboxOptions.length === plainOptions.length,
-        });
-    }
+    // function onCheckAllChange(e) {
+    //     console.log(checkboxOptions);
+    //     setCheckboxOptions({
+    //         options: e.checked ? plainOptions : [],
+    //         indeterminate: false,
+    //         checkAll: e.checked
+    //     })
+    // };
+    //
+    // function onChange(checkboxOptions) {
+    //     console.log(checkboxOptions);
+    //     setCheckboxOptions({
+    //         ...checkboxOptions,
+    //         indeterminate: !checkboxOptions.length && checkboxOptions.length < plainOptions.length,
+    //         checkAll: checkboxOptions.length === plainOptions.length,
+    //     });
+    // }
 
 
     const dataFromS = [
@@ -222,19 +227,35 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
         }
 
         console.log("temp\n" + temp);
+        setCode({...code,str: temp});
         return temp
     };
 
     const handleOptionsSelected = (optionsSelected) =>{
+        if(!b){
+            fillObjects(codeFromServer);
+        }
         console.log(optionsSelected);
+        const set = new Set(optionsSelected);
+        console.log(set);
+        console.log(opens);
         for(let r in opens){
             for(let i in opens[r]){
                 let type = opens[r][i].split(' ')[2].split('=')[1];
+
                 //https://love2dev.com/blog/javascript-includes/
-                console.log(type);
-                console.log(opens[r][i]);
+                if(set.has(type)){
+                    console.log(type);
+                    console.log(opens[r][i]);
+                    let begin = opens[r][i].substr(0,12);
+                    let end = opens[r][i].substr(13,opens[r][i].length);
+                    opens[r][i] = begin+"w"+end;
+                    // console.log(begin, "w", end)
+                }
+
             }
         }
+        console.log(opens);
     };
 
     return (
@@ -260,13 +281,16 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                     // onChange={() => onChange(checkboxOptions.options)}
                 />
             </div>
+            <button onClick={()=> handleCodeFromServe(codeFromServer)}>
+                Code
+            </button>
             <figure>
                 <figcaption id="example1-caption" onClick={() => setState()}>
                     This is the caption
                 </figcaption>
                 <pre className="prettyprint"
                      dangerouslySetInnerHTML={{
-                    __html: handleCodeFromServe(codeFromServer)
+                    __html: code.str
                 }}>
                 </pre>
             </figure>
