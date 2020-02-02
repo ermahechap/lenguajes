@@ -24,4 +24,7 @@
 # A = [1,2,3]
 # A[:zz]
 
+for i in range(10):
+    print(i)
+
 

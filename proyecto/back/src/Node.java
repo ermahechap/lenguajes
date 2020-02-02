@@ -1,8 +1,7 @@
 import Utilities.*;
-import sun.security.util.ArrayUtil;
-
+import java.io.*;
 import java.util.*;
-
+import java.lang.Process;
 /*
 * Pending:
 * Comprenhension // has its own scope
@@ -68,24 +67,57 @@ public class Node {
     @Override
     public String toString() {
         return "{" +
-                "\"type\": " + wrapOnCommas(this.type) +
-                ", \"id\": " + this.id +
-                ", \"parent_id\":" + this.getParentId() +
-                ", \"children_id\": " + this.getChildrenIds().toString() +
-                ", \"from\": " + this.from.toString() +
-                ", \"to\": " +this.to.toString() +
-                (( ("node number string boolean").contains(this.type) ) ? "}" : "")
-                ;
+            "\"type\": " + wrapOnCommas(this.type) +
+            ", \"id\": " + this.id +
+            ", \"parent_id\":" + this.getParentId() +
+            ", \"children_id\": " + this.getChildrenIds().toString() +
+            ", \"from\": " + ((from != null)? from.toString() : "null") +
+            ", \"to\": " + ((to != null)? to.toString() : "null") +
+            (( ("node number string boolean").contains(type) ) ? "}" : "");
     }
 }
 
 class Root extends Node {
     private static Root me = null;
-
+    private  static String []builtin = {
+            "abs", "all", "any", "ascii", "bin", "bool", "breakpoint", "bytearray", "bytes", "callable",
+            "chr", "classmethod", "compile", "complex", "delattr", "dict", "dir", "divmod", "enumerate",
+            "eval", "exec", "filter", "float", "format", "frozenset", "getattr", "globals", "hasattr",
+            "hash", "help", "hex", "id", "input", "int", "isinstance", "issublcass", "iter", "len", "list",
+            "locals", "map", "max", "memoryview", "min", "next", "object", "oct", "open", "ord", "pow", "print",
+            "property", "range", "repr", "reversed", "round", "set", "setattr", "slice", "sorted", "staticmethod",
+            "str", "sum", "super", "tuple", "type", "vars", "zip"
+    };
+    private static HashMap<String, Node> builtin_functions = new HashMap<>();
+    // add from here https://docs.python.org/3/library/functions.html . This is verbose, but meh!
     private Root(Pair from, Pair to) {
         super(null, from, to);
         this.type = "ROOT";
         this.me = this;
+
+        // creates built-in functions
+        for(String name: builtin){
+            Function function = new Function(null, from, to, name);
+            ProcessBuilder pb = new ProcessBuilder("python", "namecheck.py", name); // /home/c3po/anaconda3/bin/python
+            try{
+                Process process = pb.start();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                process.waitFor();
+                String line = reader.readLine();
+                //System.out.println(line);
+                //function.info = (line.length() >100) ? line.substring(0, 100) + "...": line;
+            } catch (IOException | InterruptedException e) {
+                System.out.println(e);
+            }finally {
+                if(function.info == null) function.info = "No Info!";
+                builtin_functions.put(name, function);
+            }
+        }
+
+    }
+
+    public Node findBuiltinFunction(String str){
+        return builtin_functions.get(str); // null if this does not exists
     }
 
     public static Root getRootInstance() { // Singleton, only one root
@@ -233,7 +265,8 @@ class Dictionary extends Node {
 class Function extends Node {
     public ArrayList<Node> returns = new ArrayList<>();
     public ArrayList<Node> parameters = new ArrayList <>();
-
+    public boolean isDefault = false;
+    public String info;
     public Function(Node parent, Pair from, Pair to, String name) {
         super(parent, from, to);
         this.name = name;
@@ -256,6 +289,12 @@ class Function extends Node {
 
     @Override
     public String toString() {
+        if (!isDefault){
+            return super.toString() +
+                ", \"name\": " + wrapOnCommas(this.name) +
+                ", \"info\": " + ((this.info != null) ? wrapOnCommas(this.info) : "null") +
+                "}";
+        }
         return super.toString() +
             ", \"name\": " + wrapOnCommas(this.name) +
             ", \"parameters_ids\": " + this.getParametersIds() +

@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.ref.Reference;
+import java.lang.reflect.Array;
 import java.util.*;
 import Utilities.*;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -170,8 +171,15 @@ public class Processor extends Python3BaseListener {
                 Node referenced = this.currentScope.searchNode(ctx.atom().NAME().getText());
                 Node newNode = null;
                 if(referenced == null) {
-                    // check on defaults .. pending, otherwise new variable
+                    Function function = (Function)root.findBuiltinFunction(ctx.atom().NAME().getText());
+                    if (function != null) {
+                        newNode = new FunctionReference(parent, from, to);
+                        ((FunctionReference)newNode).setCalledFunction(function);
+                    } else {
+                        // find on imports, pending
+                    }
                 }
+
                 if(assignNode != null){
                     newNode = new Var(parent, from, to, ctx.atom().NAME().getText());
                     ((Var)newNode).setValue(assignNode);
@@ -210,10 +218,31 @@ public class Processor extends Python3BaseListener {
                 Scope lookupScope = this.currentScope;
                 Node reference = lookupScope.searchNode(ctx.atom().NAME().getText());
                 int lastIdx = -1;
-                for(int i = -1 ; i < ctx.trailer().size(); i++) {
 
+                if(reference == null){ // not found on namespaces, then built-in
+                    Function function = (Function)root.findBuiltinFunction(ctx.atom().NAME().getText());
+                    if (function != null){
+                        FunctionCall function_call = new FunctionCall(composed,from,to);
+                        function_call.setCalledFunction(function);
+                        composed.addChild(function_call);
+                        ArrayList<Node> parameters = lookAhead(ctx.trailer(0), function_call);
+                        parameters.forEach((x)-> function_call.addParameter(x));
+
+                        lastIdx = 1;
+                        composed.finished = true;
+
+                    } else {
+                        // need to change, find on imports pending
+                        composed.finished = true;
+                        lastIdx = 0;
+                    }
+                }
+
+                for(int i = -1 ; i < ctx.trailer().size(); i++) {
+                    if(composed.finished)break;
                     Pair t_from = (i==-1) ? new Pair<>(ctx.atom().start.getLine(),ctx.atom().start.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).start.getLine(),ctx.trailer(i).start.getCharPositionInLine()) ;
                     Pair t_to = (i==-1) ? new Pair<>(ctx.atom().stop.getLine(),ctx.atom().stop.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).stop.getLine(),ctx.trailer(i).stop.getCharPositionInLine());
+
                     if(i >= 0) reference = lookupScope.searchNode(ctx.trailer(i).NAME().getText());
                     if(reference.type.equals("class")) {
                         if(i+1 < ctx.trailer().size() && ctx.trailer(i+1).OPEN_PAREN() == null){
@@ -278,16 +307,15 @@ public class Processor extends Python3BaseListener {
                         composed.finished = true;
                     }
                     lastIdx = i+1;
-                    if(composed.finished)break;
                 }
 
                 // from here on it does not matter what reference is, nevertheless we keep indexing functions and slices that come from our local scope
-                Node node = composed.children.get(composed.children.size() - 1);
+                Node node = (composed.children !=null) ? composed.children.get(composed.children.size() - 1) : composed;
                 for(int i = lastIdx; i < ctx.trailer().size();i++){
                     Pair t_from = new Pair<>((i==-1)? ctx.atom().start.getLine(): ctx.trailer(i).start.getLine(),(i==-1)? ctx.atom().start.getCharPositionInLine(): ctx.trailer(i).start.getCharPositionInLine());
                     Pair t_to = new Pair<>((i==-1)? ctx.atom().stop.getLine(): ctx.trailer(i).stop.getLine(),(i==-1)? ctx.atom().stop.getCharPositionInLine(): ctx.trailer(i).stop.getCharPositionInLine());
                     if(ctx.trailer(i).subscriptlist() != null)
-                        processSubscript(ctx.trailer(i).subscriptlist(), composed);
+                        processSubscript(ctx.trailer(i).subscriptlist(), node);
                     else if(ctx.trailer(i).arglist() != null)
                         lookAhead(ctx.trailer(i), node);
                     else{
@@ -419,8 +447,8 @@ public class Processor extends Python3BaseListener {
     /* ---- FUNCTIONS ---- */
     @Override
     public void enterFuncdef(Python3Parser.FuncdefContext ctx){
-        Pair from = new Pair<Integer,Integer>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        Pair to = new Pair<Integer,Integer>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
+        Pair from = new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        Pair to = new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
         Function function = new Function(this.currentNode, from, to, ctx.NAME().getText());
         this.currentScope.addNodeToScope(function);
 
@@ -433,8 +461,8 @@ public class Processor extends Python3BaseListener {
             for(Python3Parser.TfpdefContext t_ctx : ctx.parameters().typedargslist().tfpdef()) {
                 Var var = new Var(
                     function,
-                    new Pair<Integer, Integer>(t_ctx.start.getLine(), t_ctx.start.getCharPositionInLine()),
-                    new Pair<Integer, Integer>(t_ctx.stop.getLine(), t_ctx.stop.getCharPositionInLine()),
+                    new Pair<>(t_ctx.start.getLine(), t_ctx.start.getCharPositionInLine()),
+                    new Pair<>(t_ctx.stop.getLine(), t_ctx.stop.getCharPositionInLine()),
                     t_ctx.NAME().getText()
                 );
                 function.addParameter(var);
@@ -447,8 +475,8 @@ public class Processor extends Python3BaseListener {
 
                 Composed composed = new Composed(
                     this.currentNode,
-                    new Pair<Integer, Integer>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine()),
-                    new Pair<Integer, Integer>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine())
+                    new Pair<>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine()),
+                    new Pair<>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine())
                 );
 
                 for(Python3Parser.Atom_exprContext atom_exprContext : sb.atom_expr_ctxs){
@@ -474,8 +502,8 @@ public class Processor extends Python3BaseListener {
         if(this.currentNode.type.equals("function") && ctx.testlist() != null){
             ReturnNode return_ = new ReturnNode(
                     this.currentNode,
-                    new Pair<Integer, Integer>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
-                    new Pair<Integer, Integer>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
+                    new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+                    new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
             );
 
             for(Python3Parser.TestContext test_ctx: ctx.testlist().test()){
@@ -485,8 +513,8 @@ public class Processor extends Python3BaseListener {
 
                 ComposedElement composed_element = new ComposedElement(
                     return_,
-                    new Pair<Integer, Integer>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine()),
-                    new Pair<Integer, Integer>(test_ctx.stop.getLine(), test_ctx.stop.getCharPositionInLine())
+                    new Pair<>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine()),
+                    new Pair<>(test_ctx.stop.getLine(), test_ctx.stop.getCharPositionInLine())
                 );
                 for(Python3Parser.Atom_exprContext atom_expr_ctx : sb.atom_expr_ctxs) {
                     processAtomExpr(atom_expr_ctx, composed_element, null);
@@ -501,8 +529,8 @@ public class Processor extends Python3BaseListener {
     /* ---- CLASS ---- */
     @Override
     public void enterClassdef(Python3Parser.ClassdefContext ctx) {
-        Pair from = new Pair<Integer,Integer>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        Pair to = new Pair<Integer,Integer>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
+        Pair from = new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        Pair to = new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
 
         Class class_ = new Class(this.currentNode, from, to, ctx.NAME().getText());
         if(ctx.arglist() != null) class_.setInherits((Class) this.currentScope.searchNode(ctx.arglist().getText()) );
@@ -523,6 +551,9 @@ public class Processor extends Python3BaseListener {
     }
 
     /* FOR */
+
+    @Override
+
 
 
 
