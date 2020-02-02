@@ -41,10 +41,6 @@ const Code = (props) => {
         checkAll: false
     });
 
-    const [code, setCode] = useState({
-        str: ""
-    });
-
 
     // function onCheckAllChange(e) {
     //     console.log(checkboxOptions);
@@ -100,6 +96,10 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
 [A, [A,C]]
 </code>`;
 
+    const [code, setCode] = useState({
+        str: codeFromServer
+    });
+
     const rows = new Set();
 
     const setByRows = {};
@@ -143,51 +143,16 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
             /*number: 'aquamarine',*/
             /*subscript: 'gold',*/
             /*composed_element: 'lightblue'*/
-            switch (dataFromS[i].type) {
-                case "variable":
-                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "v" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
-                    break;
-                case "list":
-                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "l" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
-                    break;
-                case "function":
-                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "f" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
-                    break;
-                case "dictionary":
-                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "d" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
-                    break;
-                case "class":
-                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "c" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
-                    break;
-                case "number":
-                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "n" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
-                    break;
-                case "subscript":
-                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "s" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
-                    break;
-                case "composed_element":
-                    opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "e" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
-                    break;
-            }
-
-
+            opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "w" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
             closes[dataFromS[i].to[0]][dataFromS[i].to[1] + 1] = "</mark>";
 
             if(!setByRows[dataFromS[i].from[0]].has(dataFromS[i].from[1])){
                 setByRows[dataFromS[i].from[0]].add(dataFromS[i].from[1]);
-                if(dataFromS[i].from[0] === 1){
-                    // console.log(dataFromS[i].from[1]);
-                }
-
             }
 
             if(!setByRows[dataFromS[i].to[0]].has(dataFromS[i].to[1]+1)){
                 setByRows[dataFromS[i].to[0]].add(dataFromS[i].to[1].valueOf()+1);
-                // if(dataFromS[i].to[0] === 1){
-                //     console.log((dataFromS[i].to[1]+1));
-                // }
             }
-
         }
         b = true;
     };
@@ -248,13 +213,41 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
                     console.log(type);
                     console.log(opens[r][i]);
                     let begin = opens[r][i].substr(0,12);
+                    let t = "w";
                     let end = opens[r][i].substr(13,opens[r][i].length);
-                    opens[r][i] = begin+"w"+end;
+                    switch (type) {
+                        case "variable":
+                            t = "v"
+                            break;
+                        case "list":
+                            t = "l";
+                            break;
+                        case "function":
+                            t = "f";
+                            break;
+                        case "dictionary":
+                            t = "d";
+                            break;
+                        case "class":
+                            t = "c";
+                            break;
+                        case "number":
+                            t = "n";
+                            break;
+                        case "subscript":
+                            t = "s";
+                            break;
+                        case "composed_element":
+                            t = "e";
+                            break;
+                    }
+                    opens[r][i] = begin+t+end;
                     // console.log(begin, "w", end)
                 }
 
             }
         }
+        handleCodeFromServe(codeFromServer);
         console.log(opens);
     };
 
