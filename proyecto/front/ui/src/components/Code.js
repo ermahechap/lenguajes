@@ -2,6 +2,10 @@ import React, { useState,useContext,useEffect} from "react";
 import "../Styles/Code.css"
 import { Checkbox } from 'antd';
 import Context from "../GlobalState/context";
+import { Card } from 'antd';
+import dataJson from "../input/input.json"
+import { Row, Col } from 'antd';
+import Arbolito from "./Arbolito dime tu";
 
 const Code = (props) => {
 
@@ -23,82 +27,68 @@ const Code = (props) => {
     };
 
     const CheckboxGroup = Checkbox.Group;
+    const { Meta } = Card;
 
-    const plainOptions = ['variable', 'list', 'function', 'dictionary', 'class', 'number', 'subscript', 'composed Element'];
-        /*variable: 'red',*/
-        /*list: 'green',*/
-        /*function: 'blue',*/
-        /*dictionary: 'purple',*/
-        /*class: 'orange',*/
-        /*number: 'aquamarine',*/
-        /*subscript: 'gold',*/
-        /*composed_element: 'lightblue'*/
-    const defaultCheckedList = ['Apple', 'Orange'];
-
-    const [checkboxOptions, setCheckboxOptions] = useState({
-        options: defaultCheckedList,
-        inderteminate: true,
-        checkAll: false
-    });
-
-
-    // function onCheckAllChange(e) {
-    //     console.log(checkboxOptions);
-    //     setCheckboxOptions({
-    //         options: e.checked ? plainOptions : [],
-    //         indeterminate: false,
-    //         checkAll: e.checked
-    //     })
-    // };
-    //
-    // function onChange(checkboxOptions) {
-    //     console.log(checkboxOptions);
-    //     setCheckboxOptions({
-    //         ...checkboxOptions,
-    //         indeterminate: !checkboxOptions.length && checkboxOptions.length < plainOptions.length,
-    //         checkAll: checkboxOptions.length === plainOptions.length,
-    //     });
-    // }
-
-
-    const dataFromS = [
-        {"type": "ROOT", "id": 1, "parent_id":-1, "children_id": [], "from": [-1, -1], "to": [-1, -1]},
-        {"type": "variable", "id": 2, "parent_id":1, "children_id": [], "from": [1, 0], "to": [1, 0], "name": "A", "value_id": null},
-        {"type": "variable", "id": 3, "parent_id":1, "children_id": [], "from": [1, 2], "to": [1, 2], "name": "B", "value_id": null},
-        {"type": "variable", "id": 6, "parent_id":5, "children_id": [], "from": [1, 21], "to": [1, 21], "name": "D", "value_id": null},
-        {"type": "variable", "id": 7, "parent_id":5, "children_id": [], "from": [1, 23], "to": [1, 23], "name": "E", "value_id": null},
-        {"type": "variable", "id": 9, "parent_id":8, "children_id": [], "from": [1, 26], "to": [1, 26], "name": "F", "value_id": null},
-        {"type": "variable", "id": 10, "parent_id":8, "children_id": [], "from": [1, 28], "to": [1, 28], "name": "G", "value_id": null},
-        {"type": "subscript", "id": 12, "parent_id":11, "children_id": [], "from": [1, 32], "to": [1, 33]},
-        {"type": "variable", "id": 11, "parent_id":8, "children_id": [12], "from": [1, 30], "to": [1, 30], "name": "H", "value_id": null},
-        {"type": "list", "id": 8, "parent_id":5, "children_id": [9, 10, 11], "from": [1, 26], "to": [1, 35]},
-        {"type": "subscript", "id": 14, "parent_id":13, "children_id": [], "from": [1, 41], "to": [1, 42]},
-        {"type": "variable", "id": 13, "parent_id":5, "children_id": [14], "from": [1, 39], "to": [1, 39], "name": "I", "value_id": null},
-        {"type": "variable", "id": 15, "parent_id":5, "children_id": [], "from": [1, 46], "to": [1, 46], "name": "j", "value_id": null},
-        {"type": "subscript", "id": 5, "parent_id":4, "children_id": [6, 7, 8, 13, 15], "from": [1, 6], "to": [1, 48]},
-        {"type": "variable", "id": 4, "parent_id":1, "children_id": [5], "from": [1, 4], "to": [1, 4], "name": "C", "value_id": null},
-        {"type": "variable", "id": 17, "parent_id":16, "children_id": [], "from": [3, 1], "to": [3, 1], "name": "A", "value_id": null},
-        {"type": "variable", "id": 18, "parent_id":16, "children_id": [], "from": [3, 3], "to": [3, 3], "name": "B", "value_id": null},
-        {"type": "list", "id": 16, "parent_id":1, "children_id": [17, 18], "from": [3, 1], "to": [3, 5]},
-        {"type": "variable", "id": 20, "parent_id":19, "children_id": [], "from": [5, 1], "to": [5, 1], "name": "A", "value_id": null},
-        {"type": "variable", "id": 22, "parent_id":21, "children_id": [], "from": [5, 5], "to": [5, 5], "name": "A", "value_id": null},
-        {"type": "variable", "id": 23, "parent_id":21, "children_id": [], "from": [5, 7], "to": [5, 7], "name": "C", "value_id": null},
-        {"type": "list", "id": 21, "parent_id":19, "children_id": [22, 23], "from": [5, 5], "to": [5, 7]},
-        {"type": "list", "id": 19, "parent_id":1, "children_id": [20, 21], "from": [5, 1], "to": [5, 8]}
-    ];
-
-
+    const plainOptions = ['variable', 'list', 'function', 'dictionary', 'class', 'number', 'subscript', 'composed_element', 'variable_reference', 'tuple', 'function_reference', 'class_reference', 'calledClass', 'for_block', 'while_block', 'if_block', 'condition', 'composed', 'return','function_call','class_call']
     const codeFromServer =`<code>
-A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
+# class B:
+#     def __init__(self):
+#         pass
+#     def f(self):
+#         return 10;
+#     def ff(self, z, *args):
+#         return 10
+# class A:
+#     a = B
+#     aa = B()
+#
+# A
+# A()
+# A.a
+# A().a
+# A.aa.f()
+# A().aa.f()
+# A().aa.ff(5,10)
+#
+# c = 10
+# cc = c + 5
+# cc = cc + 3
+# zz = 1
+# A = [1,2,3]
+# A[:zz]
 
-[A,B+5]
+for i in range(10):
+    print(i)
 
-[A, [A,C]]
+for i in [1,2,3]:
+    print(i)
+
+while True:
+    print(i)
+    break;
+
+A = 10
+
+if A == 10:
+    print(A)
+elif A == True:
+    print(A)
+else:
+    print(A)
 </code>`;
 
     const [code, setCode] = useState({
         str: codeFromServer
     });
+
+    const [idCard, setIdCard] = useState({
+        id: 0
+    })
+
+    const [cardInfo, setCardInfo] = useState({
+        title: "Card Information",
+        description: <p onClick={console.log("hola")}>Some Info</p>,
+    })
 
     const rows = new Set();
 
@@ -113,46 +103,52 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
     let b = false;
 
     const fillObjects = (codeFromServer) =>{
-        for(let i = 1; i < dataFromS.length; i++) {
-            if((dataFromS[i].from[0]) === (dataFromS[i].to[0])){
-                if(!rows.has(dataFromS[i].from[0])){
-                    opens[dataFromS[i].from[0]] = {};
-                    closes[dataFromS[i].to[0]] = {};
-                    setByRows[dataFromS[i].to[0]] = new Set();
-                    rows.add((dataFromS[i].from[0]));
-                }
-            }else {
-                if(!rows.has(dataFromS[i].from[0])){
-                    opens[dataFromS[i].from[0]] = {};
-                    closes[dataFromS[i].from[0]] = {};
-                    rows.add((dataFromS[i].from[0]));
-                    setByRows[dataFromS[i].from[0]] = new Set();
-                }
-                if(!rows.has(dataFromS[i].to[0])){
-                    closes[dataFromS[i].to[0]] = {};
-                    rows.add((dataFromS[i].to[0]));
-                    setByRows[dataFromS[i].to[0]] = new Set();
+        console.log(dataJson.data);
+        // console.log(dataFromS);
+        for(let i = 0; i < dataJson.data.length; i++) {
+            if(dataJson.data[i].parent_id !== -1){
+                console.log(dataJson.data[i]);
+                if((dataJson.data[i].from[0]) === (dataJson.data[i].to[0])){
+                    if(!rows.has(dataJson.data[i].from[0])){
+                        opens[dataJson.data[i].from[0]] = {};
+                        closes[dataJson.data[i].to[0]] = {};
+                        setByRows[dataJson.data[i].to[0]] = new Set();
+                        rows.add((dataJson.data[i].from[0]));
+                    }
+                }else {
+                    if(!rows.has(dataJson.data[i].from[0])){
+                        opens[dataJson.data[i].from[0]] = {};
+                        closes[dataJson.data[i].from[0]] = {};
+                        rows.add((dataJson.data[i].from[0]));
+                        setByRows[dataJson.data[i].from[0]] = new Set();
+                    }
+                    if(!rows.has(dataJson.data[i].to[0])){
+                        closes[dataJson.data[i].to[0]] = {};
+                        rows.add((dataJson.data[i].to[0]));
+                        setByRows[dataJson.data[i].to[0]] = new Set();
+                    }
                 }
 
-            }
-            /*variable: 'red',*/
-            /*list: 'green',*/
-            /*function: 'blue',*/
-            /*dictionary: 'purple',*/
-            /*class: 'orange',*/
-            /*number: 'aquamarine',*/
-            /*subscript: 'gold',*/
-            /*composed_element: 'lightblue'*/
-            opens[dataFromS[i].from[0]][dataFromS[i].from[1]] = "<mark class="+ "w" + " type=" + dataFromS[i].type + " id=" + dataFromS[i].id +">";
-            closes[dataFromS[i].to[0]][dataFromS[i].to[1] + 1] = "</mark>";
+                if(opens[dataJson.data[i].from[0]] === undefined){
+                    opens[dataJson.data[i].from[0]] = {};
+                }
+                if(closes[dataJson.data[i].to[0]] === undefined){
+                    closes[dataJson.data[i].to[0]] = {};
+                }
+                opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = "<mark class="+ "w" + " type=" + dataJson.data[i].type + " id=" + dataJson.data[i].id +
+                                                                            + " onClick=" + "console.log(\"hola\") " +
+                                                                            ">";
+                closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] = "</mark>";
 
-            if(!setByRows[dataFromS[i].from[0]].has(dataFromS[i].from[1])){
-                setByRows[dataFromS[i].from[0]].add(dataFromS[i].from[1]);
+                if(!setByRows[dataJson.data[i].from[0]].has(dataJson.data[i].from[1])){
+                    setByRows[dataJson.data[i].from[0]].add(dataJson.data[i].from[1]);
+                }
+
+                if(!setByRows[dataJson.data[i].to[0]].has(dataJson.data[i].to[1]+1)){
+                    setByRows[dataJson.data[i].to[0]].add(dataJson.data[i].to[1].valueOf()+1);
+                }
             }
 
-            if(!setByRows[dataFromS[i].to[0]].has(dataFromS[i].to[1]+1)){
-                setByRows[dataFromS[i].to[0]].add(dataFromS[i].to[1].valueOf()+1);
-            }
         }
         b = true;
     };
@@ -165,30 +161,30 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
         console.log(res);
         console.log(opens);
         console.log(closes);
-        // console.log(setByRows);
-        // temp += `<code>`;
         console.log(rows);
         for(let r = 0; r < res.length; r++){
             if(rows.has(r)){
                 for(let c= 0; c < res[r].length; c++){
-                    if(c in opens[r]){
-                        // console.log(opens[row][j]);
-                        temp+=(opens[r][c]);
-                        // console.log(temp);
+                    if(opens[r] === undefined){
+
+                    }else{
+                        if(c in opens[r]){
+                            temp+=(opens[r][c]);
+                        }
                     }
-                    if(c in closes[r]){
-                        temp+=(closes[r][c]);
+                    if(closes[r] === undefined){
+
+                    }else{
+                        if(c in closes[r]){
+                            temp+=(closes[r][c]);
+                        }
                     }
                     temp+=(res[r][c]);
                 }
-                console.log("j: " + r);
             }else{
                 temp+= res[r];
             }
             temp += "\n";
-        }
-        for(let r of res){
-            console.log(r);
         }
 
         console.log("temp\n" + temp);
@@ -196,10 +192,34 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
         return temp
     };
 
+    const typeMaping = {
+        "variable": "v",
+        "list": "l",
+        "function": "f",
+        "dictionary": "d",
+        "class": "c",
+        "number": "n",
+        "subscript": "s",
+        "composed_element": "e",
+        "variable_reference": "var_t",
+        "tuple": "tp",
+        "function_reference": "f_r",
+        "class_reference": "c_r",
+        "calledClass": "c_c",
+        "for_block": "f_b",
+        "while_block": "w_b",
+        "if_block": "i_b", 
+        "condition": "con",
+        "composed": "comp",
+        "return": "r",
+        "function_call": "f_c",
+        "class_call": "c_l"
+    }
     const handleOptionsSelected = (optionsSelected) =>{
         if(!b){
             fillObjects(codeFromServer);
         }
+
         console.log(optionsSelected);
         const set = new Set(optionsSelected);
         console.log(set);
@@ -208,39 +228,14 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
             for(let i in opens[r]){
                 let type = opens[r][i].split(' ')[2].split('=')[1];
 
-                //https://love2dev.com/blog/javascript-includes/
                 if(set.has(type)){
                     console.log(type);
                     console.log(opens[r][i]);
                     let begin = opens[r][i].substr(0,12);
                     let t = "w";
                     let end = opens[r][i].substr(13,opens[r][i].length);
-                    switch (type) {
-                        case "variable":
-                            t = "v"
-                            break;
-                        case "list":
-                            t = "l";
-                            break;
-                        case "function":
-                            t = "f";
-                            break;
-                        case "dictionary":
-                            t = "d";
-                            break;
-                        case "class":
-                            t = "c";
-                            break;
-                        case "number":
-                            t = "n";
-                            break;
-                        case "subscript":
-                            t = "s";
-                            break;
-                        case "composed_element":
-                            t = "e";
-                            break;
-                    }
+                    t = typeMaping[type]
+                    
                     opens[r][i] = begin+t+end;
                     // console.log(begin, "w", end)
                 }
@@ -251,43 +246,103 @@ A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
         console.log(opens);
     };
 
+    const fillCard = (id) => {
+        let name = dataJson.data[id].type;
+        
+        let elements = Object.keys(dataJson.data[id]).map((k,v)=>{
+            let dat = `${k}:`
+            let val = (k,v)=>{
+                if(k === 'from' || k === 'to')return v[0] + ", " + v[1]
+                else if(v!==null && typeof(v) === 'object'){
+                    return v.map((n)=>{
+                        return <a onClick={() => fillCard(Math.abs(n) - 1)}>{n},</a>
+                    })
+                } else if(typeof(v) === 'number')return <a onClick={() => fillCard(Math.abs(v)-1)}>{v}</a>
+                return v
+            }
+            
+        return(<li>{dat} {val(k, dataJson.data[id][k])}</li>)
+        })
+        console.log(id)
+
+        let info = <ul>
+            {elements}
+        </ul>;
+        // const numbers = [1,1,1,1]
+        // const info = dataJson.data.map((number) =>
+        //     <li>{number}</li>
+        // );
+
+
+            // "<p>"+"id: " + dataJson.data[id].id + "</p>"+"\n"
+            // + "children_id: " + dataJson.data[id].children_id +  "\n"
+            // + "from: : " + dataJson.data[id].from +  "\n"
+            // + "to: : " + dataJson.data[id].to +  "\n"
+            // + "name: : " + dataJson.data[id].name +  "\n"
+            // + "info: : " + dataJson.data[id].info +  "\n"
+        setCardInfo({...cardInfo,
+            title: name,
+            description: info,
+        });
+
+        setIdCard({...idCard,
+            id: (id+1) % dataJson.data.length
+        })
+    };
+
     return (
-        <div className="code-container">
-            <p id="example1-description">
-                This is the descriptive text before the code example:
-            </p>
-            <div className="checkbox-container">
-                <div style={{ borderBottom: '1px solid #E9E9E9' }}>
-                    <Checkbox
-                        // indeterminate={()=>checkboxOptions.indeterminate}
-                        // onChange={(e)=>onCheckAllChange(e)}
-                        // checked={checkboxOptions.checkAll}
-                    >
-                        Check all
-                    </Checkbox>
-                </div>
-                <br />
-                <CheckboxGroup
-                    options={plainOptions}
-                    onChange={(optionsSelected) => handleOptionsSelected(optionsSelected)}
-                    // value={checkboxOptions.options}
-                    // onChange={() => onChange(checkboxOptions.options)}
-                />
-            </div>
-            <button onClick={()=> handleCodeFromServe(codeFromServer)}>
-                Code
-            </button>
-            <figure>
-                <figcaption id="example1-caption" onClick={() => setState()}>
-                    This is the caption
-                </figcaption>
-                <pre className="prettyprint"
-                     dangerouslySetInnerHTML={{
-                    __html: code.str
-                }}>
-                </pre>
-            </figure>
+        <div>
+            <Row>
+                <Col span={12}>
+                    <div className="code-container">
+                        <p id="example1-description">
+                            This is the descriptive text before the code example:
+                        </p>
+                        <div className="checkbox-container">
+                            <CheckboxGroup
+                                options={plainOptions}
+                                onChange={(optionsSelected) => handleOptionsSelected(optionsSelected)}
+                                // value={checkboxOptions.options}
+                                // onChange={() => onChange(checkboxOptions.options)}
+                            />
+                        </div>
+                        <button onClick={()=> handleCodeFromServe(codeFromServer)}>
+                            Code
+                        </button>
+                        <figure>
+                            <figcaption id="example1-caption" onClick={() => setState()}>
+                                This is the caption
+                            </figcaption>
+                            <pre className="prettyprint"
+                                 dangerouslySetInnerHTML={{
+                                     __html: code.str
+                                 }}>
+                            </pre>
+                        </figure>
+                    </div>
+                </Col>
+                <Col span={12}>
+                    <div className="info-container">
+                        <Card style={{ width: 300, marginTop: 50 }}
+                              title={cardInfo.title}
+                              extra={
+                                  <div>
+                                      <a onClick={() => fillCard(idCard.id)}> More </a>
+                                      <a href="https://docs.python.org/3/glossary.html" rel="noopener noreferrer" target="_blank" onClick={() => console.log(cardInfo.description)}> Doc </a>
+                                  </div>
+                              }>
+                            {cardInfo.description}
+
+
+                        </Card>
+                    </div>
+                </Col>
+
+            </Row>
+
+
         </div>
+
     )
 }
 
