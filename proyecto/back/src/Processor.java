@@ -240,89 +240,115 @@ public class Processor extends Python3BaseListener {
                         lastIdx = 0;
                     }
                 }
+                try {
+                    for(int i = -1 ; i < ctx.trailer().size(); i++) {
+                        lastIdx = i+1;
+                        if(composed.finished)break;
+                        Pair t_from = (i==-1) ? new Pair<>(ctx.atom().start.getLine(),ctx.atom().start.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).start.getLine(),ctx.trailer(i).start.getCharPositionInLine()) ;
+                        Pair t_to = (i==-1) ? new Pair<>(ctx.atom().stop.getLine(),ctx.atom().stop.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).stop.getLine(),ctx.trailer(i).stop.getCharPositionInLine());
 
-                for(int i = -1 ; i < ctx.trailer().size(); i++) {
-                    if(composed.finished)break;
-                    Pair t_from = (i==-1) ? new Pair<>(ctx.atom().start.getLine(),ctx.atom().start.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).start.getLine(),ctx.trailer(i).start.getCharPositionInLine()) ;
-                    Pair t_to = (i==-1) ? new Pair<>(ctx.atom().stop.getLine(),ctx.atom().stop.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).stop.getLine(),ctx.trailer(i).stop.getCharPositionInLine());
-
-                    if(i >= 0) reference = lookupScope.searchNode(ctx.trailer(i).NAME().getText());
-                    if(reference.type.equals("class")) {
-                        if(i+1 < ctx.trailer().size() && ctx.trailer(i+1).OPEN_PAREN() == null){
-                            ClassReference class_reference = new ClassReference(composed, t_from, t_to);
-                            class_reference.setCalledClass(reference);
-                        } else {
-                            ClassCall class_call = new ClassCall(composed, t_from, t_to);
-                            ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1), class_call) : null;
-                            parameters.forEach((x)->class_call.addParameter(x));
-                            class_call.setCalledClass(reference);
-                            i++;
-                        }
-                        lookupScope = reference.getScope();
-                    } else if(reference.type.equals("function")) {
-                        if(i+1 < ctx.trailer().size() && ctx.trailer(i+1).OPEN_PAREN() == null){
-                            FunctionReference function_ref = new FunctionReference(composed, t_from, t_to);
-                            function_ref.setCalledFunction(reference);
-                        } else {
-                            FunctionCall function_call = new FunctionCall(composed, t_from, t_to);
-                            ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1), function_call) : null;
-                            parameters.forEach((x)->function_call.addParameter(x));
-                            function_call.setCalledFunction(reference);
-                            i++;
-                            composed.finished = true;
-                        }
-                    } else if(reference.type.equals("variable")){
-                        Var var = (Var)reference;
-                        if(var.value.type.equals("composed")) {
-                            Composed found_composed = (Composed) var.value;
-                            if (found_composed.finished) {
-                                ComposedReference composed_ref = new ComposedReference(composed, t_from, t_to);
-                                composed_ref.setReference(found_composed);
-                                composed.finished = true;
+                        if(i >= 0) reference = lookupScope.searchNode(ctx.trailer(i).NAME().getText());
+                        if(reference.type.equals("class")) {
+                            if(i+1 < ctx.trailer().size() && ctx.trailer(i+1).OPEN_PAREN() == null){
+                                ClassReference class_reference = new ClassReference(composed, t_from, t_to);
+                                class_reference.setCalledClass(reference);
                             } else {
-                                Node last_child_composed = found_composed.children.get(found_composed.children.size() - 1);
-                                if (last_child_composed.type.equals("class_reference")) {
-                                    reference = ((ClassReference) last_child_composed).calledClass;
-                                    lookupScope = reference.getScope();
-                                } else if (last_child_composed.type.equals("class_call")) {
-                                    reference = ((ClassCall) last_child_composed).calledClass;
-                                    lookupScope = reference.getScope();
-
-                                } else if (last_child_composed.type.equals("function_reference"))
-                                    reference = ((FunctionReference) last_child_composed).calledFunction;
-                                else composed.finished = true;
+                                ClassCall class_call = new ClassCall(composed, t_from, t_to);
+                                ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1), class_call) : null;
+                                parameters.forEach((x)->class_call.addParameter(x));
+                                class_call.setCalledClass(reference);
+                                i++;
                             }
-                        } else if(var.value.type.equals("class_call") ){
-                            reference = ((ClassCall) var.value).calledClass;
                             lookupScope = reference.getScope();
-                        } else if(var.value.type.equals("class_reference") ){
-                            reference = ((ClassReference) var.value).calledClass;
-                            lookupScope = reference.getScope();
-                        } else if(var.value.type.equals("function_reference") ){
-                            reference = ((FunctionReference) var.value).calledFunction;
+                        } else if(reference.type.equals("function")) {
+                            if(i+1 < ctx.trailer().size() && ctx.trailer(i+1).OPEN_PAREN() == null){
+                                FunctionReference function_ref = new FunctionReference(composed, t_from, t_to);
+                                function_ref.setCalledFunction(reference);
+                            } else {
+                                FunctionCall function_call = new FunctionCall(composed, t_from, t_to);
+                                ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1), function_call) : null;
+                                parameters.forEach((x)->function_call.addParameter(x));
+                                function_call.setCalledFunction(reference);
+                                i++;
+                                composed.finished = true;
+                            }
+                        } else if(reference.type.equals("variable")){
+                            Var var = (Var)reference;
+                            if(var.value.type.equals("composed")) {
+                                Composed found_composed = (Composed) var.value;
+                                if (found_composed.finished) {
+                                    ComposedReference composed_ref = new ComposedReference(composed, t_from, t_to);
+                                    composed_ref.setReference(found_composed);
+                                    composed.finished = true;
+                                } else {
+                                    Node last_child_composed = found_composed.children.get(found_composed.children.size() - 1);
+                                    if (last_child_composed.type.equals("class_reference")) {
+                                        reference = ((ClassReference) last_child_composed).calledClass;
+                                        lookupScope = reference.getScope();
+                                    } else if (last_child_composed.type.equals("class_call")) {
+                                        reference = ((ClassCall) last_child_composed).calledClass;
+                                        lookupScope = reference.getScope();
+
+                                    } else if (last_child_composed.type.equals("function_reference"))
+                                        reference = ((FunctionReference) last_child_composed).calledFunction;
+                                    else composed.finished = true;
+                                }
+                            } else if(var.value.type.equals("class_call") ){
+                                Var new_var = new Var(composed, t_from, t_to, var.name);
+                                if(i+2 > ctx.trailer().size()){ // means that this is the last element to be processed
+                                    if(assignNode != null){
+                                        new_var.setValue(assignNode);
+                                        var.getScope().addNodeToScope(new_var);
+                                    }
+                                }
+                                var.addVarMention(new_var);
+                                reference = ((ClassCall) var.value).calledClass;
+                                lookupScope = reference.getScope();
+                            } else if(var.value.type.equals("class_reference") ){
+                                Var new_var = new Var(composed, t_from, t_to, var.name);
+                                if(i+1 > ctx.trailer().size()){ // means that this is the last element to be processed
+                                    if(assignNode != null){
+                                        new_var.setValue(assignNode);
+                                        var.getScope().addNodeToScope(new_var);
+                                    }
+                                }
+                                var.addVarMention(new_var);
+                                reference = ((ClassReference) var.value).calledClass;
+                                lookupScope = reference.getScope();
+                            } else if(var.value.type.equals("function_reference") ){
+                                Var new_var = new Var(composed, t_from, t_to, var.name);
+                                if(i+1 > ctx.trailer().size()){ // means that this is the last element to be processed
+                                    if(assignNode != null){
+                                        new_var.setValue(assignNode);
+                                        var.getScope().addNodeToScope(new_var);
+                                    }
+                                }
+                                var.addVarMention(new_var);
+                                reference = ((FunctionReference) var.value).calledFunction;
+                            } else {
+                                Var new_var = new Var(composed, t_from, t_to, var.name);
+                                var.addVarMention(new_var);
+                                composed.finished = true;
+                            }
                         } else {
-                            VarReference var_ref = new VarReference(this.currentNode, from, to);
-                            var_ref.setReference(reference);
-                            composed.addChild(var_ref);
                             composed.finished = true;
                         }
-                    } else {
-                        composed.finished = true;
                     }
-                    lastIdx = i+1;
-                }
-
-                // from here on it does not matter what reference is, nevertheless we keep indexing functions and slices that come from our local scope
-                Node node = (composed.children !=null) ? composed.children.get(composed.children.size() - 1) : composed;
-                for(int i = lastIdx; i < ctx.trailer().size();i++){
-                    Pair t_from = new Pair<>((i==-1)? ctx.atom().start.getLine(): ctx.trailer(i).start.getLine(),(i==-1)? ctx.atom().start.getCharPositionInLine(): ctx.trailer(i).start.getCharPositionInLine());
-                    Pair t_to = new Pair<>((i==-1)? ctx.atom().stop.getLine(): ctx.trailer(i).stop.getLine(),(i==-1)? ctx.atom().stop.getCharPositionInLine(): ctx.trailer(i).stop.getCharPositionInLine());
-                    if(ctx.trailer(i).subscriptlist() != null)
-                        processSubscript(ctx.trailer(i).subscriptlist(), node);
-                    else if(ctx.trailer(i).arglist() != null)
-                        lookAhead(ctx.trailer(i), node);
-                    else{
-                        node = new Node(composed,t_from, t_to);
+                }catch (Exception e) {
+                    System.out.println("That went well!" + e);
+                }finally{
+                    // from here on it does not matter what reference is, nevertheless we keep indexing functions and slices that come from our local scope
+                    Node node = (composed.children !=null) ? composed.children.get(composed.children.size() - 1) : composed;
+                    for(int i = lastIdx; i < ctx.trailer().size();i++){
+                        Pair t_from = new Pair<>((i==-1)? ctx.atom().start.getLine(): ctx.trailer(i).start.getLine(),(i==-1)? ctx.atom().start.getCharPositionInLine(): ctx.trailer(i).start.getCharPositionInLine());
+                        Pair t_to = new Pair<>((i==-1)? ctx.atom().stop.getLine(): ctx.trailer(i).stop.getLine(),(i==-1)? ctx.atom().stop.getCharPositionInLine(): ctx.trailer(i).stop.getCharPositionInLine());
+                        if(ctx.trailer(i).subscriptlist() != null)
+                            processSubscript(ctx.trailer(i).subscriptlist(), node);
+                        else if(ctx.trailer(i).arglist() != null)
+                            lookAhead(ctx.trailer(i), node);
+                        else{
+                            node = new Node(composed,t_from, t_to);
+                        }
                     }
                 }
 
