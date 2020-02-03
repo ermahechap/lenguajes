@@ -422,29 +422,50 @@ class Class extends Node {
 }
 
 
-/* Pendiente */
-
 class For extends Node {
-    public Node Rule;
-
+    private Node rule;
     public For(Node parent, Pair from, Pair to) {
         super(parent, from, to);
+        this.type = "for";
     }
 
     @Override
     public String toString() {
-        return null;
+        return super.toString() +
+            ", \"rule\": " + this.rule.id +
+            "}";
+    }
+
+    public Node getRule() {
+        return rule;
+    }
+
+    public void setRule(Node rule) {
+        this.rule = rule;
+        this.rule.type = "rule";
     }
 }
 
 class While extends Node {
+    private Node rule;
     public While(Node parent, Pair from, Pair to) {
         super(parent, from, to);
     }
 
+    public Node getRule() {
+        return rule;
+    }
+
+    public void setRule() {
+        this.rule = rule;
+        this.rule.type = "rule";
+    }
+
     @Override
     public String toString() {
-        return null;
+        return super.toString() +
+            ", \"rule\": " + this.rule.id +
+            "}";
     }
 }
 

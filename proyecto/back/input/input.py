@@ -27,4 +27,18 @@
 for i in range(10):
     print(i)
 
+for i in [1,2,3]:
+    print(i)
+
+while True:
+    print(i)
+    break;
+
+if A==10:
+    print(A)
+elif A==True:
+    print(A)
+else:
+    print(A)
+
 

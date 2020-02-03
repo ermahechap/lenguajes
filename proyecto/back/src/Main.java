@@ -23,6 +23,5 @@ public class Main {
         ParseTreeWalker walker = new ParseTreeWalker();
 
         walker.walk(new Processor((args!=null)? args[0] : null), tree);
-        System.out.println();
     }
 }

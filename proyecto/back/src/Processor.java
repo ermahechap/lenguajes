@@ -33,7 +33,7 @@ public class Processor extends Python3BaseListener {
     private Root root;
     private String filename;
     public Scope currentScope; // namespaces - like a stack, but not a stack(because keeps references to its subscopes(aka. child scopes)) :v
-    public Node currentNode; // not necessarly a scope (it could be an if, a for, etc....)
+    public Node currentNode; // not necessarly a scope node (it could be an if, a for, etc....)
     public int lockBranchCounter = 0;
 
     public Processor(String arg) {
@@ -83,6 +83,7 @@ public class Processor extends Python3BaseListener {
                 e.printStackTrace();
             }
         }
+        System.out.println(root.scope);
     }
 
 
@@ -140,7 +141,7 @@ public class Processor extends Python3BaseListener {
     @Override
     public void enterAtom_expr(Python3Parser.Atom_exprContext ctx) {
         if(this.lockBranchCounter > 0) return;
-        processAtomExpr(ctx, this.currentScope.getScopeNode(), null);
+        processAtomExpr(ctx, this.currentNode, null);
 
     }
     @Override
@@ -176,7 +177,7 @@ public class Processor extends Python3BaseListener {
                         newNode = new FunctionReference(parent, from, to);
                         ((FunctionReference)newNode).setCalledFunction(function);
                     } else {
-                        // find on imports, pending
+                        //imports, pending
                     }
                 }
 
@@ -193,12 +194,15 @@ public class Processor extends Python3BaseListener {
                         if(assignNode != null){
                             ((Var)newNode).setValue(assignNode);
                             this.currentScope.addNodeToScope( newNode ); // overwrites reference
+                        } else {
+                            ((Var)newNode).assignVarDeclaration(referenced);
                         }
                         break;
                     }
                     case "function": {
                         newNode = new FunctionReference(parent, from, to);
                         ((FunctionReference)newNode).calledFunction = referenced;
+
                         break;
                     }
                     case "class": {
@@ -553,8 +557,81 @@ public class Processor extends Python3BaseListener {
     /* FOR */
 
     @Override
+    public void enterFor_stmt(Python3Parser.For_stmtContext ctx) {
+        Pair from = new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        Pair to = new Pair<>(ctx.testlist().stop.getLine(), ctx.testlist().stop.getCharPositionInLine());
+        For for_ = new For(this.currentNode, from, to);
+        this.currentNode = for_;
+        Node rule = new Node( this.currentNode, new Pair<>(ctx.exprlist().start.getLine(), ctx.exprlist().start.getCharPositionInLine()), to);
 
+        Composed assignNode = new Composed(
+            rule,
+            new Pair<>(ctx.testlist().start.getLine(), ctx.testlist().start.getCharPositionInLine()),
+            new Pair<>(ctx.testlist().stop.getLine(), ctx.testlist().stop.getCharPositionInLine())
+        );
+        for(Python3Parser.TestContext t_ctx : ctx.testlist().test()){
+            Pair t_from = new Pair<>(ctx.testlist().start.getLine(), ctx.testlist().start.getCharPositionInLine());
+            Pair t_to = new Pair<>(ctx.testlist().stop.getLine(), ctx.testlist().stop.getCharPositionInLine());
+            ComposedElement assignNodeElement = new ComposedElement(assignNode, t_from, t_to);
+            ParseTreeWalker walker = new ParseTreeWalker();
+            NextAtomExpr sb = new NextAtomExpr();
+            walker.walk(sb, t_ctx);
+            for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
+                processAtomExpr(a_ctx, assignNodeElement, null);
+            }
+        }
+        boolean isSplitable = assignNode.children.size() == ctx.exprlist().expr().size();
+        for(Python3Parser.ExprContext e_ctx : ctx.exprlist().expr()){
+            ParseTreeWalker walker = new ParseTreeWalker();
+            NextAtomExpr sb = new NextAtomExpr();
+            walker.walk(sb, e_ctx);
+            int id = 0;
+            for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
+                if(isSplitable) {
+                    processAtomExpr(a_ctx, rule, assignNode.children.get(id++));
+                } else {
+                    processAtomExpr(a_ctx, rule, assignNode);
+                }
+            }
+        }
+        for_.setRule(rule);
+    }
 
+    @Override
+    public void exitFor_stmt(Python3Parser.For_stmtContext ctx){
+        this.currentNode = this.currentScope.getScopeNode(); // reset node
+        /*
+        * Note that this is different from class or function because the scope remains the same, just the node changes
+        * */
+    }
 
+    /* WHILE */
+    @Override
+    public void enterWhile_stmt(Python3Parser.While_stmtContext ctx) {
+        Pair from = new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        Pair to = new Pair<>(ctx.test().stop.getLine(), ctx.test().stop.getCharPositionInLine());
+        While while_ = new While(this.currentNode, from, to);
+        this.currentNode = while_;
+        Node rule = new Node( this.currentNode, new Pair<>(ctx.test().start.getLine(), ctx.test().start.getCharPositionInLine()), to);
+
+        ParseTreeWalker walker = new ParseTreeWalker();
+        NextAtomExpr sb = new NextAtomExpr();
+        walker.walk(sb, ctx.test());
+        for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
+            processAtomExpr(a_ctx, rule, null);
+        }
+    }
+
+    @Override
+    public void exitWhile_stmt(Python3Parser.While_stmtContext ctx){
+        this.currentNode = this.currentScope.getScopeNode(); // reset node
+        /*
+         * Note that this is different from class or function because the scope remains the same, just the node changes
+         * */
+    }
+
+    /* IF */
+
+    
 
 }
