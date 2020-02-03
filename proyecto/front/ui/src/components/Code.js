@@ -96,7 +96,7 @@ else:
 
     const [cardInfo, setCardInfo] = useState({
         title: "Card Information",
-        description: "Some Info",
+        description: <p onClick={console.log("hola")}>Some Info</p>,
     })
 
     const rows = new Set();
@@ -282,16 +282,31 @@ else:
 
     const fillCard = (id) => {
         let name = dataJson.data[id].type;
-        let info = "id: " + dataJson.data[id].id + "\n"
-            + "children_id: " + dataJson.data[id].children_id +  "\n"
-            + "from: : " + dataJson.data[id].from +  "\n"
-            + "to: : " + dataJson.data[id].to +  "\n"
-            + "name: : " + dataJson.data[id].name +  "\n"
-            + "info: : " + dataJson.data[id].info +  "\n"
+
+
+        // let info = <ul>
+        //     {for }
+        //     <li>{"id: " + dataJson.data[id].id}</li>
+        //     <li>{"from: " + dataJson.data[id].from}</li>
+        //     <li>{"to: " + dataJson.data[id].to}</li>
+        //     <li>{"info: " + dataJson.data[id].info}</li>
+        // </ul>;
+        const numbers = [1,1,1,1]
+        const info = dataJson.data.map((number) =>
+            <li>{number}</li>
+        );
+
+
+            // "<p>"+"id: " + dataJson.data[id].id + "</p>"+"\n"
+            // + "children_id: " + dataJson.data[id].children_id +  "\n"
+            // + "from: : " + dataJson.data[id].from +  "\n"
+            // + "to: : " + dataJson.data[id].to +  "\n"
+            // + "name: : " + dataJson.data[id].name +  "\n"
+            // + "info: : " + dataJson.data[id].info +  "\n"
         setCardInfo({...cardInfo,
             title: name,
             description: info,
-        })
+        });
 
         setIdCard({...idCard,
             id: (id+1) % dataJson.data.length
@@ -331,10 +346,19 @@ else:
                 </Col>
                 <Col span={12}>
                     <div className="info-container">
-                        <Card style={{ width: 300, marginTop: 50 }} title={cardInfo.title} extra={<a href="#" onClick={() => fillCard(idCard.id)}>More</a>}>
-                            <Meta
-                                description={cardInfo.description}
-                            />
+                        <Card style={{ width: 300, marginTop: 50 }}
+                              title={cardInfo.title}
+                              extra={
+                                  <div>
+                                      <a href="#" onClick={() => fillCard(idCard.id)}> More </a>
+                                      <a href="https://docs.python.org/3/glossary.html" rel="noopener noreferrer" target="_blank" onClick={() => console.log(cardInfo.description)}> Doc </a>
+                                  </div>
+                              }>
+                            <ul>
+                                {cardInfo.description}
+                            </ul>
+
+
                         </Card>
                     </div>
                 </Col>
