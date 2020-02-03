@@ -1,12 +1,9 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.ref.Reference;
-import java.lang.reflect.Array;
 import java.util.*;
 import Utilities.*;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import sun.misc.ExtensionInstallationException;
 
 class NextAtomExpr extends Python3BaseListener { // Class intended to get the next atom_expr on the tree (avoids atom_expr under the one already found)
     public ArrayList<Python3Parser.Atom_exprContext> atom_expr_ctxs = new ArrayList<>();
@@ -73,6 +70,7 @@ public class Processor extends Python3BaseListener {
 
                 fw.write("{\n\t\"data\": [\n");
                 for (int i = 0; i < Node.nodeDump.size(); i++) {
+                    //System.out.println(Node.nodeDump.get(i));
                     fw.write("\t\t"+ Node.nodeDump.get(i).toString() + ((i + 1 == Node.nodeDump.size()) ? "\n" : ", \n" ) );
                 }
                 fw.write("\t]\n}");
@@ -83,7 +81,7 @@ public class Processor extends Python3BaseListener {
                 e.printStackTrace();
             }
         }
-        System.out.println(root.scope);
+
     }
 
 
@@ -176,6 +174,7 @@ public class Processor extends Python3BaseListener {
                     if (function != null) {
                         newNode = new FunctionReference(parent, from, to);
                         ((FunctionReference)newNode).setCalledFunction(function);
+                        return newNode;
                     } else {
                         //imports, pending
                     }
@@ -556,10 +555,11 @@ public class Processor extends Python3BaseListener {
 
     /* FOR */
 
+    Stack<Node> loops = new Stack<>();
     @Override
     public void enterFor_stmt(Python3Parser.For_stmtContext ctx) {
         Pair from = new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        Pair to = new Pair<>(ctx.testlist().stop.getLine(), ctx.testlist().stop.getCharPositionInLine());
+        Pair to = new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
         For for_ = new For(this.currentNode, from, to);
         this.currentNode = for_;
         Node rule = new Node( this.currentNode, new Pair<>(ctx.exprlist().start.getLine(), ctx.exprlist().start.getCharPositionInLine()), to);
@@ -594,12 +594,15 @@ public class Processor extends Python3BaseListener {
                 }
             }
         }
+        loops.push(for_);
         for_.setRule(rule);
     }
 
     @Override
     public void exitFor_stmt(Python3Parser.For_stmtContext ctx){
-        this.currentNode = this.currentScope.getScopeNode(); // reset node
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode(); // reset node
+        else this.currentNode = loops.peek();
         /*
         * Note that this is different from class or function because the scope remains the same, just the node changes
         * */
@@ -609,7 +612,7 @@ public class Processor extends Python3BaseListener {
     @Override
     public void enterWhile_stmt(Python3Parser.While_stmtContext ctx) {
         Pair from = new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        Pair to = new Pair<>(ctx.test().stop.getLine(), ctx.test().stop.getCharPositionInLine());
+        Pair to = new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
         While while_ = new While(this.currentNode, from, to);
         this.currentNode = while_;
         Node rule = new Node( this.currentNode, new Pair<>(ctx.test().start.getLine(), ctx.test().start.getCharPositionInLine()), to);
@@ -620,18 +623,117 @@ public class Processor extends Python3BaseListener {
         for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
             processAtomExpr(a_ctx, rule, null);
         }
+        loops.push(while_);
+        while_.setRule(rule);
     }
 
     @Override
     public void exitWhile_stmt(Python3Parser.While_stmtContext ctx){
-        this.currentNode = this.currentScope.getScopeNode(); // reset node
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode(); // reset node
+        else this.currentNode = loops.peek();
         /*
          * Note that this is different from class or function because the scope remains the same, just the node changes
          * */
     }
 
     /* IF */
+    @Override
+    public void enterIf_stmt(Python3Parser.If_stmtContext ctx) {
+        IfBlock block = new IfBlock(
+            this.currentNode,
+            new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+            new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
+        );
+        this.currentNode = block;
+        loops.push(block);
+    }
 
-    
+    @Override
+    public void exitIf_stmt(Python3Parser.If_stmtContext ctx) {
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode();
+        else this.currentNode = loops.peek();
+    }
 
+    @Override
+    public void enterIf_(Python3Parser.If_Context ctx) {
+        Condition condition = new Condition(
+            this.currentNode,
+            new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+            new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
+        );
+        this.currentNode = condition;
+        Node rule = new Node(
+            this.currentNode,
+            new Pair<>(ctx.test().start.getLine(), ctx.test().start.getCharPositionInLine()),
+            new Pair<>(ctx.test().stop.getLine(), ctx.test().stop.getCharPositionInLine())
+        );
+
+        ParseTreeWalker walker = new ParseTreeWalker();
+        NextAtomExpr sb = new NextAtomExpr();
+        walker.walk(sb, ctx.test());
+        for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
+            processAtomExpr(a_ctx, rule, null);
+        }
+        loops.push(condition);
+        condition.setRule(rule);
+    }
+
+    @Override
+    public void exitIf_(Python3Parser.If_Context ctx){
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode();
+        else this.currentNode = loops.peek();
+    }
+
+    @Override
+    public void enterElif_(Python3Parser.Elif_Context ctx) {
+        Condition condition = new Condition(
+            this.currentNode,
+            new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+            new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
+        );
+        this.currentNode = condition;
+        Node rule = new Node(
+            this.currentNode,
+            new Pair<>(ctx.test().start.getLine(), ctx.test().start.getCharPositionInLine()),
+            new Pair<>(ctx.test().stop.getLine(), ctx.test().stop.getCharPositionInLine())
+        );
+
+        ParseTreeWalker walker = new ParseTreeWalker();
+        NextAtomExpr sb = new NextAtomExpr();
+        walker.walk(sb, ctx.test());
+        for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
+            processAtomExpr(a_ctx, rule, null);
+        }
+        loops.push(condition);
+        condition.setRule(rule);
+    }
+
+    @Override
+    public void exitElif_(Python3Parser.Elif_Context ctx){
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode();
+        else this.currentNode = loops.peek();
+    }
+
+    @Override
+    public void enterElse_(Python3Parser.Else_Context ctx) {
+        Condition condition = new Condition(
+            this.currentNode,
+            new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+            new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
+        );
+        this.currentNode = condition;
+
+        loops.push(condition);
+    }
+
+    @Override
+    public void exitElse_(Python3Parser.Else_Context ctx) {
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode();
+        else this.currentNode = loops.peek();
+    }
 }

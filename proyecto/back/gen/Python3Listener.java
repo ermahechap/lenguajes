@@ -1,4 +1,4 @@
-// Generated from /home/c3po/Git/lenguajes/proyecto/grammar/Python3.g4 by ANTLR 4.7.2
+// Generated from /home/c3po/Git/lenguajes/proyecto/back/grammar/Python3.g4 by ANTLR 4.7.2
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -426,6 +426,36 @@ public interface Python3Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIf_stmt(Python3Parser.If_stmtContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link Python3Parser#if_}.
+	 * @param ctx the parse tree
+	 */
+	void enterIf_(Python3Parser.If_Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link Python3Parser#if_}.
+	 * @param ctx the parse tree
+	 */
+	void exitIf_(Python3Parser.If_Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link Python3Parser#elif_}.
+	 * @param ctx the parse tree
+	 */
+	void enterElif_(Python3Parser.Elif_Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link Python3Parser#elif_}.
+	 * @param ctx the parse tree
+	 */
+	void exitElif_(Python3Parser.Elif_Context ctx);
+	/**
+	 * Enter a parse tree produced by {@link Python3Parser#else_}.
+	 * @param ctx the parse tree
+	 */
+	void enterElse_(Python3Parser.Else_Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link Python3Parser#else_}.
+	 * @param ctx the parse tree
+	 */
+	void exitElse_(Python3Parser.Else_Context ctx);
 	/**
 	 * Enter a parse tree produced by {@link Python3Parser#while_stmt}.
 	 * @param ctx the parse tree

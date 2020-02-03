@@ -73,7 +73,7 @@ public class Node {
             ", \"children_id\": " + this.getChildrenIds().toString() +
             ", \"from\": " + ((from != null)? from.toString() : "null") +
             ", \"to\": " + ((to != null)? to.toString() : "null") +
-            (( ("node number string boolean").contains(type) ) ? "}" : "");
+            (( ("node number string boolean rule").contains(type) ) ? "}" : "");
     }
 }
 
@@ -99,13 +99,16 @@ class Root extends Node {
         for(String name: builtin){
             Function function = new Function(null, from, to, name);
             ProcessBuilder pb = new ProcessBuilder("python", "namecheck.py", name); // /home/c3po/anaconda3/bin/python
+            pb.directory(new File(System.getProperty("user.dir")));
             try{
                 Process process = pb.start();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 process.waitFor();
                 String line = reader.readLine();
-                //System.out.println(line);
-                //function.info = (line.length() >100) ? line.substring(0, 100) + "...": line;
+                if(line !=null){
+                    System.out.println(line);
+                    function.info = (line.length() >100) ? line.substring(0, 100) + "...": line;
+                }
             } catch (IOException | InterruptedException e) {
                 System.out.println(e);
             }finally {
@@ -442,7 +445,7 @@ class For extends Node {
 
     public void setRule(Node rule) {
         this.rule = rule;
-        this.rule.type = "rule";
+        this.rule.type = "rule_block";
     }
 }
 
@@ -450,13 +453,14 @@ class While extends Node {
     private Node rule;
     public While(Node parent, Pair from, Pair to) {
         super(parent, from, to);
+        this.type = "while_block";
     }
 
     public Node getRule() {
         return rule;
     }
 
-    public void setRule() {
+    public void setRule(Node rule) {
         this.rule = rule;
         this.rule.type = "rule";
     }
@@ -471,19 +475,54 @@ class While extends Node {
 
 
 
-class If extends Node {
-    public ArrayList<If> else_if = new ArrayList<>();
-    public Node condition = null;
-    public If(Node parent, Pair from, Pair to) {
+class IfBlock extends Node {
+    private ArrayList<Node> conditions = new ArrayList<>();
+
+    public IfBlock(Node parent, Pair from, Pair to) {
         super(parent, from, to);
+        this.type = "if_block";
+    }
+    public ArrayList<Integer> getConditionsIds() {
+        ArrayList<Integer> ids = new ArrayList<>();
+        conditions.forEach((x)->ids.add(x.id));
+        return ids;
+    }
+
+    public boolean setCondition(Node condition) {
+        return this.conditions.add(condition);
     }
 
     @Override
     public String toString() {
-        return null;
+        return super.toString() +
+            ", name: " + getConditionsIds() +
+            "}";
     }
 }
 
+class Condition extends Node{
+    private Node rule;
+    public Condition(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type = "condition";
+    }
+
+    public Node getRule() {
+        return rule;
+    }
+
+    public void setRule(Node rule) {
+        this.rule = rule;
+        this.rule.type = "rule";
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+            ", \"rule\": " + ((this.rule != null) ? this.rule.id : "null") +
+            "}";
+    }
+}
 
 
 
