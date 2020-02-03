@@ -429,7 +429,7 @@ class For extends Node {
     private Node rule;
     public For(Node parent, Pair from, Pair to) {
         super(parent, from, to);
-        this.type = "for";
+        this.type = "for_block";
     }
 
     @Override
@@ -445,7 +445,7 @@ class For extends Node {
 
     public void setRule(Node rule) {
         this.rule = rule;
-        this.rule.type = "rule_block";
+        this.rule.type = "rule";
     }
 }
 
@@ -495,7 +495,7 @@ class IfBlock extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", name: " + getConditionsIds() +
+            ", \"conditions_ids\": " + getConditionsIds() +
             "}";
     }
 }
