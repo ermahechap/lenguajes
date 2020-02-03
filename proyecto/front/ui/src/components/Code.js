@@ -29,7 +29,7 @@ const Code = (props) => {
     const CheckboxGroup = Checkbox.Group;
     const { Meta } = Card;
 
-    const plainOptions = ['variable', 'list', 'function', 'dictionary', 'class', 'number', 'subscript', 'composed Element', 'for_block'];
+    const plainOptions = ['variable', 'list', 'function', 'dictionary', 'class', 'number', 'subscript', 'composed Element', 'for_block', 'function_call'];
     /*variable: 'red',*/
     /*list: 'green',*/
     /*function: 'blue',*/
@@ -90,9 +90,13 @@ else:
         str: codeFromServer
     });
 
+    const [idCard, setIdCard] = useState({
+        id: 123
+    })
+
     const [cardInfo, setCardInfo] = useState({
-        title: "",
-        description: "",
+        title: "Card Information",
+        description: "Some Info",
     })
 
     const rows = new Set();
@@ -107,13 +111,25 @@ else:
 
     let b = false;
 
+    // const fillCards = (dataJson) => {
+    //     for(let i = 0; i<dataJson.data.length; i++){
+    //         if(dataJson.data[i].parent_id !== -1){
+    //
+    //         }
+    //     }
+    //     return(
+    //         <div>
+    //
+    //         </div>
+    //     )
+    //
+    // };
+
     const fillObjects = (codeFromServer) =>{
         console.log(dataJson.data);
         // console.log(dataFromS);
         for(let i = 0; i < dataJson.data.length; i++) {
-            if(dataJson.data[i].parent_id === -1){
-
-            }else{
+            if(dataJson.data[i].parent_id !== -1){
                 console.log(dataJson.data[i]);
                 if((dataJson.data[i].from[0]) === (dataJson.data[i].to[0])){
                     if(!rows.has(dataJson.data[i].from[0])){
@@ -142,7 +158,10 @@ else:
                 if(closes[dataJson.data[i].to[0]] === undefined){
                     closes[dataJson.data[i].to[0]] = {};
                 }
-                opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = "<mark class="+ "w" + " type=" + dataJson.data[i].type + " id=" + dataJson.data[i].id +">";
+                opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = "<mark class="+ "w" + " type=" + dataJson.data[i].type + " id=" + dataJson.data[i].id +
+                                                                            " href=" + "\"https://docs.python.org/3/glossary.html\"" +
+                                                                            + " onClick=" + "console.log(\"hola\") " +
+                                                                            ">";
                 closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] = "</mark>";
 
                 if(!setByRows[dataJson.data[i].from[0]].has(dataJson.data[i].from[1])){
@@ -204,6 +223,7 @@ else:
         if(!b){
             fillObjects(codeFromServer);
         }
+
         console.log(optionsSelected);
         const set = new Set(optionsSelected);
         console.log(set);
@@ -246,6 +266,9 @@ else:
                         case "for_block":
                             t = "for";
                             break;
+                        case "function_call":
+                            t= "f_c";
+                            break;
                     }
                     opens[r][i] = begin+t+end;
                     // console.log(begin, "w", end)
@@ -255,6 +278,24 @@ else:
         }
         handleCodeFromServe(codeFromServer);
         console.log(opens);
+    };
+
+    const fillCard = (id) => {
+        let name = dataJson.data[id].type;
+        let info = "id: " + dataJson.data[id].id + "\n"
+            + "children_id: " + dataJson.data[id].children_id +  "\n"
+            + "from: : " + dataJson.data[id].from +  "\n"
+            + "to: : " + dataJson.data[id].to +  "\n"
+            + "name: : " + dataJson.data[id].name +  "\n"
+            + "info: : " + dataJson.data[id].info +  "\n"
+        setCardInfo({...cardInfo,
+            title: name,
+            description: info,
+        })
+
+        setIdCard({...idCard,
+            id: (id+1) % dataJson.data.length
+        })
     };
 
     return (
@@ -290,9 +331,8 @@ else:
                 </Col>
                 <Col span={12}>
                     <div className="info-container">
-                        <Card style={{ width: 300, marginTop: 50 }}>
+                        <Card style={{ width: 300, marginTop: 50 }} title={cardInfo.title} extra={<a href="#" onClick={() => fillCard(idCard.id)}>More</a>}>
                             <Meta
-                                title={cardInfo.title}
                                 description={cardInfo.description}
                             />
                         </Card>
