@@ -284,17 +284,17 @@ else:
         let name = dataJson.data[id].type;
 
 
-        // let info = <ul>
-        //     {for }
-        //     <li>{"id: " + dataJson.data[id].id}</li>
-        //     <li>{"from: " + dataJson.data[id].from}</li>
-        //     <li>{"to: " + dataJson.data[id].to}</li>
-        //     <li>{"info: " + dataJson.data[id].info}</li>
-        // </ul>;
-        const numbers = [1,1,1,1]
-        const info = dataJson.data.map((number) =>
-            <li>{number}</li>
-        );
+        let info = <ul>
+            <li>{"id: " + dataJson.data[id].id}</li>
+            {/*<li></li>*/}
+            <li>{"from: " + dataJson.data[id].from}</li>
+            <li>{"to: " + dataJson.data[id].to}</li>
+            <li>{"info: " + dataJson.data[id].info}</li>
+        </ul>;
+        // const numbers = [1,1,1,1]
+        // const info = dataJson.data.map((number) =>
+        //     <li>{number}</li>
+        // );
 
 
             // "<p>"+"id: " + dataJson.data[id].id + "</p>"+"\n"
@@ -350,13 +350,11 @@ else:
                               title={cardInfo.title}
                               extra={
                                   <div>
-                                      <a href="#" onClick={() => fillCard(idCard.id)}> More </a>
+                                      <a onClick={() => fillCard(idCard.id)}> More </a>
                                       <a href="https://docs.python.org/3/glossary.html" rel="noopener noreferrer" target="_blank" onClick={() => console.log(cardInfo.description)}> Doc </a>
                                   </div>
                               }>
-                            <ul>
-                                {cardInfo.description}
-                            </ul>
+                            {cardInfo.description}
 
 
                         </Card>
