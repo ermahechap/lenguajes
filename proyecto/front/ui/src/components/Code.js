@@ -71,11 +71,16 @@ const Code = (props) => {
 
 
     const codeFromServer =`<code>
-A,B,C[5:10, 5, 5:10, D:E:[F,G,H[:10]], I[:5], j+5]
-
-[A,B+5]
-
-[A, [A,C]]
+ class B:
+     def __init__(self):
+         pass
+     def f(self):
+         return 10;
+     def ff(self, z, *args):
+         return 10
+ class A:
+     a = B
+     aa = B()
 </code>`;
 
     const [code, setCode] = useState({
