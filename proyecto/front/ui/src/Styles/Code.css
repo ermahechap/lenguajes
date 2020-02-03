@@ -13,6 +13,7 @@ pre > code {
     display: block;
     padding: 1rem;
     word-wrap: normal;
+    max-height: 500px;
 }
 
 .w{
@@ -20,7 +21,7 @@ pre > code {
 }
 
 .v{
-    background-color: red;
+    background-color: hotpink
 }
 
 .l{
@@ -51,19 +52,58 @@ pre > code {
     background-color: lightblue;
 }
 
-.for{
-    background-color: burlywood;
+.var_r{
+    background-color: brown;
+}
+
+.tp{
+    background-color: cadetblue;
+}
+
+.f_r{
+    background-color: deeppink;
+}
+
+.c_r{
+    background-color: mediumspringgreen;
+}
+
+.c_c{
+    background-color: greenyellow;
+}
+
+.f_b{
+    background-color: orchid;
+}
+
+.w_b{
+    background-color: palegreen;
+}
+
+.i_b{
+    background-color: teal;
+}
+
+.con{
+    background-color: sandybrown;
+}
+
+.comp{
+    background-color: springgreen;
+}
+
+.r{
+    background-color: violet;
 }
 
 .f_c{
-    background-color: #9dffc4;
+    background-color: indigo;
 }
 
-/*variable: 'red',*/
-/*list: 'green',*/
-/*function: 'blue',*/
-/*dictionary: 'purple',*/
-/*class: 'orange',*/
-/*number: 'aquamarine',*/
-/*subscript: 'gold',*/
-/*composed_element: 'lightblue'*/
+.c_l{
+    background-color: yellow;
+}
+
+.recolor{
+    background-color: red !important;
+}

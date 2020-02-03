@@ -29,16 +29,7 @@ const Code = (props) => {
     const CheckboxGroup = Checkbox.Group;
     const { Meta } = Card;
 
-    const plainOptions = ['variable', 'list', 'function', 'dictionary', 'class', 'number', 'subscript', 'composed Element', 'for_block', 'function_call'];
-    /*variable: 'red',*/
-    /*list: 'green',*/
-    /*function: 'blue',*/
-    /*dictionary: 'purple',*/
-    /*class: 'orange',*/
-    /*number: 'aquamarine',*/
-    /*subscript: 'gold',*/
-    /*composed_element: 'lightblue'*/
-
+    const plainOptions = ['variable', 'list', 'function', 'dictionary', 'class', 'number', 'subscript', 'composed_element', 'variable_reference', 'tuple', 'function_reference', 'class_reference', 'calledClass', 'for_block', 'while_block', 'if_block', 'condition', 'composed', 'return','function_call','class_call']
     const codeFromServer =`<code>
 # class B:
 #     def __init__(self):
@@ -91,7 +82,7 @@ else:
     });
 
     const [idCard, setIdCard] = useState({
-        id: 123
+        id: 0
     })
 
     const [cardInfo, setCardInfo] = useState({
@@ -110,20 +101,6 @@ else:
     var temp = '';
 
     let b = false;
-
-    // const fillCards = (dataJson) => {
-    //     for(let i = 0; i<dataJson.data.length; i++){
-    //         if(dataJson.data[i].parent_id !== -1){
-    //
-    //         }
-    //     }
-    //     return(
-    //         <div>
-    //
-    //         </div>
-    //     )
-    //
-    // };
 
     const fillObjects = (codeFromServer) =>{
         console.log(dataJson.data);
@@ -159,7 +136,6 @@ else:
                     closes[dataJson.data[i].to[0]] = {};
                 }
                 opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = "<mark class="+ "w" + " type=" + dataJson.data[i].type + " id=" + dataJson.data[i].id +
-                                                                            " href=" + "\"https://docs.python.org/3/glossary.html\"" +
                                                                             + " onClick=" + "console.log(\"hola\") " +
                                                                             ">";
                 closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] = "</mark>";
@@ -210,15 +186,35 @@ else:
             }
             temp += "\n";
         }
-        // for(let r of res){
-        //     console.log(r);
-        // }
-        //
+
         console.log("temp\n" + temp);
         setCode({...code,str: temp});
         return temp
     };
 
+    const typeMaping = {
+        "variable": "v",
+        "list": "l",
+        "function": "f",
+        "dictionary": "d",
+        "class": "c",
+        "number": "n",
+        "subscript": "s",
+        "composed_element": "e",
+        "variable_reference": "var_t",
+        "tuple": "tp",
+        "function_reference": "f_r",
+        "class_reference": "c_r",
+        "calledClass": "c_c",
+        "for_block": "f_b",
+        "while_block": "w_b",
+        "if_block": "i_b", 
+        "condition": "con",
+        "composed": "comp",
+        "return": "r",
+        "function_call": "f_c",
+        "class_call": "c_l"
+    }
     const handleOptionsSelected = (optionsSelected) =>{
         if(!b){
             fillObjects(codeFromServer);
@@ -238,38 +234,8 @@ else:
                     let begin = opens[r][i].substr(0,12);
                     let t = "w";
                     let end = opens[r][i].substr(13,opens[r][i].length);
-                    switch (type) {
-                        case "variable":
-                            t = "v"
-                            break;
-                        case "list":
-                            t = "l";
-                            break;
-                        case "function":
-                            t = "f";
-                            break;
-                        case "dictionary":
-                            t = "d";
-                            break;
-                        case "class":
-                            t = "c";
-                            break;
-                        case "number":
-                            t = "n";
-                            break;
-                        case "subscript":
-                            t = "s";
-                            break;
-                        case "composed_element":
-                            t = "e";
-                            break;
-                        case "for_block":
-                            t = "for";
-                            break;
-                        case "function_call":
-                            t= "f_c";
-                            break;
-                    }
+                    t = typeMaping[type]
+                    
                     opens[r][i] = begin+t+end;
                     // console.log(begin, "w", end)
                 }
@@ -282,14 +248,25 @@ else:
 
     const fillCard = (id) => {
         let name = dataJson.data[id].type;
-
+        
+        let elements = Object.keys(dataJson.data[id]).map((k,v)=>{
+            let dat = `${k}:`
+            let val = (k,v)=>{
+                if(k === 'from' || k === 'to')return v[0] + ", " + v[1]
+                else if(v!==null && typeof(v) === 'object'){
+                    return v.map((n)=>{
+                        return <a onClick={() => fillCard(Math.abs(n) - 1)}>{n},</a>
+                    })
+                } else if(typeof(v) === 'number')return <a onClick={() => fillCard(Math.abs(v)-1)}>{v}</a>
+                return v
+            }
+            
+        return(<li>{dat} {val(k, dataJson.data[id][k])}</li>)
+        })
+        console.log(id)
 
         let info = <ul>
-            <li>{"id: " + dataJson.data[id].id}</li>
-            {/*<li></li>*/}
-            <li>{"from: " + dataJson.data[id].from}</li>
-            <li>{"to: " + dataJson.data[id].to}</li>
-            <li>{"info: " + dataJson.data[id].info}</li>
+            {elements}
         </ul>;
         // const numbers = [1,1,1,1]
         // const info = dataJson.data.map((number) =>
