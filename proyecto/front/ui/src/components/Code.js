@@ -71,16 +71,29 @@ const Code = (props) => {
 
 
     const codeFromServer =`<code>
- class B:
-     def __init__(self):
-         pass
-     def f(self):
-         return 10;
-     def ff(self, z, *args):
-         return 10
- class A:
-     a = B
-     aa = B()
+class B:
+    def __init__(self):
+        pass
+    def f(self):
+        return 10;
+    def ff(self, z, *args):
+        return 10
+class A:
+    a = B
+    aa = B()
+ A
+A()
+A.a
+A().a
+A.aa.f()
+A().aa.f()
+A().aa.ff(5,10)
+ c = 10
+cc = c + 5
+cc = cc + 3
+zz = 1
+A = [1,2,3]
+A[:zz]
 </code>`;
 
     const [code, setCode] = useState({
@@ -103,9 +116,10 @@ const Code = (props) => {
         console.log(dataJson.data);
         // console.log(dataFromS);
         for(let i = 0; i < dataJson.data.length; i++) {
-            if(dataJson.data.parent_id === -1){
+            if(dataJson.data[i].parent_id === -1){
 
             }else{
+                console.log(dataJson.data[i]);
                 if((dataJson.data[i].from[0]) === (dataJson.data[i].to[0])){
                     if(!rows.has(dataJson.data[i].from[0])){
                         opens[dataJson.data[i].from[0]] = {};
@@ -125,16 +139,14 @@ const Code = (props) => {
                         rows.add((dataJson.data[i].to[0]));
                         setByRows[dataJson.data[i].to[0]] = new Set();
                     }
-
                 }
-                /*variable: 'red',*/
-                /*list: 'green',*/
-                /*function: 'blue',*/
-                /*dictionary: 'purple',*/
-                /*class: 'orange',*/
-                /*number: 'aquamarine',*/
-                /*subscript: 'gold',*/
-                /*composed_element: 'lightblue'*/
+
+                if(opens[dataJson.data[i].from[0]] === undefined){
+                    opens[dataJson.data[i].from[0]] = {};
+                }
+                if(closes[dataJson.data[i].to[0]] === undefined){
+                    closes[dataJson.data[i].to[0]] = {};
+                }
                 opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = "<mark class="+ "w" + " type=" + dataJson.data[i].type + " id=" + dataJson.data[i].id +">";
                 closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] = "</mark>";
 
@@ -159,32 +171,35 @@ const Code = (props) => {
         console.log(res);
         console.log(opens);
         console.log(closes);
-        // console.log(setByRows);
-        // temp += `<code>`;
         console.log(rows);
         for(let r = 0; r < res.length; r++){
             if(rows.has(r)){
                 for(let c= 0; c < res[r].length; c++){
-                    if(c in opens[r]){
-                        // console.log(opens[row][j]);
-                        temp+=(opens[r][c]);
-                        // console.log(temp);
+                    if(opens[r] === undefined){
+
+                    }else{
+                        if(c in opens[r]){
+                            temp+=(opens[r][c]);
+                        }
                     }
-                    if(c in closes[r]){
-                        temp+=(closes[r][c]);
+                    if(closes[r] === undefined){
+
+                    }else{
+                        if(c in closes[r]){
+                            temp+=(closes[r][c]);
+                        }
                     }
                     temp+=(res[r][c]);
                 }
-                console.log("j: " + r);
             }else{
                 temp+= res[r];
             }
             temp += "\n";
         }
-        for(let r of res){
-            console.log(r);
-        }
-
+        // for(let r of res){
+        //     console.log(r);
+        // }
+        //
         console.log("temp\n" + temp);
         setCode({...code,str: temp});
         return temp
@@ -202,7 +217,6 @@ const Code = (props) => {
             for(let i in opens[r]){
                 let type = opens[r][i].split(' ')[2].split('=')[1];
 
-                //https://love2dev.com/blog/javascript-includes/
                 if(set.has(type)){
                     console.log(type);
                     console.log(opens[r][i]);
@@ -251,16 +265,7 @@ const Code = (props) => {
                 This is the descriptive text before the code example:
             </p>
             <div className="checkbox-container">
-                <div style={{ borderBottom: '1px solid #E9E9E9' }}>
-                    <Checkbox
-                        // indeterminate={()=>checkboxOptions.indeterminate}
-                        // onChange={(e)=>onCheckAllChange(e)}
-                        // checked={checkboxOptions.checkAll}
-                    >
-                        Check all
-                    </Checkbox>
-                </div>
-                <br />
+
                 <CheckboxGroup
                     options={plainOptions}
                     onChange={(optionsSelected) => handleOptionsSelected(optionsSelected)}
