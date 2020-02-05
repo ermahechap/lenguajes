@@ -60,7 +60,7 @@ else:
 </code>`;
 
     const [code, setCode] = useState({
-        str: codeFromServer
+        str: ''
     });
 
     const [idTypeMap, setIdTypeMap] = useState({
@@ -89,6 +89,7 @@ else:
     })
 
     const [idCard, setIdCard] = useState({
+        last_id: 0,
         id: 0
     })
 
@@ -187,7 +188,7 @@ else:
         setIsHandled(true)
     };
 
-    const handleOptionsSelected = (options) =>{
+    const handleOptionsSelected = (options, id) =>{
         if(!isHandled) handleCodeFromServe(codeFromServer);
         let diff = plainOptions.filter(x => !options.includes(x))
 
@@ -204,25 +205,23 @@ else:
                     document.getElementById(id).className = c
             }
         }
-        console.log(options)
-        setOptionsSelected({...optionsSelected, options})
-        console.log(optionsSelected)
 
-
-
+        if(id && document.getElementById(dataJson.data[id].id)){
+            console.log("aaa")
+            document.getElementById(dataJson.data[id].id).className = 'selected'
+        }
     };
 
-    const fillCard = (id) => {
+    const fillCard = (id, last) => {
         let name = dataJson.data[id].type;
-        
         let elements = Object.keys(dataJson.data[id]).map((k,v)=>{
             let val = (k,v)=>{
                 if(k === 'from' || k === 'to')return v[0] + ", " + v[1]
                 else if(v!==null && typeof(v) === 'object'){
                     return v.map((n)=>{
-                        return <a onClick={() => fillCard(Math.abs(n) - 1)}>{n},</a>
+                        return <a onClick={() => fillCard(Math.abs(n) - 1 , id)}>{n},</a>
                     })
-                } else if(typeof(v) === 'number')return <a onClick={() => fillCard(Math.abs(v)-1)}>{v}</a>
+                } else if(typeof(v) === 'number')return <a onClick={() => fillCard(Math.abs(v) - 1, id)}>{v}</a>
                 return v
             }
             
@@ -230,9 +229,11 @@ else:
         })
 
         if(document.getElementById(dataJson.data[id].id)){
-            console.log(optionsSelected)
-            handleOptionsSelected(optionsSelected)
             document.getElementById(dataJson.data[id].id).className = 'selected'
+        }
+
+        if(last !== 0 && document.getElementById(dataJson.data[last].id)){
+            document.getElementById(dataJson.data[last].id).className = ''
         }
 
         let info = <ul>
@@ -242,9 +243,12 @@ else:
             title: name,
             description: info,
         });
+        setIdCard({...idCard,
+            id: (id+1) % dataJson.data.length,
+        })
 
         setIdCard({...idCard,
-            id: (id+1) % dataJson.data.length
+            last_id: last
         })
     };
 
@@ -270,12 +274,15 @@ else:
                         <div className="checkbox-container">
                             <CheckboxGroup
                                 options={plainOptions}
-                                onChange={(optionsSelected) => handleOptionsSelected(optionsSelected)}
+                                onChange={(options) =>{
+                                    handleOptionsSelected(options, idCard.id)
+                                    setOptionsSelected(options)
+                                }}
                                 // value={checkboxOptions.options}
                                 // onChange={() => onChange(checkboxOptions.options)}
                             />
                         </div>
-                        <button onClick={()=> handleCodeFromServe(codeFromServer)}>
+                        <button onClick={()=> handleOptionsSelected(optionsSelected)}>
                             Code
                         </button>
                         <figure>
@@ -293,8 +300,16 @@ else:
                               title={cardInfo.title}
                               extra={
                                   <div>
-                                      <a onClick={() => fillCard(idCard.id)}> More </a>
-                                      <a href="https://docs.python.org/3/glossary.html" rel="noopener noreferrer" target="_blank" onClick={() => console.log(cardInfo.description)}> Doc </a>
+                                        <a onClick={() => {
+                                                fillCard(idCard.id, idCard.last_id)
+                                            }}> More </a>
+                                            <a href="https://docs.python.org/3/glossary.html" 
+                                            rel="noopener noreferrer" 
+                                            target="_blank" onClick={() =>{
+                                                console.log(cardInfo.description)
+                                            }}> 
+                                                Doc
+                                            </a>
                                   </div>
                               }>
                             {cardInfo.description}

@@ -12,7 +12,7 @@ function App() {
                 <Col span={24}>
                     <Code/>
                 </Col>
-                <Col span={16}>
+                <Col span={20}>
                 <IndexTree/>
                 </Col>
 
