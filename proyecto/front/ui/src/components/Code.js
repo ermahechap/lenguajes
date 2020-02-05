@@ -86,17 +86,17 @@ else:
         function_call: [],
         class_call: [],
         rule: [],
-    })
+    });
 
     const [idCard, setIdCard] = useState({
         last_id: 0,
         id: 0
-    })
+    });
 
     const [cardInfo, setCardInfo] = useState({
         title: "Card Information",
         description: <p onClick={console.log("hola")}>Some Info</p>,
-    })
+    });
     
     const [isHandled, setIsHandled] = useState(false)
 
@@ -143,8 +143,22 @@ else:
                 if(closes[dataJson.data[i].to[0]] === undefined){
                     closes[dataJson.data[i].to[0]] = {};
                 }
-                opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = `<mark class="w ${dataJson.data[i].type}" id="${dataJson.data[i].id}">`
-                closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] = "</mark>";
+                // if(dataJson.data[i].id === 106){
+                //     console.log(dataJson.data[i]);
+                //     opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = `<mark class="w ${dataJson.data[i].type}" id="${dataJson.data[i].id}">`
+                //     console.log(opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]]);
+                // }
+                if(opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] === undefined){
+                    opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = `<mark class="w ${dataJson.data[i].type}" id="${dataJson.data[i].id}">`
+                }else{
+                    opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = `<mark class="w ${dataJson.data[i].type}" id="${dataJson.data[i].id}">` + opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]]
+                }
+                if(closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] === undefined){
+                    closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] = "</mark>";
+                }else {
+                    closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] = closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] + "</mark>";
+                }
+
                 
                 let type = dataJson.data[i].type;
                 if(obj[type] === undefined) obj[type] = [dataJson.data[i].type]
@@ -159,6 +173,7 @@ else:
                 }
             }
         }
+        console.log(opens)
         setIdTypeMap(obj)
     };
 
