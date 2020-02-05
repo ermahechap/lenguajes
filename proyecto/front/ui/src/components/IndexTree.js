@@ -226,98 +226,28 @@ function transformData(data,node){
 
 
 var datico = transformData(dataFromS, dataFromS[0]);
-// const treee = '['+ datico +']';
 const myTreeData = JSON.stringify(eval("(" + datico + ")"));
 
-// const myTreeData2 = [
-//     {
-//       name: 'ROOT',
-//       attributes: {
-//         keyA: 'val A',
-//         keyB: 'val B',
-//         keyC: 'val C',
-//       },
-//       children: [
-//         {
-//           name: 'Level 2: A',
-//           attributes: {
-//             keyA: 'val A',
-//             keyB: 'val B',
-//             keyC: 'val C',
-//           },
-//           children: [
-//               {
-//                   name: 'Level 2: B',
-//               attributes: {
-//                 keyA: 'val A',
-//                 keyB: 'val B',
-//                 keyC: 'val C',
-//             },
-//         },
-//               {
-//                   name: 'Level 2: A',
-//               attributes: {
-//                 keyA: 'val A',
-//                 keyB: 'val B',
-//                 keyC: 'val C',
-//             }
-//         }
-//           ]
-//         },
-//         {
-//           name: 'Level 2: B',
-//           onClick: () =>{console.log('hello');},
-//         },
-//       ],
-//
-//     },
-//   ];
-
-
   const updateHandler = (nodeData, event) => {
-    // if (this.treeTranslateOrZoomTime && this.treeNodeMouseOverTime < this.treeTranslateOrZoomTime) {
-    //   // Make sure that if the user subsequently clicks the current node without mousing off it,
-    //   // the click will be honored.
-    //   this.treeTranslateOrZoomTime = null;
-    //   return;
-    // }
-    // this.props.actions.openThingyDetail(nodeData.name, nodeData.attributes.version);
-    console.log(nodeData.x+' '+nodeData.y);
-    // console.log(Tree);
     
+    console.log(nodeData.x+' '+nodeData.y);
+
     
   }
 
-  // {/* <Tree data={myTreeData2} orientation = 'vertical' /> */}
+
 
   
-  const Arbolito = (props)=> {
-
+  const IndexTree = (props)=> {
       const {state, actions} = useContext(Context);
-
       const clickHandler = (nodeData, event) => {
-        // if (this.treeTranslateOrZoomTime && this.treeNodeMouseOverTime < this.treeTranslateOrZoomTime) {
-        //   // Make sure that if the user subsequently clicks the current node without mousing off it,
-        //   // the click will be honored.
-        //   this.treeTranslateOrZoomTime = null;
-        //   return;
-        // }
-        // this.props.actions.openThingyDetail(nodeData.name, nodeData.attributes.version);
-        // console.log(nodeData.x+' '+nodeData.y);
-        // console.log(Tree);
-
-        console.log(state);
         actions({
           type: 'setState',
           payload: {...state, nodeData: nodeData}
         });
 
-        console.log(nodeData);
-        // props.node.push(nodeData);
       };
-      
       return (
-        //{/* <Tree /> will fill width/height of its container; in this case `#treeWrapper` */}
         <div id="treeWrapper" style={{width: '75em', height: '20em'}}>
           <Tree data={JSON.parse(myTreeData)} orientation = 'vertical' onClick={clickHandler} onUpdate={updateHandler} collapsible={false} />
           <button onClick={() => console.log(Tree)}>
@@ -331,4 +261,4 @@ const myTreeData = JSON.stringify(eval("(" + datico + ")"));
 
   }
 
-  export default Arbolito;
+  export default IndexTree;

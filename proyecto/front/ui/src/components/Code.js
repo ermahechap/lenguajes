@@ -5,31 +5,13 @@ import Context from "../GlobalState/context";
 import { Card } from 'antd';
 import dataJson from "../input/input.json"
 import { Row, Col } from 'antd';
-import Arbolito from "./Arbolito dime tu";
 
 const Code = (props) => {
-
-    useEffect(() => {
-        let script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.async = true;
-
-        script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
-
-
-    });
-
     const { state } = useContext(Context);
-
-    const setState = () =>{
-        console.log(state);
-    };
-
     const CheckboxGroup = Checkbox.Group;
-    const { Meta } = Card;
 
-    const plainOptions = ['variable', 'list', 'function', 'dictionary', 'class', 'number', 'subscript', 'composed_element', 'variable_reference', 'tuple', 'function_reference', 'class_reference', 'calledClass', 'for_block', 'while_block', 'if_block', 'condition', 'composed', 'return','function_call','class_call']
+    const plainOptions = ['variable', 'list', 'function', 'dictionary', 'class', 'number', 'subscript', 'composed_element', 'variable_reference', 'tuple', 'function_reference', 'class_reference', 'calledClass', 'for_block', 'while_block', 'if_block', 'condition', 'composed', 'return','function_call','class_call','rule']
+
     const codeFromServer =`<code>
 # class B:
 #     def __init__(self):
@@ -81,6 +63,31 @@ else:
         str: codeFromServer
     });
 
+    const [idTypeMap, setIdTypeMap] = useState({
+        variable: [],
+        list: [],
+        function: [],
+        dictionary: [],
+        class: [],
+        number: [],
+        subscript: [],
+        composed_element: [],
+        variable_reference: [],
+        tuple: [],
+        function_reference: [],
+        class_reference: [],
+        calledClass: [],
+        for_block: [],
+        while_block: [],
+        if_block: [], 
+        condition: [],
+        composed: [],
+        return: [],
+        function_call: [],
+        class_call: [],
+        rule: [],
+    })
+
     const [idCard, setIdCard] = useState({
         id: 0
     })
@@ -89,6 +96,10 @@ else:
         title: "Card Information",
         description: <p onClick={console.log("hola")}>Some Info</p>,
     })
+    
+    const [isHandled, setIsHandled] = useState(false)
+
+    const [optionsSelected, setOptionsSelected] = useState([])
 
     const rows = new Set();
 
@@ -100,14 +111,10 @@ else:
 
     var temp = '';
 
-    let b = false;
-
     const fillObjects = (codeFromServer) =>{
-        console.log(dataJson.data);
-        // console.log(dataFromS);
+        let obj = Object.assign({}, idTypeMap);
         for(let i = 0; i < dataJson.data.length; i++) {
             if(dataJson.data[i].parent_id !== -1){
-                console.log(dataJson.data[i]);
                 if((dataJson.data[i].from[0]) === (dataJson.data[i].to[0])){
                     if(!rows.has(dataJson.data[i].from[0])){
                         opens[dataJson.data[i].from[0]] = {};
@@ -135,11 +142,13 @@ else:
                 if(closes[dataJson.data[i].to[0]] === undefined){
                     closes[dataJson.data[i].to[0]] = {};
                 }
-                opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = "<mark class="+ "w" + " type=" + dataJson.data[i].type + " id=" + dataJson.data[i].id +
-                                                                            + " onClick=" + "console.log(\"hola\") " +
-                                                                            ">";
+                opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = `<mark class="w ${dataJson.data[i].type}" id="${dataJson.data[i].id}">`
                 closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] = "</mark>";
-
+                
+                let type = dataJson.data[i].type;
+                if(obj[type] === undefined) obj[type] = [dataJson.data[i].type]
+                else obj[type].push(dataJson.data[i].id)
+                setCode({...code, str: temp});
                 if(!setByRows[dataJson.data[i].from[0]].has(dataJson.data[i].from[1])){
                     setByRows[dataJson.data[i].from[0]].add(dataJson.data[i].from[1]);
                 }
@@ -148,36 +157,23 @@ else:
                     setByRows[dataJson.data[i].to[0]].add(dataJson.data[i].to[1].valueOf()+1);
                 }
             }
-
         }
-        b = true;
+        setIdTypeMap(obj)
     };
 
     const handleCodeFromServe = (codeFromServer) => {
-        if(!b){
-            fillObjects(codeFromServer);
-        }
+        console.log("handling....")
+        fillObjects(codeFromServer);
+
         const res = codeFromServer.split('\n');
-        console.log(res);
-        console.log(opens);
-        console.log(closes);
-        console.log(rows);
         for(let r = 0; r < res.length; r++){
             if(rows.has(r)){
                 for(let c= 0; c < res[r].length; c++){
-                    if(opens[r] === undefined){
-
-                    }else{
-                        if(c in opens[r]){
-                            temp+=(opens[r][c]);
-                        }
+                    if(opens[r] !== undefined && c in opens[r]){
+                        temp+=(opens[r][c]);
                     }
-                    if(closes[r] === undefined){
-
-                    }else{
-                        if(c in closes[r]){
-                            temp+=(closes[r][c]);
-                        }
+                    if(closes[r] !== undefined && c in closes[r]){
+                        temp+=(closes[r][c]);
                     }
                     temp+=(res[r][c]);
                 }
@@ -187,70 +183,39 @@ else:
             temp += "\n";
         }
 
-        console.log("temp\n" + temp);
-        setCode({...code,str: temp});
-        return temp
+        setCode({...code, str: temp});
+        setIsHandled(true)
     };
 
-    const typeMaping = {
-        "variable": "v",
-        "list": "l",
-        "function": "f",
-        "dictionary": "d",
-        "class": "c",
-        "number": "n",
-        "subscript": "s",
-        "composed_element": "e",
-        "variable_reference": "var_t",
-        "tuple": "tp",
-        "function_reference": "f_r",
-        "class_reference": "c_r",
-        "calledClass": "c_c",
-        "for_block": "f_b",
-        "while_block": "w_b",
-        "if_block": "i_b", 
-        "condition": "con",
-        "composed": "comp",
-        "return": "r",
-        "function_call": "f_c",
-        "class_call": "c_l"
-    }
-    const handleOptionsSelected = (optionsSelected) =>{
-        if(!b){
-            fillObjects(codeFromServer);
-        }
+    const handleOptionsSelected = (options) =>{
+        if(!isHandled) handleCodeFromServe(codeFromServer);
+        let diff = plainOptions.filter(x => !options.includes(x))
 
-        console.log(optionsSelected);
-        const set = new Set(optionsSelected);
-        console.log(set);
-        console.log(opens);
-        for(let r in opens){
-            for(let i in opens[r]){
-                let type = opens[r][i].split(' ')[2].split('=')[1];
-
-                if(set.has(type)){
-                    console.log(type);
-                    console.log(opens[r][i]);
-                    let begin = opens[r][i].substr(0,12);
-                    let t = "w";
-                    let end = opens[r][i].substr(13,opens[r][i].length);
-                    t = typeMaping[type]
-                    
-                    opens[r][i] = begin+t+end;
-                    // console.log(begin, "w", end)
-                }
-
+        for(let c of diff){
+            for(let id of idTypeMap[c]){
+                if(document.getElementById(id))
+                    document.getElementById(id).className = `${c} w`
             }
         }
-        handleCodeFromServe(codeFromServer);
-        console.log(opens);
+
+        for(let c of options){
+            for(let id of idTypeMap[c]){
+                if(document.getElementById(id))
+                    document.getElementById(id).className = c
+            }
+        }
+        console.log(options)
+        setOptionsSelected({...optionsSelected, options})
+        console.log(optionsSelected)
+
+
+
     };
 
     const fillCard = (id) => {
         let name = dataJson.data[id].type;
         
         let elements = Object.keys(dataJson.data[id]).map((k,v)=>{
-            let dat = `${k}:`
             let val = (k,v)=>{
                 if(k === 'from' || k === 'to')return v[0] + ", " + v[1]
                 else if(v!==null && typeof(v) === 'object'){
@@ -261,25 +226,18 @@ else:
                 return v
             }
             
-        return(<li>{dat} {val(k, dataJson.data[id][k])}</li>)
+            return(<li>{k}: {val(k, dataJson.data[id][k])}</li>)
         })
-        console.log(id)
+
+        if(document.getElementById(dataJson.data[id].id)){
+            console.log(optionsSelected)
+            handleOptionsSelected(optionsSelected)
+            document.getElementById(dataJson.data[id].id).className = 'selected'
+        }
 
         let info = <ul>
             {elements}
         </ul>;
-        // const numbers = [1,1,1,1]
-        // const info = dataJson.data.map((number) =>
-        //     <li>{number}</li>
-        // );
-
-
-            // "<p>"+"id: " + dataJson.data[id].id + "</p>"+"\n"
-            // + "children_id: " + dataJson.data[id].children_id +  "\n"
-            // + "from: : " + dataJson.data[id].from +  "\n"
-            // + "to: : " + dataJson.data[id].to +  "\n"
-            // + "name: : " + dataJson.data[id].name +  "\n"
-            // + "info: : " + dataJson.data[id].info +  "\n"
         setCardInfo({...cardInfo,
             title: name,
             description: info,
@@ -289,6 +247,17 @@ else:
             id: (id+1) % dataJson.data.length
         })
     };
+
+
+    useEffect(() => {
+        let script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.async = true;
+
+        script.src = 'https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
+        if(!isHandled) handleCodeFromServe(codeFromServer);
+    });
 
     return (
         <div>
@@ -310,9 +279,6 @@ else:
                             Code
                         </button>
                         <figure>
-                            <figcaption id="example1-caption" onClick={() => setState()}>
-                                This is the caption
-                            </figcaption>
                             <pre className="prettyprint"
                                  dangerouslySetInnerHTML={{
                                      __html: code.str

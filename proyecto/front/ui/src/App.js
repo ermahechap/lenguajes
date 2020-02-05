@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import Code from "./components/Code";
 import { Row, Col } from 'antd';
-import Arbolito from "./components/Arbolito dime tu";
+import IndexTree from "./components/IndexTree";
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
                     <Code/>
                 </Col>
                 <Col span={16}>
-                <Arbolito></Arbolito>}
+                <IndexTree/>
                 </Col>
 
             </Row>

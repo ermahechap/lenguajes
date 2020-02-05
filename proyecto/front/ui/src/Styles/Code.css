@@ -17,93 +17,93 @@ pre > code {
 }
 
 .w{
-
+    background-color: white !important;
 }
 
-.v{
+.variable{
     background-color: hotpink
 }
 
-.l{
+.list{
     background-color: green;
 }
 
-.f{
+.function{
     background-color: blue;
 }
 
-.d{
+.dictionary{
     background-color: purple;
 }
 
-.c{
+.class{
     background-color: orange;
 }
 
-.n{
+.number{
     background-color: aquamarine;
 }
 
-.s{
+.subscript{
     background-color: gold;
 }
 
-.e{
+.composed_element{
     background-color: lightblue;
 }
 
-.var_r{
+.variable_reference{
     background-color: brown;
 }
 
-.tp{
+.tuple{
     background-color: cadetblue;
 }
 
-.f_r{
+.function_reference{
     background-color: deeppink;
 }
 
-.c_r{
+.class_reference{
     background-color: mediumspringgreen;
 }
 
-.c_c{
+.calledClass{
     background-color: greenyellow;
 }
 
-.f_b{
+.for_block{
     background-color: orchid;
 }
 
-.w_b{
+.while_block{
     background-color: palegreen;
 }
 
-.i_b{
+.if_block{
     background-color: teal;
 }
 
-.con{
+.condition{
     background-color: sandybrown;
 }
 
-.comp{
+.composed{
     background-color: springgreen;
 }
 
-.r{
+.return{
     background-color: violet;
 }
 
-.f_c{
+.function_call{
     background-color: indigo;
 }
 
-.c_l{
+.class_call{
     background-color: yellow;
 }
 
-.recolor{
+.selected{
     background-color: red !important;
 }
