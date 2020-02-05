@@ -151,7 +151,7 @@ else:
                 if(opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] === undefined){
                     opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = `<mark class="w ${dataJson.data[i].type}" id="${dataJson.data[i].id}">`
                 }else{
-                    opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = `<mark class="w ${dataJson.data[i].type}" id="${dataJson.data[i].id}">` + opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]]
+                    opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] = opens[dataJson.data[i].from[0]][dataJson.data[i].from[1]] + `<mark class="w ${dataJson.data[i].type}" id="${dataJson.data[i].id}">`;
                 }
                 if(closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] === undefined){
                     closes[dataJson.data[i].to[0]][dataJson.data[i].to[1] + 1] = "</mark>";
@@ -267,6 +267,13 @@ else:
         })
     };
 
+    const selectById = (id) => {
+        console.log(id);
+        if(document.getElementById(dataJson.data[id].id)){
+            document.getElementById(dataJson.data[id].id).className = 'selected'
+        }
+    }
+
 
     useEffect(() => {
         let script = document.createElement('script');
@@ -283,7 +290,7 @@ else:
             <Row>
                 <Col span={12}>
                     <div className="code-container">
-                        <p id="example1-description">
+                        <p id="example1-description" onClick={()=>selectById(state.nodeData.attributes.id - 1)}>
                             This is the descriptive text before the code example:
                         </p>
                         <div className="checkbox-container">
