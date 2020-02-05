@@ -3,6 +3,23 @@
     /*position: relative;*/
 }
 
+.info-container{
+    position: center;
+}
+
+.search-container{
+    margin-top: 10%;
+    text-align: center;
+}
+
+.ant-checkbox-group-item.ant-checkbox-wrapper{
+    min-width: 150px;
+}
+
+.card-container{
+    margin-left: 28%;
+
+}
 pre, code {
     font-family: monospace, monospace;
 }

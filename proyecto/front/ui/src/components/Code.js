@@ -5,6 +5,9 @@ import Context from "../GlobalState/context";
 import { Card } from 'antd';
 import dataJson from "../input/input.json"
 import { Row, Col } from 'antd';
+import { Input } from 'antd';
+
+const { Search } = Input;
 
 const Code = (props) => {
     const { state } = useContext(Context);
@@ -290,20 +293,14 @@ else:
             <Row>
                 <Col span={12}>
                     <div className="code-container">
+                        <h2>
+                            Code Explorer
+                        </h2>
                         <p id="example1-description" onClick={()=>selectById(state.nodeData.attributes.id - 1)}>
-                            This is the descriptive text before the code example:
+                            This project take a python source file and describe it in a general way wich all component have every one of it declarations and elements.
+                            After this processesing we show an interactive code visualization and a graph of the code
                         </p>
-                        <div className="checkbox-container">
-                            <CheckboxGroup
-                                options={plainOptions}
-                                onChange={(options) =>{
-                                    handleOptionsSelected(options, idCard.id)
-                                    setOptionsSelected(options)
-                                }}
-                                // value={checkboxOptions.options}
-                                // onChange={() => onChange(checkboxOptions.options)}
-                            />
-                        </div>
+
                         <button onClick={()=> handleOptionsSelected(optionsSelected)}>
                             Code
                         </button>
@@ -318,26 +315,46 @@ else:
                 </Col>
                 <Col span={12}>
                     <div className="info-container">
-                        <Card style={{ width: 300, marginTop: 50 }}
-                              title={cardInfo.title}
-                              extra={
-                                  <div>
-                                        <a onClick={() => {
-                                                fillCard(idCard.id, idCard.last_id)
-                                            }}> More </a>
-                                            <a href="https://docs.python.org/3/glossary.html" 
-                                            rel="noopener noreferrer" 
-                                            target="_blank" onClick={() =>{
-                                                console.log(cardInfo.description)
-                                            }}> 
-                                                Doc
-                                            </a>
-                                  </div>
-                              }>
-                            {cardInfo.description}
+                        <div className="search-container">
+                            <Search
+                                placeholder="input search text"
+                                onSearch={value => fillCard(value,idCard.last_id)}
+                                style={{ width: 300 }}
+                            />
+                        </div>
 
+                        <div className="card-container">
+                            <Card style={{ width: 300, marginTop: 50 }}
+                                  title={cardInfo.title}
+                                  extra={
+                                      <div>
+                                          <a onClick={() => {
+                                              fillCard(idCard.id, idCard.last_id)
+                                          }}> More </a>
+                                          <a href="https://docs.python.org/3/glossary.html"
+                                             rel="noopener noreferrer"
+                                             target="_blank" onClick={() =>{
+                                              console.log(cardInfo.description)
+                                          }}>
+                                              Doc
+                                          </a>
+                                      </div>
+                                  }>
+                                {cardInfo.description}
+                            </Card>
+                        </div>
 
-                        </Card>
+                        <div className="checkbox-container">
+                            <CheckboxGroup
+                                options={plainOptions}
+                                onChange={(options) =>{
+                                    handleOptionsSelected(options, idCard.id)
+                                    setOptionsSelected(options)
+                                }}
+                                // value={checkboxOptions.options}
+                                // onChange={() => onChange(checkboxOptions.options)}
+                            />
+                        </div>
                     </div>
                 </Col>
 
