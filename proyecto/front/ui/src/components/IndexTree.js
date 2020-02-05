@@ -429,7 +429,7 @@ const myTreeData = JSON.stringify(eval("(" + datico + ")"));
 
       };
       return (
-        <div id="treeWrapper" style={{width: '75em', height: '30em'}}>
+        <div id="treeWrapper" style={{marginLeft: 'auto', width: '75em', height: '30em'}}>
           <Tree data={JSON.parse(myTreeData)} orientation = 'vertical' onClick={clickHandler} onUpdate={updateHandler} collapsible={false} />
           <button onClick={() => console.log(Tree)}>
             debug

@@ -13,11 +13,10 @@ function App() {
                     <Code/>
                 </Col>
                 <Col span={20}>
-                <IndexTree/>
+                    <IndexTree/>
                 </Col>
 
             </Row>
-
         </div>
     </div>
 
