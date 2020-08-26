@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e41b0b1d-4a88-4fb1-b90a-e0f85d726413" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../proyecto/gen/Python3Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../proyecto/gen/Python3Lexer.java" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="final_antlr" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/input/entrada.txt" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/grammar/MiLenguaje.g4" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="IgnoredFileRootStore">
+    <option name="generatedRoots">
+      <set>
+        <option value="$PROJECT_DIR$/.idea" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectId" id="1TRNYEaG3XjJUVI1MwWR3o3K38O" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/input/entrada.txt" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/input" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.Translate">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="final_antlr" />
+      <option name="PROGRAM_PARAMETERS" value="input/entrada.txt" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Translate" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Translate" />
+      <module name="final_antlr" />
+      <option name="PROGRAM_PARAMETERS" value="input/entrada.txt" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.Main" />
+      <item itemvalue="Application.Translate" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Translate" />
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="showServicesTree" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e41b0b1d-4a88-4fb1-b90a-e0f85d726413" name="Default Changelist" comment="" />
+      <created>1573418993084</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1573418993084</updated>
+      <workItem from="1573418995025" duration="12071000" />
+      <workItem from="1573469776066" duration="16535000" />
+      <workItem from="1573487342680" duration="441000" />
+      <workItem from="1573488195429" duration="533000" />
+      <workItem from="1573489488708" duration="3731000" />
+      <workItem from="1573494162514" duration="17603000" />
+      <workItem from="1573512030977" duration="141000" />
+      <workItem from="1573512762588" duration="1191000" />
+      <workItem from="1573514133471" duration="723000" />
+      <workItem from="1573514964987" duration="103000" />
+      <workItem from="1573515087891" duration="167000" />
+      <workItem from="1573515463385" duration="811000" />
+      <workItem from="1573532228091" duration="2134000" />
+      <workItem from="1573534546710" duration="537000" />
+      <workItem from="1573535111297" duration="27000" />
+      <workItem from="1573535194912" duration="3384000" />
+      <workItem from="1573568452511" duration="6685000" />
+      <workItem from="1573578756511" duration="134000" />
+      <workItem from="1573578914185" duration="362000" />
+      <workItem from="1573588601259" duration="456000" />
+      <workItem from="1573589080791" duration="13000" />
+      <workItem from="1573589113568" duration="2897000" />
+      <workItem from="1573605118925" duration="34967000" />
+      <workItem from="1573646937473" duration="18751000" />
+      <workItem from="1573667074547" duration="154000" />
+      <workItem from="1575590839770" duration="1306000" />
+      <workItem from="1577736244263" duration="50000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

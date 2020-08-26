@@ -1,4 +1,6 @@
-import java.lang.ref.Reference;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import Utilities.*;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -26,23 +28,60 @@ class NextAtomExpr extends Python3BaseListener { // Class intended to get the ne
 // Main class for processing the tree
 public class Processor extends Python3BaseListener {
     private Root root;
+    private String filename;
     public Scope currentScope; // namespaces - like a stack, but not a stack(because keeps references to its subscopes(aka. child scopes)) :v
-    public Node currentNode; // not necessarly a scope (it could be an if, a for, etc....)
-
+    public Node currentNode; // not necessarly a scope node (it could be an if, a for, etc....)
     public int lockBranchCounter = 0;
+
+    public Processor(String arg) {
+        super();
+        this.filename = arg;
+    }
 
     @Override
     public void enterFile_input(Python3Parser.File_inputContext ctx) {
         this.root = Root.getRootInstance();
         this.currentScope = new Scope(null, this.root);
         this.currentNode = this.root;
+        root.setScope(currentScope);
     }
 
     @Override
     public void exitFile_input(Python3Parser.File_inputContext ctx) {
-        System.out.println("[");
-        Node.nodeDump.forEach((n) -> System.out.println(n.toString() + ",")); // uses nodedump which is static
-        System.out.println("]");
+
+        if(this.filename == null){
+            System.out.println("{\"data\": [");
+            Node.nodeDump.forEach((n) -> System.out.println(n.toString() + ",")); // uses nodedump which is static
+            System.out.println("]}");
+        } else {
+            String split[] = this.filename.split("/");
+            split = split[split.length - 1].split("\\.");
+            String filename = "./output/";
+            if(split.length == 1) {
+                filename += this.filename;
+            } else {
+                split = Arrays.copyOfRange(split, 0, split.length -1);
+                filename += String.join(".", split);
+            }
+            filename += ".json";
+            try {
+                File file = new File(filename);
+                FileWriter fw = new FileWriter(filename,false);
+
+                fw.write("{\n\t\"data\": [\n");
+                for (int i = 0; i < Node.nodeDump.size(); i++) {
+                    //System.out.println(Node.nodeDump.get(i));
+                    fw.write("\t\t"+ Node.nodeDump.get(i).toString() + ((i + 1 == Node.nodeDump.size()) ? "\n" : ", \n" ) );
+                }
+                fw.write("\t]\n}");
+                fw.close();
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                System.out.println("Couldn't write to: " + filename);
+                e.printStackTrace();
+            }
+        }
+
     }
 
 
@@ -80,7 +119,8 @@ public class Processor extends Python3BaseListener {
                         walker.walk(sb, test_ctx);
                         for(Python3Parser.Atom_exprContext atom_expr_ctx : sb.atom_expr_ctxs) {
                             if(isSplitable){
-                                processAtomExpr(atom_expr_ctx, this.currentNode, assignNode.children.get(id++));
+                                Node assignValue = (assignNode.children.get(id).children.size() == 1) ? assignNode.children.get(id++).children.get(0) : assignNode.children.get(id++);
+                                processAtomExpr(atom_expr_ctx, this.currentNode, assignValue);
                             }
                             else
                                 processAtomExpr(atom_expr_ctx, this.currentNode, assignNode);
@@ -92,14 +132,14 @@ public class Processor extends Python3BaseListener {
             }
         }
         /*
-        * Otherwise, it is just variable call -> dealt later by the overridden method enterAtom_expr
+        * Otherwise, it is just variable call -> dealt later by the method enterAtom_expr
         */
     }
 
     @Override
     public void enterAtom_expr(Python3Parser.Atom_exprContext ctx) {
         if(this.lockBranchCounter > 0) return;
-        processAtomExpr(ctx, this.currentScope.getScopeNode(), null);
+        processAtomExpr(ctx, this.currentNode, null);
 
     }
     @Override
@@ -107,7 +147,7 @@ public class Processor extends Python3BaseListener {
         this.lockBranchCounter--;
     }
 
-    public ArrayList<Node> lookAhead(Python3Parser.TrailerContext ctx){ // null if trailer has no arglist, empty arraylist if no parameters
+    public ArrayList<Node> lookAhead(Python3Parser.TrailerContext ctx, Node parent){ // null if trailer is .varname , else if trailer is (...)
         if(ctx.OPEN_PAREN() == null) return null;
         ArrayList<Node> parameters = new ArrayList<>();
 
@@ -116,7 +156,7 @@ public class Processor extends Python3BaseListener {
             ParseTreeWalker walker = new ParseTreeWalker();
             NextAtomExpr sb = new NextAtomExpr();
             walker.walk(sb, (arg_ctx.test().size() > 1)? arg_ctx.test(1): arg_ctx.test(0) );
-            sb.atom_expr_ctxs.forEach((a_ctx) -> parameters.add(processAtomExpr(a_ctx, this.currentNode, null)));
+            sb.atom_expr_ctxs.forEach((a_ctx) -> parameters.add(processAtomExpr(a_ctx, parent, null)));
         }
         return parameters;
     }
@@ -125,13 +165,27 @@ public class Processor extends Python3BaseListener {
         this.lockBranchCounter++;
         Pair from = new Pair<>(ctx.atom().start.getLine(), ctx.atom().start.getCharPositionInLine());
         Pair to = new Pair<>(ctx.atom().stop.getLine(), ctx.atom().stop.getCharPositionInLine());
-
         if(!ctx.atom().getTokens(Python3Parser.NAME).isEmpty()){
-
             if(ctx.trailer().isEmpty()){ // just var call (or function ref or class ref)
                 Node referenced = this.currentScope.searchNode(ctx.atom().NAME().getText());
-                if(referenced == null) return null;
                 Node newNode = null;
+                if(referenced == null) {
+                    Function function = (Function)root.findBuiltinFunction(ctx.atom().NAME().getText());
+                    if (function != null) {
+                        newNode = new FunctionReference(parent, from, to);
+                        ((FunctionReference)newNode).setCalledFunction(function);
+                        return newNode;
+                    } else {
+                        //imports, pending
+                    }
+                }
+
+                if(assignNode != null){
+                    newNode = new Var(parent, from, to, ctx.atom().NAME().getText());
+                    ((Var)newNode).setValue(assignNode);
+                    this.currentScope.addNodeToScope( newNode ); // overwrites reference
+                    return newNode;
+                }
 
                 switch (referenced.type) {
                     case "variable": {
@@ -139,127 +193,163 @@ public class Processor extends Python3BaseListener {
                         if(assignNode != null){
                             ((Var)newNode).setValue(assignNode);
                             this.currentScope.addNodeToScope( newNode ); // overwrites reference
+                        } else {
+                            ((Var)newNode).assignVarDeclaration(referenced);
                         }
                         break;
                     }
                     case "function": {
                         newNode = new FunctionReference(parent, from, to);
                         ((FunctionReference)newNode).calledFunction = referenced;
+
                         break;
                     }
                     case "class": {
-                        newNode = new ClassCall(parent, from, to);
-                        ((ClassCall)newNode).calledClass = referenced;
-                    }
-                    default: {
-                        // check on defaults.. pending
+                        newNode = new ClassReference(parent, from, to);
+                        ((ClassReference)newNode).calledClass = referenced;
                         break;
                     }
                 }
                 return newNode;
 
             }else {
-                Composed composed = new Composed(parent, from, to);
+
+                Composed composed = new Composed(parent,
+                    new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+                    new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine()));
                 composed.finished = false;
                 Scope lookupScope = this.currentScope;
                 Node reference = lookupScope.searchNode(ctx.atom().NAME().getText());
                 int lastIdx = -1;
-                for(int i = -1 ; i < ctx.trailer().size(); i++) {
-                    System.out.println("[");
-                    Node.nodeDump.forEach((n) -> System.out.println(n.toString() + ",")); // uses nodedump which is static
-                    System.out.println("]");
-                    Pair t_from = new Pair<>((i==-1)? ctx.atom().start.getLine(): ctx.trailer(i).start.getLine(),(i==-1)? ctx.atom().start.getCharPositionInLine(): ctx.trailer(i).start.getCharPositionInLine());
-                    Pair t_to = new Pair<>((i==-1)? ctx.atom().stop.getLine(): ctx.trailer(i).stop.getLine(),(i==-1)? ctx.atom().stop.getCharPositionInLine(): ctx.trailer(i).stop.getCharPositionInLine());
-                    System.out.println(i);
-                    System.out.println(lookupScope);
-                    if(i >= 0) System.out.println(ctx.trailer(i).getText());
-                    if(i >= 0)reference = lookupScope.searchNode(ctx.trailer(i).NAME().getText());
 
-                    if(reference.type.equals("class")) {
-                        ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1)) : null;
-                        if(parameters == null){
-                            ClassReference class_reference = new ClassReference(this.currentNode, t_from, t_to);
-                            class_reference.setCalledClass(reference);
-                            composed.addChild(class_reference);
-                        } else {
-                            ClassCall class_call = new ClassCall(this.currentNode, t_from, t_to);
-                            parameters.forEach((x)->class_call.addParameter(x));
-                            class_call.setCalledClass(reference);
-                            composed.addChild(class_call);
-                            i++;
-                        }
-                        lookupScope = reference.getScope();
-                    } else if(reference.type.equals("function")) {
-                        ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1)) : null;
-                        if(parameters == null) {
-                            FunctionReference function_ref = new FunctionReference(this.currentNode, t_from, t_to);
-                            function_ref.setCalledFunction(reference);
-                            composed.addChild(function_ref);
-                        } else {
-                            FunctionCall function_call = new FunctionCall(this.currentNode, t_from, t_to);
-                            parameters.forEach((x)->function_call.addParameter(x));
-                            function_call.setCalledFunction(reference);
-                            composed.addChild(function_call);
-                            composed.finished = true;
-                        }
-                    } else if(reference.type.equals("variable")){
-                        Var var = (Var)reference;
-                        if(var.value.type.equals("composed")) {
-                            Composed found_composed = (Composed) var.value;
-                            if (found_composed.finished) {
-                                ComposedReference composed_ref = new ComposedReference(this.currentNode, t_from, t_to);
-                                composed_ref.setReference(found_composed);
-                                composed.addChild(composed_ref);
-                                composed.finished = true;
-                            } else {
-                                Node last_child_composed = found_composed.children.get(found_composed.children.size() - 1);
-                                if (last_child_composed.type.equals("class_reference")) {
-                                    reference = ((ClassReference) last_child_composed).calledClass;
-                                    lookupScope = reference.getScope();
-                                } else if (last_child_composed.type.equals("class_call")) {
-                                    reference = ((ClassCall) last_child_composed).calledClass;
-                                    lookupScope = reference.getScope();
+                if(reference == null){ // not found on namespaces, then built-in
+                    Function function = (Function)root.findBuiltinFunction(ctx.atom().NAME().getText());
+                    if (function != null){
+                        FunctionCall function_call = new FunctionCall(composed,from,to);
+                        function_call.setCalledFunction(function);
+                        composed.addChild(function_call);
+                        ArrayList<Node> parameters = lookAhead(ctx.trailer(0), function_call);
+                        parameters.forEach((x)-> function_call.addParameter(x));
 
-                                } else if (last_child_composed.type.equals("function_reference"))
-                                    reference = ((FunctionReference) last_child_composed).calledFunction;
-                                else composed.finished = true;
-                                i--;
-                            }
-                        } else if(var.value.type.equals("class_call") ){
-                            reference = ((ClassCall) var.value).calledClass;
-                            lookupScope = reference.getScope();
-                            i--;
-                        } else if(var.value.type.equals("class_reference") ){
-                            reference = ((ClassReference) var.value).calledClass;
-                            lookupScope = reference.getScope();
-                            i--;
-                        } else if(var.value.type.equals("function_reference") ){
-                            reference = ((FunctionReference) var.value).calledFunction;
-                            i--;
-                        } else {
-                            VarReference var_ref = new VarReference(this.currentNode, from, to);
-                            var_ref.setReference(reference);
-                            composed.addChild(var_ref);
-                            composed.finished = true;
-                        }
-                    } else {
+                        lastIdx = 1;
                         composed.finished = true;
-                    }
-                    if(composed.finished){
-                        lastIdx = i+1;
-                        break;
+
+                    } else {
+                        // need to change, find on imports pending
+                        composed.finished = true;
+                        lastIdx = 0;
                     }
                 }
+                try {
+                    for(int i = -1 ; i < ctx.trailer().size(); i++) {
+                        lastIdx = i+1;
+                        if(composed.finished)break;
+                        Pair t_from = (i==-1) ? new Pair<>(ctx.atom().start.getLine(),ctx.atom().start.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).start.getLine(),ctx.trailer(i).start.getCharPositionInLine()) ;
+                        Pair t_to = (i==-1) ? new Pair<>(ctx.atom().stop.getLine(),ctx.atom().stop.getCharPositionInLine()) : new Pair<>(ctx.trailer(i).stop.getLine(),ctx.trailer(i).stop.getCharPositionInLine());
 
-                // from here on it does not matter what reference is, nevertheless we keep indexing functions and slices that come from our local scope
-                for(int i = lastIdx; i < ctx.trailer().size();i++){
-                    Pair t_from = new Pair<>((i==-1)? ctx.atom().start.getLine(): ctx.trailer(i).start.getLine(),(i==-1)? ctx.atom().start.getCharPositionInLine(): ctx.trailer(i).start.getCharPositionInLine());
-                    Pair t_to = new Pair<>((i==-1)? ctx.atom().stop.getLine(): ctx.trailer(i).stop.getLine(),(i==-1)? ctx.atom().stop.getCharPositionInLine(): ctx.trailer(i).stop.getCharPositionInLine());
+                        if(i >= 0) reference = lookupScope.searchNode(ctx.trailer(i).NAME().getText());
+                        if(reference.type.equals("class")) {
+                            if(i+1 < ctx.trailer().size() && ctx.trailer(i+1).OPEN_PAREN() == null){
+                                ClassReference class_reference = new ClassReference(composed, t_from, t_to);
+                                class_reference.setCalledClass(reference);
+                            } else {
+                                ClassCall class_call = new ClassCall(composed, t_from, t_to);
+                                ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1), class_call) : null;
+                                parameters.forEach((x)->class_call.addParameter(x));
+                                class_call.setCalledClass(reference);
+                                i++;
+                            }
+                            lookupScope = reference.getScope();
+                        } else if(reference.type.equals("function")) {
+                            if(i+1 < ctx.trailer().size() && ctx.trailer(i+1).OPEN_PAREN() == null){
+                                FunctionReference function_ref = new FunctionReference(composed, t_from, t_to);
+                                function_ref.setCalledFunction(reference);
+                            } else {
+                                FunctionCall function_call = new FunctionCall(composed, t_from, t_to);
+                                ArrayList<Node> parameters = (i+1 < ctx.trailer().size()) ? lookAhead(ctx.trailer(i+1), function_call) : null;
+                                parameters.forEach((x)->function_call.addParameter(x));
+                                function_call.setCalledFunction(reference);
+                                i++;
+                                composed.finished = true;
+                            }
+                        } else if(reference.type.equals("variable")){
+                            Var var = (Var)reference;
+                            if(var.value.type.equals("composed")) {
+                                Composed found_composed = (Composed) var.value;
+                                if (found_composed.finished) {
+                                    ComposedReference composed_ref = new ComposedReference(composed, t_from, t_to);
+                                    composed_ref.setReference(found_composed);
+                                    composed.finished = true;
+                                } else {
+                                    Node last_child_composed = found_composed.children.get(found_composed.children.size() - 1);
+                                    if (last_child_composed.type.equals("class_reference")) {
+                                        reference = ((ClassReference) last_child_composed).calledClass;
+                                        lookupScope = reference.getScope();
+                                    } else if (last_child_composed.type.equals("class_call")) {
+                                        reference = ((ClassCall) last_child_composed).calledClass;
+                                        lookupScope = reference.getScope();
 
-                    if(ctx.trailer(i).subscriptlist() != null)
-                        processSubscript(ctx.trailer(i).subscriptlist(), composed);
-                    else if(ctx.trailer(i).arglist() != null)
-                        lookAhead(ctx.trailer(i));
+                                    } else if (last_child_composed.type.equals("function_reference"))
+                                        reference = ((FunctionReference) last_child_composed).calledFunction;
+                                    else composed.finished = true;
+                                }
+                            } else if(var.value.type.equals("class_call") ){
+                                Var new_var = new Var(composed, t_from, t_to, var.name);
+                                if(i+2 > ctx.trailer().size()){ // means that this is the last element to be processed
+                                    if(assignNode != null){
+                                        new_var.setValue(assignNode);
+                                        var.getScope().addNodeToScope(new_var);
+                                    }
+                                }
+                                var.addVarMention(new_var);
+                                reference = ((ClassCall) var.value).calledClass;
+                                lookupScope = reference.getScope();
+                            } else if(var.value.type.equals("class_reference") ){
+                                Var new_var = new Var(composed, t_from, t_to, var.name);
+                                if(i+1 > ctx.trailer().size()){ // means that this is the last element to be processed
+                                    if(assignNode != null){
+                                        new_var.setValue(assignNode);
+                                        var.getScope().addNodeToScope(new_var);
+                                    }
+                                }
+                                var.addVarMention(new_var);
+                                reference = ((ClassReference) var.value).calledClass;
+                                lookupScope = reference.getScope();
+                            } else if(var.value.type.equals("function_reference") ){
+                                Var new_var = new Var(composed, t_from, t_to, var.name);
+                                if(i+1 > ctx.trailer().size()){ // means that this is the last element to be processed
+                                    if(assignNode != null){
+                                        new_var.setValue(assignNode);
+                                        var.getScope().addNodeToScope(new_var);
+                                    }
+                                }
+                                var.addVarMention(new_var);
+                                reference = ((FunctionReference) var.value).calledFunction;
+                            } else {
+                                Var new_var = new Var(composed, t_from, t_to, var.name);
+                                var.addVarMention(new_var);
+                                composed.finished = true;
+                            }
+                        } else {
+                            composed.finished = true;
+                        }
+                    }
+                }catch (Exception e) {
+                    System.out.println("That went well!" + e);
+                }finally{
+                    // from here on it does not matter what reference is, nevertheless we keep indexing functions and slices that come from our local scope
+                    Node node = (composed.children !=null) ? composed.children.get(composed.children.size() - 1) : composed;
+                    for(int i = lastIdx; i < ctx.trailer().size();i++){
+                        Pair t_from = new Pair<>((i==-1)? ctx.atom().start.getLine(): ctx.trailer(i).start.getLine(),(i==-1)? ctx.atom().start.getCharPositionInLine(): ctx.trailer(i).start.getCharPositionInLine());
+                        Pair t_to = new Pair<>((i==-1)? ctx.atom().stop.getLine(): ctx.trailer(i).stop.getLine(),(i==-1)? ctx.atom().stop.getCharPositionInLine(): ctx.trailer(i).stop.getCharPositionInLine());
+                        if(ctx.trailer(i).subscriptlist() != null)
+                            processSubscript(ctx.trailer(i).subscriptlist(), node);
+                        else if(ctx.trailer(i).arglist() != null)
+                            lookAhead(ctx.trailer(i), node);
+                        else{
+                            node = new Node(composed,t_from, t_to);
+                        }
+                    }
                 }
 
                 return composed;
@@ -271,7 +361,7 @@ public class Processor extends Python3BaseListener {
         } else {
             Node node = new Node(parent, from, to); // simple node, does not go deeper
             node.type = (ctx.atom().NUMBER() !=null) ? "number" : (!ctx.atom().STRING().isEmpty()) ? "string"
-                    : (ctx.atom().TRUE() != null || ctx.atom().FALSE() != null)? "boolean" : "node";
+                : (ctx.atom().TRUE() != null || ctx.atom().FALSE() != null)? "boolean" : "node";
             return node;
         }
     }
@@ -386,8 +476,8 @@ public class Processor extends Python3BaseListener {
     /* ---- FUNCTIONS ---- */
     @Override
     public void enterFuncdef(Python3Parser.FuncdefContext ctx){
-        Pair from = new Pair<Integer,Integer>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        Pair to = new Pair<Integer,Integer>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
+        Pair from = new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        Pair to = new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
         Function function = new Function(this.currentNode, from, to, ctx.NAME().getText());
         this.currentScope.addNodeToScope(function);
 
@@ -400,8 +490,8 @@ public class Processor extends Python3BaseListener {
             for(Python3Parser.TfpdefContext t_ctx : ctx.parameters().typedargslist().tfpdef()) {
                 Var var = new Var(
                     function,
-                    new Pair<Integer, Integer>(t_ctx.start.getLine(), t_ctx.start.getCharPositionInLine()),
-                    new Pair<Integer, Integer>(t_ctx.stop.getLine(), t_ctx.stop.getCharPositionInLine()),
+                    new Pair<>(t_ctx.start.getLine(), t_ctx.start.getCharPositionInLine()),
+                    new Pair<>(t_ctx.stop.getLine(), t_ctx.stop.getCharPositionInLine()),
                     t_ctx.NAME().getText()
                 );
                 function.addParameter(var);
@@ -414,8 +504,8 @@ public class Processor extends Python3BaseListener {
 
                 Composed composed = new Composed(
                     this.currentNode,
-                    new Pair<Integer, Integer>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine()),
-                    new Pair<Integer, Integer>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine())
+                    new Pair<>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine()),
+                    new Pair<>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine())
                 );
 
                 for(Python3Parser.Atom_exprContext atom_exprContext : sb.atom_expr_ctxs){
@@ -441,8 +531,8 @@ public class Processor extends Python3BaseListener {
         if(this.currentNode.type.equals("function") && ctx.testlist() != null){
             ReturnNode return_ = new ReturnNode(
                     this.currentNode,
-                    new Pair<Integer, Integer>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
-                    new Pair<Integer, Integer>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
+                    new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+                    new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
             );
 
             for(Python3Parser.TestContext test_ctx: ctx.testlist().test()){
@@ -452,8 +542,8 @@ public class Processor extends Python3BaseListener {
 
                 ComposedElement composed_element = new ComposedElement(
                     return_,
-                    new Pair<Integer, Integer>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine()),
-                    new Pair<Integer, Integer>(test_ctx.stop.getLine(), test_ctx.stop.getCharPositionInLine())
+                    new Pair<>(test_ctx.start.getLine(), test_ctx.start.getCharPositionInLine()),
+                    new Pair<>(test_ctx.stop.getLine(), test_ctx.stop.getCharPositionInLine())
                 );
                 for(Python3Parser.Atom_exprContext atom_expr_ctx : sb.atom_expr_ctxs) {
                     processAtomExpr(atom_expr_ctx, composed_element, null);
@@ -468,8 +558,8 @@ public class Processor extends Python3BaseListener {
     /* ---- CLASS ---- */
     @Override
     public void enterClassdef(Python3Parser.ClassdefContext ctx) {
-        Pair from = new Pair<Integer,Integer>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
-        Pair to = new Pair<Integer,Integer>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
+        Pair from = new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        Pair to = new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
 
         Class class_ = new Class(this.currentNode, from, to, ctx.NAME().getText());
         if(ctx.arglist() != null) class_.setInherits((Class) this.currentScope.searchNode(ctx.arglist().getText()) );
@@ -491,4 +581,185 @@ public class Processor extends Python3BaseListener {
 
     /* FOR */
 
+    Stack<Node> loops = new Stack<>();
+    @Override
+    public void enterFor_stmt(Python3Parser.For_stmtContext ctx) {
+        Pair from = new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        Pair to = new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
+        For for_ = new For(this.currentNode, from, to);
+        this.currentNode = for_;
+        Node rule = new Node( this.currentNode, new Pair<>(ctx.exprlist().start.getLine(), ctx.exprlist().start.getCharPositionInLine()), to);
+
+        Composed assignNode = new Composed(
+            rule,
+            new Pair<>(ctx.testlist().start.getLine(), ctx.testlist().start.getCharPositionInLine()),
+            new Pair<>(ctx.testlist().stop.getLine(), ctx.testlist().stop.getCharPositionInLine())
+        );
+        for(Python3Parser.TestContext t_ctx : ctx.testlist().test()){
+            Pair t_from = new Pair<>(ctx.testlist().start.getLine(), ctx.testlist().start.getCharPositionInLine());
+            Pair t_to = new Pair<>(ctx.testlist().stop.getLine(), ctx.testlist().stop.getCharPositionInLine());
+            ComposedElement assignNodeElement = new ComposedElement(assignNode, t_from, t_to);
+            ParseTreeWalker walker = new ParseTreeWalker();
+            NextAtomExpr sb = new NextAtomExpr();
+            walker.walk(sb, t_ctx);
+            for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
+                processAtomExpr(a_ctx, assignNodeElement, null);
+            }
+        }
+        boolean isSplitable = assignNode.children.size() == ctx.exprlist().expr().size();
+        for(Python3Parser.ExprContext e_ctx : ctx.exprlist().expr()){
+            ParseTreeWalker walker = new ParseTreeWalker();
+            NextAtomExpr sb = new NextAtomExpr();
+            walker.walk(sb, e_ctx);
+            int id = 0;
+            for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
+                if(isSplitable) {
+                    processAtomExpr(a_ctx, rule, assignNode.children.get(id++));
+                } else {
+                    processAtomExpr(a_ctx, rule, assignNode);
+                }
+            }
+        }
+        loops.push(for_);
+        for_.setRule(rule);
+    }
+
+    @Override
+    public void exitFor_stmt(Python3Parser.For_stmtContext ctx){
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode(); // reset node
+        else this.currentNode = loops.peek();
+        /*
+        * Note that this is different from class or function because the scope remains the same, just the node changes
+        * */
+    }
+
+    /* WHILE */
+    @Override
+    public void enterWhile_stmt(Python3Parser.While_stmtContext ctx) {
+        Pair from = new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        Pair to = new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine());
+        While while_ = new While(this.currentNode, from, to);
+        this.currentNode = while_;
+        Node rule = new Node( this.currentNode, new Pair<>(ctx.test().start.getLine(), ctx.test().start.getCharPositionInLine()), to);
+
+        ParseTreeWalker walker = new ParseTreeWalker();
+        NextAtomExpr sb = new NextAtomExpr();
+        walker.walk(sb, ctx.test());
+        for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
+            processAtomExpr(a_ctx, rule, null);
+        }
+        loops.push(while_);
+        while_.setRule(rule);
+    }
+
+    @Override
+    public void exitWhile_stmt(Python3Parser.While_stmtContext ctx){
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode(); // reset node
+        else this.currentNode = loops.peek();
+        /*
+         * Note that this is different from class or function because the scope remains the same, just the node changes
+         * */
+    }
+
+    /* IF */
+    @Override
+    public void enterIf_stmt(Python3Parser.If_stmtContext ctx) {
+        IfBlock block = new IfBlock(
+            this.currentNode,
+            new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+            new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
+        );
+        this.currentNode = block;
+        loops.push(block);
+    }
+
+    @Override
+    public void exitIf_stmt(Python3Parser.If_stmtContext ctx) {
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode();
+        else this.currentNode = loops.peek();
+    }
+
+    @Override
+    public void enterIf_(Python3Parser.If_Context ctx) {
+        Condition condition = new Condition(
+            this.currentNode,
+            new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+            new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
+        );
+        this.currentNode = condition;
+        Node rule = new Node(
+            this.currentNode,
+            new Pair<>(ctx.test().start.getLine(), ctx.test().start.getCharPositionInLine()),
+            new Pair<>(ctx.test().stop.getLine(), ctx.test().stop.getCharPositionInLine())
+        );
+
+        ParseTreeWalker walker = new ParseTreeWalker();
+        NextAtomExpr sb = new NextAtomExpr();
+        walker.walk(sb, ctx.test());
+        for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
+            processAtomExpr(a_ctx, rule, null);
+        }
+        loops.push(condition);
+        condition.setRule(rule);
+    }
+
+    @Override
+    public void exitIf_(Python3Parser.If_Context ctx){
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode();
+        else this.currentNode = loops.peek();
+    }
+
+    @Override
+    public void enterElif_(Python3Parser.Elif_Context ctx) {
+        Condition condition = new Condition(
+            this.currentNode,
+            new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+            new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
+        );
+        this.currentNode = condition;
+        Node rule = new Node(
+            this.currentNode,
+            new Pair<>(ctx.test().start.getLine(), ctx.test().start.getCharPositionInLine()),
+            new Pair<>(ctx.test().stop.getLine(), ctx.test().stop.getCharPositionInLine())
+        );
+
+        ParseTreeWalker walker = new ParseTreeWalker();
+        NextAtomExpr sb = new NextAtomExpr();
+        walker.walk(sb, ctx.test());
+        for(Python3Parser.Atom_exprContext a_ctx : sb.atom_expr_ctxs){
+            processAtomExpr(a_ctx, rule, null);
+        }
+        loops.push(condition);
+        condition.setRule(rule);
+    }
+
+    @Override
+    public void exitElif_(Python3Parser.Elif_Context ctx){
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode();
+        else this.currentNode = loops.peek();
+    }
+
+    @Override
+    public void enterElse_(Python3Parser.Else_Context ctx) {
+        Condition condition = new Condition(
+            this.currentNode,
+            new Pair<>(ctx.start.getLine(), ctx.start.getCharPositionInLine()),
+            new Pair<>(ctx.stop.getLine(), ctx.stop.getCharPositionInLine())
+        );
+        this.currentNode = condition;
+
+        loops.push(condition);
+    }
+
+    @Override
+    public void exitElse_(Python3Parser.Else_Context ctx) {
+        loops.pop();
+        if(loops.isEmpty()) this.currentNode = this.currentScope.getScopeNode();
+        else this.currentNode = loops.peek();
+    }
 }

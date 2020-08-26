@@ -1,4 +1,4 @@
-// Generated from /home/c3po/Git/lenguajes/proyecto/grammar/Python3.g4 by ANTLR 4.7.2
+// Generated from /home/c3po/Git/lenguajes/proyecto/back/grammar/Python3.g4 by ANTLR 4.7.2
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
@@ -287,7 +287,7 @@ public class Python3Lexer extends Lexer {
 			     int next = _input.LA(1);
 			     int nextnext = _input.LA(2);
 			     if (opened > 0 || (nextnext != -1 && (next == '\r' || next == '\n' || next == '\f' || next == '#'))) {
-			       // Utilities.If we're inside a list or on a blank line, ignore all indents,
+			       // If we're inside a list or on a blank line, ignore all indents,
 			       // dedents and line breaks.
 			       skip();
 			     }

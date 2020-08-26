@@ -29,7 +29,4 @@ O,P = J
 Q, R, S = K
 T = U = 10
 V,W = X =[4,50]
-A[0:1][0][0:1,5] = 100 #this might not work
 
-Z = [i for i in range(0,10)]
-AA = [k for k in M]

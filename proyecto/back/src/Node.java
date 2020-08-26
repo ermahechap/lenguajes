@@ -1,8 +1,7 @@
 import Utilities.*;
-import sun.security.util.ArrayUtil;
-
+import java.io.*;
 import java.util.*;
-
+import java.lang.Process;
 /*
 * Pending:
 * Comprenhension // has its own scope
@@ -31,7 +30,7 @@ public class Node {
     public ArrayList<Node> children = new ArrayList<>(); //children of this node
 
     public String wrapOnCommas(String str) { //this is an useless piece of shit that apparently everyone wants
-        return "'" + str + "'";
+        return "\"" + str + "\"";
     } //remove when webserver exists
 
     public void setScope(Scope scope){ this.scope = scope; }
@@ -68,24 +67,60 @@ public class Node {
     @Override
     public String toString() {
         return "{" +
-                "type: " + wrapOnCommas(this.type) +
-                ", id: " + this.id +
-                ", parent_id:" + this.getParentId() +
-                ", children_id: " + this.getChildrenIds().toString() +
-                ", from: " + this.from.toString() +
-                ", to: " +this.to.toString() +
-                (( ("node number string boolean").contains(this.type) ) ? "}" : "")
-                ;
+            "\"type\": " + wrapOnCommas(this.type) +
+            ", \"id\": " + this.id +
+            ", \"parent_id\":" + this.getParentId() +
+            ", \"children_id\": " + this.getChildrenIds().toString() +
+            ", \"from\": " + ((from != null)? from.toString() : "null") +
+            ", \"to\": " + ((to != null)? to.toString() : "null") +
+            (( ("node number string boolean rule").contains(type) ) ? "}" : "");
     }
 }
 
 class Root extends Node {
     private static Root me = null;
-
+    private  static String []builtin = {
+            "abs", "all", "any", "ascii", "bin", "bool", "breakpoint", "bytearray", "bytes", "callable",
+            "chr", "classmethod", "compile", "complex", "delattr", "dict", "dir", "divmod", "enumerate",
+            "eval", "exec", "filter", "float", "format", "frozenset", "getattr", "globals", "hasattr",
+            "hash", "help", "hex", "id", "input", "int", "isinstance", "issublcass", "iter", "len", "list",
+            "locals", "map", "max", "memoryview", "min", "next", "object", "oct", "open", "ord", "pow", "print",
+            "property", "range", "repr", "reversed", "round", "set", "setattr", "slice", "sorted", "staticmethod",
+            "str", "sum", "super", "tuple", "type", "vars", "zip"
+    };
+    private static HashMap<String, Node> builtin_functions = new HashMap<>();
+    // add from here https://docs.python.org/3/library/functions.html . This is verbose, but meh!
     private Root(Pair from, Pair to) {
         super(null, from, to);
         this.type = "ROOT";
         this.me = this;
+
+        // creates built-in functions
+        for(String name: builtin){
+            Function function = new Function(null, from, to, name);
+            ProcessBuilder pb = new ProcessBuilder("python", "namecheck.py", name); // /home/c3po/anaconda3/bin/python
+            pb.directory(new File(System.getProperty("user.dir")));
+            try{
+                Process process = pb.start();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                process.waitFor();
+                String line = reader.readLine();
+                if(line !=null){
+                    System.out.println(line);
+                    function.info = (line.length() >100) ? line.substring(0, 100) + "...": line;
+                }
+            } catch (IOException | InterruptedException e) {
+                System.out.println(e);
+            }finally {
+                if(function.info == null) function.info = "No Info!";
+                builtin_functions.put(name, function);
+            }
+        }
+
+    }
+
+    public Node findBuiltinFunction(String str){
+        return builtin_functions.get(str); // null if this does not exists
     }
 
     public static Root getRootInstance() { // Singleton, only one root
@@ -140,10 +175,10 @@ class Var extends Node {
     @Override
     public String toString() {
         return super.toString() +
-                ", name: " + wrapOnCommas(this.name) +
-                ", value_id: " + ((this.value != null) ? this.value.id : "null") +
-                ", declared_id: " + ((this.varDeclaration != null) ? this.varDeclaration.id : "null") +
-                ", mentions_ids: " + getVarMentions().toString() +
+                ", \"name\": " + wrapOnCommas(this.name) +
+                ", \"value_id\": " + ((this.value != null) ? this.value.id : "null") +
+                ", \"declared_id\": " + ((this.varDeclaration != null) ? this.varDeclaration.id : "null") +
+                ", \"mentions_ids\": " + getVarMentions().toString() +
                 "}";
     }
 }
@@ -160,7 +195,7 @@ class VarReference extends Node {
     @Override
     public String toString(){
         return super.toString() +
-            ", reference_id: " + ((this.reference != null) ? this.reference.id : "null") +
+            ", \"reference_id\": " + ((this.reference != null) ? this.reference.id : "null") +
             "}";
     }
 }
@@ -194,7 +229,7 @@ class List_ extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", elements_ids: " + getElementsIds() +
+            ", \"elements_ids\": " + getElementsIds() +
             "}";
     }
 }
@@ -224,7 +259,7 @@ class Dictionary extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", elements_ids: " + getDictIds() +
+            ", \"elements_ids\": " + getDictIds() +
             "}";
     }
 }
@@ -233,7 +268,8 @@ class Dictionary extends Node {
 class Function extends Node {
     public ArrayList<Node> returns = new ArrayList<>();
     public ArrayList<Node> parameters = new ArrayList <>();
-
+    public boolean isDefault = false;
+    public String info;
     public Function(Node parent, Pair from, Pair to, String name) {
         super(parent, from, to);
         this.name = name;
@@ -256,9 +292,15 @@ class Function extends Node {
 
     @Override
     public String toString() {
+        if (!isDefault){
+            return super.toString() +
+                ", \"name\": " + wrapOnCommas(this.name) +
+                ", \"info\": " + ((this.info != null) ? wrapOnCommas(this.info) : "null") +
+                "}";
+        }
         return super.toString() +
-            ", name: " + wrapOnCommas(this.name) +
-            ",parameters_ids: " + this.getParametersIds() +
+            ", \"name\": " + wrapOnCommas(this.name) +
+            ", \"parameters_ids\": " + this.getParametersIds() +
             "}";
     }
 }
@@ -279,7 +321,7 @@ class FunctionReference extends Node{
     @Override
     public String toString(){
         return super.toString() +
-            ", called_function_id: " + ((this.calledFunction != null) ? this.calledFunction.id : "null") +
+            ", \"called_function_id\": " + ((this.calledFunction != null) ? this.calledFunction.id : "null") +
             (( this.type.equals("function_reference") ) ? "}" : "");
     }
 }
@@ -307,7 +349,7 @@ class FunctionCall extends FunctionReference {
     @Override
     public String toString(){
         return super.toString() +
-            ", parameters_ids: " + this.getParametersIds().toString() +
+            ", \"parameters_ids\": " + this.getParametersIds().toString() +
             "}";
     }
 }
@@ -325,7 +367,7 @@ class ClassReference extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", called_class_id: " + ((this.calledClass != null) ? this.calledClass.id : "null") +
+            ", \"called_class_id\": " + ((this.calledClass != null) ? this.calledClass.id : "null") +
             ((this.type.equals("class_reference")) ? "}" : "");
     }
 }
@@ -353,7 +395,7 @@ class ClassCall extends ClassReference {
     @Override
     public String toString() {
         return super.toString() +
-            ", parameters_ids: " + this.getParametersIds().toString() +
+            ", \"parameters_ids\": " + this.getParametersIds().toString() +
             "}";
     }
 }
@@ -375,55 +417,112 @@ class Class extends Node {
     @Override
     public String toString() {
         return super.toString() +
-                ", name: " + wrapOnCommas(this.name) +
-                ", constructor_id: " + ((this.constructor == null)? "null" : this.constructor.id) +
-                ", inherits_id: " + ((this.inherits == null)? "null" : this.inherits.id) +
+                ", \"name\": " + wrapOnCommas(this.name) +
+                ", \"constructor_id\": " + ((this.constructor == null)? "null" : this.constructor.id) +
+                ", \"inherits_id\": " + ((this.inherits == null)? "null" : this.inherits.id) +
                 "}";
     }
 }
 
 
-/* Pendiente */
-
 class For extends Node {
-    public Node Rule;
-
+    private Node rule;
     public For(Node parent, Pair from, Pair to) {
         super(parent, from, to);
+        this.type = "for_block";
     }
 
     @Override
     public String toString() {
-        return null;
+        return super.toString() +
+            ", \"rule\": " + this.rule.id +
+            "}";
+    }
+
+    public Node getRule() {
+        return rule;
+    }
+
+    public void setRule(Node rule) {
+        this.rule = rule;
+        this.rule.type = "rule";
     }
 }
 
 class While extends Node {
+    private Node rule;
     public While(Node parent, Pair from, Pair to) {
         super(parent, from, to);
+        this.type = "while_block";
+    }
+
+    public Node getRule() {
+        return rule;
+    }
+
+    public void setRule(Node rule) {
+        this.rule = rule;
+        this.rule.type = "rule";
     }
 
     @Override
     public String toString() {
-        return null;
+        return super.toString() +
+            ", \"rule\": " + this.rule.id +
+            "}";
     }
 }
 
 
 
-class If extends Node {
-    public ArrayList<If> else_if = new ArrayList<>();
-    public Node condition = null;
-    public If(Node parent, Pair from, Pair to) {
+class IfBlock extends Node {
+    private ArrayList<Node> conditions = new ArrayList<>();
+
+    public IfBlock(Node parent, Pair from, Pair to) {
         super(parent, from, to);
+        this.type = "if_block";
+    }
+    public ArrayList<Integer> getConditionsIds() {
+        ArrayList<Integer> ids = new ArrayList<>();
+        conditions.forEach((x)->ids.add(x.id));
+        return ids;
+    }
+
+    public boolean setCondition(Node condition) {
+        return this.conditions.add(condition);
     }
 
     @Override
     public String toString() {
-        return null;
+        return super.toString() +
+            ", \"conditions_ids\": " + getConditionsIds() +
+            "}";
     }
 }
 
+class Condition extends Node{
+    private Node rule;
+    public Condition(Node parent, Pair from, Pair to) {
+        super(parent, from, to);
+        this.type = "condition";
+    }
+
+    public Node getRule() {
+        return rule;
+    }
+
+    public void setRule(Node rule) {
+        this.rule = rule;
+        this.rule.type = "rule";
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+            ", \"rule\": " + ((this.rule != null) ? this.rule.id : "null") +
+            "}";
+    }
+}
 
 
 
@@ -456,7 +555,7 @@ class ComposedReference extends Node {
     @Override
     public String toString() {
         return super.toString() +
-            ", referenced_id: " + ((reference == null) ? "null": this.reference.id) +
+            ", \"referenced_id\": " + ((reference == null) ? "null": this.reference.id) +
             "}";
     }
 }
@@ -492,7 +591,7 @@ class ReturnNode extends Node{
     @Override
     public String toString() {
         return super.toString() +
-                ", returns_ids: " + this.getRetunsIds() +
+                ", \"returns_ids\": " + this.getRetunsIds() +
                 "}";
     }
 

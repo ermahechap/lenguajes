@@ -1,4 +1,4 @@
-// Generated from /home/c3po/Git/lenguajes/proyecto/grammar/Python3.g4 by ANTLR 4.7.2
+// Generated from /home/c3po/Git/lenguajes/proyecto/back/grammar/Python3.g4 by ANTLR 4.7.2
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -261,6 +261,24 @@ public interface Python3Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIf_stmt(Python3Parser.If_stmtContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link Python3Parser#if_}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIf_(Python3Parser.If_Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link Python3Parser#elif_}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElif_(Python3Parser.Elif_Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link Python3Parser#else_}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElse_(Python3Parser.Else_Context ctx);
 	/**
 	 * Visit a parse tree produced by {@link Python3Parser#while_stmt}.
 	 * @param ctx the parse tree

@@ -18,7 +18,6 @@ public class Scope {
     private Scope parentScope; //who is my parent
     private Node scopeNode; // must be a class, function or module. it identifies the node that opens this scope
 
-    private  static String []builtin_methods = {"abs", "all", "min", "str", "zip", "range"}; // add as required from here https://docs.python.org/3/library/functions.html
     private static ArrayList<Module> modules= new ArrayList<>();
 
     private static HashMap<String, Node> lingering = new HashMap<>(); // keeps calls to node instances that have not been created yet. For example https://stackoverflow.com/questions/44423786/does-the-order-of-functions-in-a-python-script-matter

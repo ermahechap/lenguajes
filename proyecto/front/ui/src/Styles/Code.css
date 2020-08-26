@@ -1,0 +1,126 @@
+.code-container{
+    /*width: 50%;*/
+    /*position: relative;*/
+}
+
+.info-container{
+    position: center;
+}
+
+.search-container{
+    margin-top: 10%;
+    text-align: center;
+}
+
+.ant-checkbox-group-item.ant-checkbox-wrapper{
+    min-width: 150px;
+}
+
+.card-container{
+    margin-left: 28%;
+    margin-bottom: 5%;
+}
+pre, code {
+    font-family: monospace, monospace;
+}
+pre {
+    overflow: auto;
+}
+pre > code {
+    display: block;
+    padding: 1rem;
+    word-wrap: normal;
+    max-height: 500px;
+}
+
+.w{
+    background-color: white !important;
+}
+
+.variable{
+    background-color: hotpink
+}
+
+.list{
+    background-color: green;
+}
+
+.function{
+    background-color: blue;
+}
+
+.dictionary{
+    background-color: purple;
+}
+
+.class{
+    background-color: orange;
+}
+
+.number{
+    background-color: aquamarine;
+}
+
+.subscript{
+    background-color: gold;
+}
+
+.composed_element{
+    background-color: lightblue;
+}
+
+.variable_reference{
+    background-color: brown;
+}
+
+.tuple{
+    background-color: cadetblue;
+}
+
+.function_reference{
+    background-color: deeppink;
+}
+
+.class_reference{
+    background-color: mediumspringgreen;
+}
+
+.calledClass{
+    background-color: greenyellow;
+}
+
+.for_block{
+    background-color: orchid;
+}
+
+.while_block{
+    background-color: palegreen;
+}
+
+.if_block{
+    background-color: teal;
+}
+
+.condition{
+    background-color: sandybrown;
+}
+
+.composed{
+    background-color: springgreen;
+}
+
+.return{
+    background-color: violet;
+}
+
+.function_call{
+    background-color: indigo;
+}
+
+.class_call{
+    background-color: yellow;
+}
+
+.selected{
+    background-color: red !important;
+}
